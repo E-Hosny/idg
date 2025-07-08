@@ -13,6 +13,7 @@ class Client extends Model
         'full_name',
         'company_name',
         'customer_code',
+        'receiving_record_no',
         'phone',
         'email',
         'address',

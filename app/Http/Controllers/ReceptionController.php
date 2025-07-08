@@ -54,12 +54,18 @@ class ReceptionController extends Controller
             $lastClient = \App\Models\Client::orderByDesc('id')->first();
             $nextCode = 'C' . str_pad(($lastClient ? ($lastClient->id + 1) : 1), 3, '0', STR_PAD_LEFT);
 
+            $today = date('ymd');
+            $lastToday = \App\Models\Client::where('receiving_record_no', 'like', $today.'%')->orderByDesc('receiving_record_no')->first();
+            $nextSeq = $lastToday ? ((int)substr($lastToday->receiving_record_no, 6) + 1) : 1;
+            $nextRecordNo = $today . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
+
             $receivedDate = now()->toDateString();
 
             $client = Client::create([
                 'full_name' => $data['full_name'],
                 'company_name' => $data['company_name'] ?? null,
                 'customer_code' => $nextCode,
+                'receiving_record_no' => $nextRecordNo,
                 'phone' => $data['mobile'],
                 'email' => $data['email'] ?? null,
                 'address' => $data['city'] ?? null,
@@ -112,6 +118,7 @@ class ReceptionController extends Controller
         return \Inertia\Inertia::render('Reception/ShowClient', [
             'client' => $client,
             'received_by' => $receivedBy,
+            'receiving_record_no' => $client->receiving_record_no,
         ]);
     }
 

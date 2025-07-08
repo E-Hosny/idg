@@ -13,6 +13,7 @@
           {{ __('Client Information') }}
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><span class="font-bold">{{ __('Receiving Record No') }}:</span> {{ client.receiving_record_no || '-' }}</div>
           <div><span class="font-bold">{{ __('Full Name') }}:</span> {{ client.full_name }}</div>
           <div><span class="font-bold">{{ __('Company Name') }}:</span> {{ client.company_name || '-' }}</div>
           <div><span class="font-bold">{{ __('Customer Code') }}:</span> {{ client.customer_code }}</div>
@@ -114,6 +115,8 @@ export default {
         'certified': 'معتمد',
         'rejected': 'مرفوض',
         'Not specified': 'غير محدد',
+        'Receiving Record No': 'رقم سجل الاستلام',
+        'Received By': 'تم الاستلام بواسطة',
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     }
