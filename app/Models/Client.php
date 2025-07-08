@@ -11,12 +11,17 @@ class Client extends Model
 
     protected $fillable = [
         'full_name',
-        'national_id',
+        'company_name',
+        'customer_code',
         'phone',
         'email',
-        'nationality',
         'address',
+        'received_date',
+        'delivery_date',
+        'national_id',
+        'nationality',
         'notes',
+        'created_by',
     ];
 
     public function artifacts()

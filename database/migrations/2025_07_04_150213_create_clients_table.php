@@ -20,6 +20,12 @@ return new class extends Migration
             $table->string('nationality')->nullable();
             $table->string('address')->nullable();
             $table->text('notes')->nullable();
+            $table->string('company_name')->nullable();
+            $table->string('customer_code')->nullable();
+            $table->date('received_date')->nullable();
+            $table->date('delivery_date')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }

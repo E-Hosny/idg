@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index');
     Route::get('/reception/new', [ReceptionController::class, 'createClient'])->name('reception.new');
     Route::post('/reception/store', [ReceptionController::class, 'storeClient'])->name('reception.store');
+    Route::get('/reception/client/{client}', [ReceptionController::class, 'showClient'])->name('reception.client.show');
 
     Route::get('/test-gate', function () {
         return [auth()->user()->role, \Gate::allows('isReceptionist')];

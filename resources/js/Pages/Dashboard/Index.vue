@@ -26,9 +26,9 @@
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <Link :href="route('dashboard.artifacts')" class="font-medium text-green-700 hover:text-green-900">
+              <a @click.prevent="goToArtifacts" class="font-medium text-green-700 hover:text-green-900 cursor-pointer">
                 {{ __('View all') }}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -56,9 +56,9 @@
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <Link :href="route('dashboard.evaluations')" class="font-medium text-yellow-700 hover:text-yellow-900">
+              <a @click.prevent="goToArtifacts('pending')" class="font-medium text-yellow-700 hover:text-yellow-900 cursor-pointer">
                 {{ __('Review pending') }}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -86,9 +86,9 @@
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <Link :href="route('dashboard.evaluations')" class="font-medium text-blue-700 hover:text-blue-900">
+              <a @click.prevent="goToEvaluations('under_evaluation')" class="font-medium text-blue-700 hover:text-blue-900 cursor-pointer">
                 {{ __('Track progress') }}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -116,9 +116,9 @@
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <Link :href="route('dashboard.artifacts')" class="font-medium text-purple-700 hover:text-purple-900">
+              <a @click.prevent="goToArtifacts('certified')" class="font-medium text-purple-700 hover:text-purple-900 cursor-pointer">
                 {{ __('View certified') }}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -277,7 +277,17 @@ export default {
 
       const locale = this.$page.props.locale || 'en'
       return translations[locale]?.[key] || key
-    }
+    },
+    goToArtifacts(status) {
+      if (status === 'certified') {
+        this.$inertia.visit(route('dashboard.artifacts', { status: 'certified' }))
+      } else {
+        this.$inertia.visit(route('dashboard.artifacts'))
+      }
+    },
+    goToEvaluations(status) {
+      this.$inertia.visit(route('dashboard.evaluations', { status }))
+    },
   }
 }
 </script>

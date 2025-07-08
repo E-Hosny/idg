@@ -14,6 +14,10 @@ class Artifact extends Model
     protected $fillable = [
         'client_id',
         'artifact_code',
+        'type',
+        'service',
+        'weight',
+        'notes',
         'title',
         'description',
         'category_id',

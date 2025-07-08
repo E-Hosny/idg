@@ -72,12 +72,13 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function artifacts()
+    public function artifacts(Request $request)
     {
-        $artifacts = Artifact::with(['category', 'assignedTo'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-
+        $query = Artifact::with(['category', 'assignedTo']);
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+        $artifacts = $query->orderBy('created_at', 'desc')->paginate(15);
         return Inertia::render('Dashboard/Artifacts/Index', [
             'artifacts' => $artifacts,
         ]);

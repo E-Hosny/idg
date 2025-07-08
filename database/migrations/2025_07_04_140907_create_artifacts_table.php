@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('artifact_code')->unique(); // IDG-2024-001
             $table->json('title'); // {"en": "Ancient Roman Coin", "ar": "عملة رومانية قديمة"}
             $table->json('description'); // {"en": "...", "ar": "..."}
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('origin_country')->nullable();
             $table->string('origin_city')->nullable();
             $table->string('period')->nullable(); // "1st Century BC"

@@ -15,268 +15,91 @@
             <i class="fas fa-user mr-2 text-blue-500"></i>
             {{ __('Client Information') }}
           </h3>
-          
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Full Name') }} <span class="text-red-500">*</span>
               </label>
-              <input 
-                v-model="form.full_name" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.full_name }"
-                required
-              />
+              <input v-model="form.full_name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.full_name }" required />
               <p v-if="errors.full_name" class="text-red-500 text-sm mt-1">{{ errors.full_name }}</p>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Phone Number') }} <span class="text-red-500">*</span>
+                {{ __('Company Name') }}
               </label>
-              <input 
-                v-model="form.phone" 
-                type="tel" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.phone }"
-                required
-              />
-              <p v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</p>
+              <input v-model="form.company_name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.company_name }" />
+              <p v-if="errors.company_name" class="text-red-500 text-sm mt-1">{{ errors.company_name }}</p>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('National ID') }}
+                {{ __('Mobile') }} <span class="text-red-500">*</span>
               </label>
-              <input 
-                v-model="form.national_id" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.national_id }"
-              />
-              <p v-if="errors.national_id" class="text-red-500 text-sm mt-1">{{ errors.national_id }}</p>
+              <input v-model="form.mobile" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.mobile }" required />
+              <p v-if="errors.mobile" class="text-red-500 text-sm mt-1">{{ errors.mobile }}</p>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Email') }}
               </label>
-              <input 
-                v-model="form.email" 
-                type="email" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.email }"
-              />
+              <input v-model="form.email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.email }" />
               <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Nationality') }}
+                {{ __('City') }}
               </label>
-              <input 
-                v-model="form.nationality" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.nationality }"
-                :placeholder="__( 'Nationality Placeholder' )"
-              />
-              <p v-if="errors.nationality" class="text-red-500 text-sm mt-1">{{ errors.nationality }}</p>
+              <input v-model="form.city" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.city }" />
+              <p v-if="errors.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Address') }}
+                {{ __('Delivery Date') }}
               </label>
-              <input 
-                v-model="form.address" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.address }"
-                :placeholder="__( 'Address Placeholder' )"
-              />
-              <p v-if="errors.address" class="text-red-500 text-sm mt-1">{{ errors.address }}</p>
+              <input v-model="form.delivery_date" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.delivery_date }" />
+              <p v-if="errors.delivery_date" class="text-red-500 text-sm mt-1">{{ errors.delivery_date }}</p>
             </div>
-          </div>
-
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              {{ __('Client Notes') }}
-            </label>
-            <textarea 
-              v-model="form.client_notes" 
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              :class="{ 'border-red-500': errors.client_notes }"
-              :placeholder="__( 'Client Notes Placeholder' )"
-            ></textarea>
-            <p v-if="errors.client_notes" class="text-red-500 text-sm mt-1">{{ errors.client_notes }}</p>
           </div>
         </div>
 
-        <!-- Artifact Information Section -->
+        <!-- Artifacts Table Section -->
         <div class="mb-8">
           <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
             <i class="fas fa-gem mr-2 text-green-500"></i>
-            {{ __('Artifact Information') }}
+            {{ __('Artifacts Information') }}
           </h3>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Artifact Name') }} <span class="text-red-500">*</span>
-              </label>
-              <input 
-                v-model="form.artifact_name" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.artifact_name }"
-                required
-              />
-              <p v-if="errors.artifact_name" class="text-red-500 text-sm mt-1">{{ errors.artifact_name }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Artifact Type') }} <span class="text-red-500">*</span>
-              </label>
-              <select 
-                v-model="form.artifact_type" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.artifact_type }"
-                required
-              >
-                <option value="">{{ __('Select Type') }}</option>
-                <option value="antique">{{ __('Antique') }}</option>
-                <option value="jewelry">{{ __('Jewelry') }}</option>
-                <option value="artwork">{{ __('Artwork') }}</option>
-                <option value="furniture">{{ __('Furniture') }}</option>
-                <option value="coins">{{ __('Coins') }}</option>
-                <option value="books">{{ __('Books') }}</option>
-                <option value="other">{{ __('Other') }}</option>
-              </select>
-              <p v-if="errors.artifact_type" class="text-red-500 text-sm mt-1">{{ errors.artifact_type }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Origin Country') }}
-              </label>
-              <input 
-                v-model="form.origin_country" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.origin_country }"
-                :placeholder="__( 'Origin Country Placeholder' )"
-              />
-              <p v-if="errors.origin_country" class="text-red-500 text-sm mt-1">{{ errors.origin_country }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Year Made') }}
-              </label>
-              <input 
-                v-model="form.year_made" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.year_made }"
-                :placeholder="__( 'Year Made Placeholder' )"
-              />
-              <p v-if="errors.year_made" class="text-red-500 text-sm mt-1">{{ errors.year_made }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Materials') }}
-              </label>
-              <input 
-                v-model="form.materials" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.materials }"
-                :placeholder="__( 'Materials Placeholder' )"
-              />
-              <p v-if="errors.materials" class="text-red-500 text-sm mt-1">{{ errors.materials }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Weight') }}
-              </label>
-              <input 
-                v-model="form.weight" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.weight }"
-                :placeholder="__( 'Weight Placeholder' )"
-              />
-              <p v-if="errors.weight" class="text-red-500 text-sm mt-1">{{ errors.weight }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Dimensions') }}
-              </label>
-              <input 
-                v-model="form.dimensions" 
-                type="text" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.dimensions }"
-                :placeholder="__( 'Dimensions Placeholder' )"
-              />
-              <p v-if="errors.dimensions" class="text-red-500 text-sm mt-1">{{ errors.dimensions }}</p>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Condition') }} <span class="text-red-500">*</span>
-              </label>
-              <select 
-                v-model="form.condition" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                :class="{ 'border-red-500': errors.condition }"
-                required
-              >
-                <option value="">{{ __('Select Condition') }}</option>
-                <option value="excellent">{{ __('Excellent') }}</option>
-                <option value="very_good">{{ __('Very Good') }}</option>
-                <option value="good">{{ __('Good') }}</option>
-                <option value="fair">{{ __('Fair') }}</option>
-                <option value="poor">{{ __('Poor') }}</option>
-              </select>
-              <p v-if="errors.condition" class="text-red-500 text-sm mt-1">{{ errors.condition }}</p>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              {{ __('Artifact Description') }}
-            </label>
-            <textarea 
-              v-model="form.artifact_description" 
-              rows="4"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              :class="{ 'border-red-500': errors.artifact_description }"
-              :placeholder="__( 'Artifact Description Placeholder' )"
-            ></textarea>
-            <p v-if="errors.artifact_description" class="text-red-500 text-sm mt-1">{{ errors.artifact_description }}</p>
-          </div>
-
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              {{ __('Artifact Notes') }}
-            </label>
-            <textarea 
-              v-model="form.artifact_notes" 
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              :class="{ 'border-red-500': errors.artifact_notes }"
-              :placeholder="__( 'Artifact Notes Placeholder' )"
-            ></textarea>
-            <p v-if="errors.artifact_notes" class="text-red-500 text-sm mt-1">{{ errors.artifact_notes }}</p>
-          </div>
+          <table class="min-w-full bg-white rounded shadow mb-4">
+            <thead>
+              <tr>
+                <th class="px-2 py-1">#</th>
+                <th class="px-2 py-1">{{ __('Type') }}</th>
+                <th class="px-2 py-1">{{ __('Service') }}</th>
+                <th class="px-2 py-1">{{ __('Weight') }}</th>
+                <th class="px-2 py-1">{{ __('Notes') }}</th>
+                <th class="px-2 py-1"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(artifact, idx) in form.artifacts" :key="idx">
+                <td class="px-2 py-1">{{ idx + 1 }}</td>
+                <td class="px-2 py-1">
+                  <input v-model="artifact.type" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                </td>
+                <td class="px-2 py-1">
+                  <input v-model="artifact.service" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                </td>
+                <td class="px-2 py-1">
+                  <input v-model="artifact.weight" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                </td>
+                <td class="px-2 py-1">
+                  <input v-model="artifact.notes" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                </td>
+                <td class="px-2 py-1">
+                  <button type="button" @click="removeArtifact(idx)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" @click="addArtifact" class="btn btn-secondary"><i class="fas fa-plus mr-1"></i> {{ __('Add Artifact') }}</button>
         </div>
 
         <!-- Submit Buttons -->
@@ -317,23 +140,13 @@ export default {
     const form = useForm({
       // Client data
       full_name: '',
-      national_id: '',
-      phone: '',
+      company_name: '',
+      mobile: '',
       email: '',
-      nationality: '',
-      address: '',
-      client_notes: '',
+      city: '',
+      delivery_date: '',
       // Artifact data
-      artifact_name: '',
-      artifact_description: '',
-      artifact_type: '',
-      origin_country: '',
-      year_made: '',
-      materials: '',
-      weight: '',
-      dimensions: '',
-      condition: '',
-      artifact_notes: ''
+      artifacts: []
     })
 
     return { form }
@@ -414,14 +227,39 @@ export default {
     },
     submitForm() {
       this.loading = true
+      
+      // تأكد من وجود قطعة واحدة على الأقل
+      if (this.form.artifacts.length === 0) {
+        this.addArtifact()
+      }
+      
+      console.log('Sending data:', this.form.data())
+      
       this.form.post(this.$route('reception.store'), {
-        onSuccess: () => {
+        onSuccess: (page) => {
+          console.log('Success!', page)
+          this.loading = false
+          // التوجيه التلقائي سيتم من الكنترولر
+        },
+        onError: (errors) => {
+          console.log('Errors:', errors)
           this.loading = false
         },
-        onError: () => {
+        onFinish: () => {
           this.loading = false
         }
       })
+    },
+    addArtifact() {
+      this.form.artifacts.push({
+        type: '',
+        service: '',
+        weight: '',
+        notes: ''
+      })
+    },
+    removeArtifact(index) {
+      this.form.artifacts.splice(index, 1)
     }
   }
 }
