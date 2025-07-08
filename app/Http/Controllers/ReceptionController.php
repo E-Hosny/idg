@@ -43,6 +43,7 @@ class ReceptionController extends Controller
             'artifacts.*.service' => 'nullable|string|max:100',
             'artifacts.*.weight' => 'nullable|string|max:50',
             'artifacts.*.notes' => 'nullable|string|max:1000',
+            'artifacts.*.delivery_type' => 'nullable|string|max:100',
         ]);
 
         \Log::info('Validation passed, creating client...');
@@ -77,6 +78,7 @@ class ReceptionController extends Controller
                     'service' => $artifactData['service'] ?? null,
                     'weight' => $artifactData['weight'] ?? null,
                     'notes' => $artifactData['notes'] ?? null,
+                    'delivery_type' => $artifactData['delivery_type'] ?? null,
                     'status' => 'pending',
                     'title' => json_encode(['en' => '', 'ar' => '']),
                     'description' => json_encode(['en' => '', 'ar' => '']),
@@ -99,6 +101,14 @@ class ReceptionController extends Controller
     {
         $client->load('artifacts');
         $receivedBy = $client->created_by ? \App\Models\User::find($client->created_by)?->name : null;
+        
+        // Log for debugging
+        \Log::info('ShowClient Debug', [
+            'client_id' => $client->id,
+            'created_by' => $client->created_by,
+            'receivedBy' => $receivedBy,
+        ]);
+        
         return \Inertia\Inertia::render('Reception/ShowClient', [
             'client' => $client,
             'received_by' => $receivedBy,

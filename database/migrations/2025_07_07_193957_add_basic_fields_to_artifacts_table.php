@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('service')->nullable()->after('type');
             $table->string('weight')->nullable()->after('service');
             $table->text('notes')->nullable()->after('weight');
+            if (!Schema::hasColumn('artifacts', 'delivery_type')) {
+                $table->string('delivery_type')->nullable()->after('notes');
+            }
         });
     }
 
@@ -26,6 +29,9 @@ return new class extends Migration
     {
         Schema::table('artifacts', function (Blueprint $table) {
             $table->dropColumn(['type', 'service', 'weight', 'notes']);
+            if (Schema::hasColumn('artifacts', 'delivery_type')) {
+                $table->dropColumn('delivery_type');
+            }
         });
     }
 };

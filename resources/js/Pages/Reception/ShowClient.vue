@@ -39,6 +39,7 @@
               <th class="px-4 py-2 text-left font-bold">{{ __('Service') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Notes') }}</th>
+              <th class="px-4 py-2 text-left font-bold">{{ __('Delivery Type') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
             </tr>
           </thead>
@@ -49,6 +50,7 @@
               <td class="px-4 py-2">{{ artifact.service }}</td>
               <td class="px-4 py-2">{{ artifact.weight }}</td>
               <td class="px-4 py-2">{{ artifact.notes }}</td>
+              <td class="px-4 py-2">{{ artifact.delivery_type }}</td>
               <td class="px-4 py-2">
                 <span :class="{
                   'text-yellow-600 font-semibold': artifact.status === 'pending',
@@ -81,7 +83,8 @@ import { Link } from '@inertiajs/vue3'
 export default {
   components: { DashboardLayout, Link },
   props: {
-    client: Object
+    client: Object,
+    received_by: String
   },
   methods: {
     __(key) {

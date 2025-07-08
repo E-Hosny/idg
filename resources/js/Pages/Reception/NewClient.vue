@@ -74,6 +74,7 @@
                 <th class="px-2 py-1">{{ __('Type') }}</th>
                 <th class="px-2 py-1">{{ __('Service') }}</th>
                 <th class="px-2 py-1">{{ __('Weight') }}</th>
+                <th class="px-2 py-1">{{ __('Delivery Type') }}</th>
                 <th class="px-2 py-1">{{ __('Notes') }}</th>
                 <th class="px-2 py-1"></th>
               </tr>
@@ -89,6 +90,9 @@
                 </td>
                 <td class="px-2 py-1">
                   <input v-model="artifact.weight" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                </td>
+                <td class="px-2 py-1">
+                  <input v-model="artifact.delivery_type" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
                 </td>
                 <td class="px-2 py-1">
                   <input v-model="artifact.notes" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
@@ -255,7 +259,8 @@ export default {
         type: '',
         service: '',
         weight: '',
-        notes: ''
+        notes: '',
+        delivery_type: ''
       })
     },
     removeArtifact(index) {
