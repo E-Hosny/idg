@@ -114,4 +114,36 @@ class ReceptionController extends Controller
             'received_by' => $receivedBy,
         ]);
     }
+
+    public function createArtifact($clientId)
+    {
+        return \Inertia\Inertia::render('Reception/AddArtifact', [
+            'client_id' => (int) $clientId,
+        ]);
+    }
+
+    public function storeArtifact(Request $request, $clientId)
+    {
+        $data = $request->validate([
+            'type' => 'required|string|max:100',
+            'service' => 'nullable|string|max:100',
+            'weight' => 'nullable|string|max:50',
+            'delivery_type' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+        $artifact = \App\Models\Artifact::create([
+            'client_id' => $clientId,
+            'artifact_code' => \App\Models\Artifact::generateArtifactCode(),
+            'type' => $data['type'],
+            'service' => $data['service'] ?? null,
+            'weight' => $data['weight'] ?? null,
+            'delivery_type' => $data['delivery_type'] ?? null,
+            'notes' => $data['notes'] ?? null,
+            'status' => 'pending',
+            'title' => json_encode(['en' => '', 'ar' => '']),
+            'description' => json_encode(['en' => '', 'ar' => '']),
+            'category_id' => null,
+        ]);
+        return redirect()->route('reception.client.show', $clientId)->with('success', 'Artifact added successfully.');
+    }
 } 

@@ -30,7 +30,7 @@
             <td class="px-4 py-2">{{ client.email }}</td>
             <td class="px-4 py-2">{{ client.artifacts.length }}</td>
             <td class="px-4 py-2 flex gap-2" @click.stop>
-              <Link :href="$route('reception.new', { client_id: client.id })" class="inline-flex items-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs font-semibold">
+              <Link :href="$route('reception.artifact.create', { client: client.id })" class="inline-flex items-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs font-semibold">
                 <i class="fas fa-plus mr-1"></i> {{ __('Add Artifact') }}
               </Link>
               <Link :href="$route('reception.client.show', client.id)" class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-xs font-semibold border border-blue-200">

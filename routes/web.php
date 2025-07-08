@@ -37,6 +37,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reception/new', [ReceptionController::class, 'createClient'])->name('reception.new');
     Route::post('/reception/store', [ReceptionController::class, 'storeClient'])->name('reception.store');
     Route::get('/reception/client/{client}', [ReceptionController::class, 'showClient'])->name('reception.client.show');
+    Route::get('/reception/client/{client}/artifact/new', [\App\Http\Controllers\ReceptionController::class, 'createArtifact'])->name('reception.artifact.create');
+    Route::post('/reception/client/{client}/artifact/store', [\App\Http\Controllers\ReceptionController::class, 'storeArtifact'])->name('reception.artifact.store');
 
     Route::get('/test-gate', function () {
         return [auth()->user()->role, \Gate::allows('isReceptionist')];
