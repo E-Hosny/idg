@@ -13,7 +13,7 @@
       <table class="min-w-full bg-white rounded shadow border">
         <thead>
           <tr class="bg-gray-100 border-b">
-            <th class="px-4 py-2 text-left font-bold">#</th>
+            <th class="px-4 py-2 text-left font-bold">{{ __('Customer Code') }}</th>
             <th class="px-4 py-2 text-left font-bold">{{ __('Name') }}</th>
             <th class="px-4 py-2 text-left font-bold">{{ __('Phone') }}</th>
             <th class="px-4 py-2 text-left font-bold">{{ __('Email') }}</th>
@@ -24,7 +24,7 @@
         <tbody>
           <tr v-for="client in clients.data" :key="client.id" class="border-b hover:bg-gray-50 transition cursor-pointer group"
               @click="goToDetails(client.id)">
-            <td class="px-4 py-2">{{ client.id }}</td>
+            <td class="px-4 py-2">{{ client.customer_code }}</td>
             <td class="px-4 py-2">{{ client.full_name }}</td>
             <td class="px-4 py-2">{{ client.phone }}</td>
             <td class="px-4 py-2">{{ client.email }}</td>
