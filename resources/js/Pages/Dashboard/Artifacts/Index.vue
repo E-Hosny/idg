@@ -13,6 +13,7 @@
               <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Created At') }}</th>
+              <th class="px-4 py-2 text-left font-bold">{{ __('Evaluate') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -33,6 +34,11 @@
               </td>
               <td class="px-4 py-2">{{ artifact.client ? artifact.client.full_name : '-' }}</td>
               <td class="px-4 py-2">{{ formatDate(artifact.created_at) }}</td>
+              <td class="px-4 py-2">
+                <button @click.stop="$inertia.visit(`/dashboard/artifacts/${artifact.id}/evaluate`)" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold">
+                  {{ __('Evaluate') }}
+                </button>
+              </td>
             </tr>
             <tr v-if="!artifacts.data.length">
               <td colspan="7" class="text-center text-gray-400 py-4">{{ __('No artifacts found.') }}</td>
@@ -68,6 +74,7 @@ export default {
         'evaluated': 'تم التقييم',
         'certified': 'معتمد',
         'rejected': 'مرفوض',
+        'Evaluate': 'تقييم',
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     },

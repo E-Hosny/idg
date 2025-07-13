@@ -147,4 +147,11 @@ class DashboardController extends Controller
             'conditionDistribution' => $conditionDistribution,
         ]);
     }
+
+    public function evaluate(Artifact $artifact)
+    {
+        return Inertia::render('Dashboard/Artifacts/Evaluate', [
+            'artifact' => $artifact,
+        ]);
+    }
 }

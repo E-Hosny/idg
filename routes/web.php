@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/evaluations', [DashboardController::class, 'evaluations'])->name('dashboard.evaluations');
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('dashboard.analytics');
+    Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
     
     // Redirect /home to dashboard
     Route::get('/home', function () {
