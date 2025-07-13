@@ -83,16 +83,25 @@
               <tr v-for="(artifact, idx) in form.artifacts" :key="idx">
                 <td class="px-2 py-1">{{ idx + 1 }}</td>
                 <td class="px-2 py-1">
-                  <input v-model="artifact.type" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                  <select v-model="artifact.type" class="w-full px-2 py-1 border border-gray-300 rounded">
+                    <option value="" disabled>{{ __("Select Type") }}</option>
+                    <option v-for="option in typeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                  </select>
                 </td>
                 <td class="px-2 py-1">
-                  <input v-model="artifact.service" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                  <select v-model="artifact.service" class="w-full px-2 py-1 border border-gray-300 rounded">
+                    <option value="" disabled>{{ __("Select Service") }}</option>
+                    <option v-for="option in serviceOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                  </select>
                 </td>
                 <td class="px-2 py-1">
                   <input v-model="artifact.weight" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
                 </td>
                 <td class="px-2 py-1">
-                  <input v-model="artifact.delivery_type" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                  <select v-model="artifact.delivery_type" class="w-full px-2 py-1 border border-gray-300 rounded">
+                    <option value="" disabled>{{ __("Select Delivery Type") }}</option>
+                    <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                  </select>
                 </td>
                 <td class="px-2 py-1">
                   <input v-model="artifact.notes" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
@@ -152,8 +161,60 @@ export default {
       // Artifact data
       artifacts: []
     })
-
-    return { form }
+    const locale = window?.Inertia?.page?.props?.locale || 'en';
+    // Type options
+    const typeOptions = [
+      { value: 'Colored Gemstones', label: locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
+      { value: 'Other Color Gemstones', label: locale === 'ar' ? 'أحجار ملونة أخرى' : 'Other Color Gemstones' },
+      { value: 'Colorless Diamonds', label: locale === 'ar' ? 'ألماس عديم اللون' : 'Colorless Diamonds' },
+      { value: 'Jewellery Report', label: locale === 'ar' ? 'تقرير مجوهرات' : 'Jewellery Report' },
+      { value: 'Loose Stones', label: locale === 'ar' ? 'أحجار مفكوكة' : 'Loose Stones' },
+      { value: 'Loose Diamonds', label: locale === 'ar' ? 'ألماس مفكوك' : 'Loose Diamonds' },
+      { value: 'Diamond Screening', label: locale === 'ar' ? 'فحص الألماس' : 'Diamond Screening' },
+      { value: 'Consultation', label: locale === 'ar' ? 'استشارة' : 'Consultation' },
+      { value: 'Ring', label: locale === 'ar' ? 'خاتم' : 'Ring' },
+      { value: 'Necklace', label: locale === 'ar' ? 'عقد' : 'Necklace' },
+      { value: 'Pair of Earring', label: locale === 'ar' ? 'زوج أقراط' : 'Pair of Earring' },
+      { value: 'Earring', label: locale === 'ar' ? 'قرط' : 'Earring' },
+      { value: 'Bracelet', label: locale === 'ar' ? 'سوار' : 'Bracelet' },
+      { value: 'Charm Bracelet', label: locale === 'ar' ? 'سوار تعويذة' : 'Charm Bracelet' },
+      { value: 'Nose Pin', label: locale === 'ar' ? 'دبوس أنف' : 'Nose Pin' },
+      { value: 'Chokker', label: locale === 'ar' ? 'شوكر' : 'Chokker' },
+      { value: 'Bangle', label: locale === 'ar' ? 'سوار دائري' : 'Bangle' },
+      { value: 'Cuff links', label: locale === 'ar' ? 'أزرار أكمام' : 'Cuff links' },
+      { value: 'Armlet', label: locale === 'ar' ? 'عضادة' : 'Armlet' },
+      { value: 'Hair Clip', label: locale === 'ar' ? 'مشبك شعر' : 'Hair Clip' },
+      { value: 'Brooch', label: locale === 'ar' ? 'بروش' : 'Brooch' },
+      { value: 'Anklet', label: locale === 'ar' ? 'خلخال' : 'Anklet' },
+      { value: 'Amulet', label: locale === 'ar' ? 'تعويذة' : 'Amulet' },
+      { value: 'Locket', label: locale === 'ar' ? 'قلادة صغيرة' : 'Locket' },
+      { value: 'Pendant', label: locale === 'ar' ? 'قلادة' : 'Pendant' },
+    ];
+    // Service options
+    const serviceOptions = [
+      { value: 'Regular (ID Report and ID + Origin Report)', label: locale === 'ar' ? 'عادي (تقرير هوية وتقرير هوية + أصل)' : 'Regular (ID Report and ID + Origin Report)' },
+      { value: 'Mini Card Report (ID Report and ID + Origin Report)', label: locale === 'ar' ? 'تقرير بطاقة مصغرة (تقرير هوية وتقرير هوية + أصل)' : 'Mini Card Report (ID Report and ID + Origin Report)' },
+      { value: 'Regular (ID Report)', label: locale === 'ar' ? 'عادي (تقرير هوية)' : 'Regular (ID Report)' },
+      { value: 'Mini Card Report (ID Report)', label: locale === 'ar' ? 'تقرير بطاقة مصغرة (تقرير هوية)' : 'Mini Card Report (ID Report)' },
+      { value: 'Regular (Diamond Grading Report)', label: locale === 'ar' ? 'عادي (تقرير تصنيف الألماس)' : 'Regular (Diamond Grading Report)' },
+      { value: 'Mini Card Report (Mini Report)', label: locale === 'ar' ? 'تقرير بطاقة مصغرة (تقرير مصغر)' : 'Mini Card Report (Mini Report)' },
+      { value: 'Regular (Jewellery Report)', label: locale === 'ar' ? 'عادي (تقرير مجوهرات)' : 'Regular (Jewellery Report)' },
+      { value: 'Mini Card Report (Mini Jewellery Report)', label: locale === 'ar' ? 'تقرير بطاقة مصغرة (تقرير مجوهرات مصغر)' : 'Mini Card Report (Mini Jewellery Report)' },
+      { value: 'Duplicate Identification Report', label: locale === 'ar' ? 'تقرير هوية مكرر' : 'Duplicate Identification Report' },
+      { value: 'Duplicate PVC Card Report', label: locale === 'ar' ? 'تقرير بطاقة PVC مكرر' : 'Duplicate PVC Card Report' },
+      { value: 'Premium Report', label: locale === 'ar' ? 'تقرير مميز' : 'Premium Report' },
+      { value: 'Prestigious Report', label: locale === 'ar' ? 'تقرير مرموق' : 'Prestigious Report' },
+    ];
+    // Delivery options
+    const deliveryOptions = [
+      { value: 'Regular', label: locale === 'ar' ? 'عادي' : 'Regular' },
+      { value: 'Express Service', label: locale === 'ar' ? 'خدمة سريعة' : 'Express Service' },
+      { value: 'Same Day', label: locale === 'ar' ? 'نفس اليوم' : 'Same Day' },
+      { value: '24 hours', label: locale === 'ar' ? '24 ساعة' : '24 hours' },
+      { value: '18 hours', label: locale === 'ar' ? '18 ساعة' : '18 hours' },
+      { value: '72 hours', label: locale === 'ar' ? '72 ساعة' : '72 hours' },
+    ];
+    return { form, typeOptions, serviceOptions, deliveryOptions }
   },
   data() {
     return {
