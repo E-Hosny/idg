@@ -77,12 +77,14 @@ class ReceptionController extends Controller
             \Log::info('Client created:', $client->toArray());
 
             foreach ($data['artifacts'] as $artifactData) {
-                \App\Models\Artifact::create([
+                \Log::info('Creating artifact with data:', $artifactData);
+                $artifact = \App\Models\Artifact::create([
                     'client_id' => $client->id,
                     'artifact_code' => \App\Models\Artifact::generateArtifactCode(),
                     'type' => $artifactData['type'],
                     'service' => $artifactData['service'] ?? null,
                     'weight' => $artifactData['weight'] ?? null,
+                    'weight_unit' => $artifactData['weight_unit'] ?? null,
                     'notes' => $artifactData['notes'] ?? null,
                     'delivery_type' => $artifactData['delivery_type'] ?? null,
                     'status' => 'pending',
@@ -90,6 +92,7 @@ class ReceptionController extends Controller
                     'description' => json_encode(['en' => '', 'ar' => '']),
                     'category_id' => null,
                 ]);
+                \Log::info('Artifact created:', $artifact->toArray());
             }
 
             \DB::commit();
@@ -107,13 +110,6 @@ class ReceptionController extends Controller
     {
         $client->load('artifacts');
         $receivedBy = $client->created_by ? \App\Models\User::find($client->created_by)?->name : null;
-        
-        // Log for debugging
-        \Log::info('ShowClient Debug', [
-            'client_id' => $client->id,
-            'created_by' => $client->created_by,
-            'receivedBy' => $receivedBy,
-        ]);
         
         return \Inertia\Inertia::render('Reception/ShowClient', [
             'client' => $client,
@@ -135,15 +131,18 @@ class ReceptionController extends Controller
             'type' => 'required|string|max:100',
             'service' => 'nullable|string|max:100',
             'weight' => 'nullable|string|max:50',
+            'weight_unit' => 'nullable|in:ct,gm',
             'delivery_type' => 'nullable|string|max:100',
             'notes' => 'nullable|string|max:1000',
         ]);
+        \Log::info('Creating single artifact with data:', $data);
         $artifact = \App\Models\Artifact::create([
             'client_id' => $clientId,
             'artifact_code' => \App\Models\Artifact::generateArtifactCode(),
             'type' => $data['type'],
             'service' => $data['service'] ?? null,
             'weight' => $data['weight'] ?? null,
+            'weight_unit' => $data['weight_unit'] ?? null,
             'delivery_type' => $data['delivery_type'] ?? null,
             'notes' => $data['notes'] ?? null,
             'status' => 'pending',
@@ -151,6 +150,7 @@ class ReceptionController extends Controller
             'description' => json_encode(['en' => '', 'ar' => '']),
             'category_id' => null,
         ]);
+        \Log::info('Single artifact created:', $artifact->toArray());
         return redirect()->route('reception.client.show', $clientId)->with('success', 'Artifact added successfully.');
     }
 } 

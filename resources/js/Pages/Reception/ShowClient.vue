@@ -51,7 +51,15 @@
               <td class="px-4 py-2">{{ artifact.artifact_code || '-' }}</td>
               <td class="px-4 py-2">{{ artifact.type }}</td>
               <td class="px-4 py-2">{{ artifact.service }}</td>
-              <td class="px-4 py-2">{{ artifact.weight }}</td>
+              <td class="px-4 py-2">
+                <span v-if="artifact.weight">
+                  {{ artifact.weight }} 
+                  <span v-if="artifact.weight_unit" class="text-gray-600 text-sm">
+                    {{ __(artifact.weight_unit) }}
+                  </span>
+                </span>
+                <span v-else class="text-gray-400">-</span>
+              </td>
               <td class="px-4 py-2">{{ artifact.notes }}</td>
               <td class="px-4 py-2">{{ artifact.delivery_type }}</td>
               <td class="px-4 py-2">
@@ -89,6 +97,8 @@ export default {
     client: Object,
     received_by: String
   },
+
+
   methods: {
     __(key) {
       const t = {
@@ -107,6 +117,8 @@ export default {
         'Type': 'النوع',
         'Service': 'الخدمة',
         'Weight': 'الوزن',
+        'ct': 'قيراط',
+        'gm': 'جرام',
         'Notes': 'ملاحظات',
         'Status': 'الحالة',
         'No artifacts found.': 'لا توجد قطع مسجلة',

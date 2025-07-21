@@ -22,7 +22,13 @@
         </div>
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ __("Weight") }}</label>
-          <input v-model="form.weight" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <div class="flex space-x-2">
+            <input v-model="form.weight" type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <select v-model="form.weight_unit" class="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="" disabled>{{ __("Select Weight Unit") }}</option>
+              <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
         </div>
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ __("Delivery Type") }}</label>
@@ -69,6 +75,11 @@ export default {
       { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
       { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
     ];
+    // Weight unit options
+    const weightUnitOptions = [
+      { value: 'ct', label: locale === 'ar' ? 'قيراط' : 'ct' },
+      { value: 'gm', label: locale === 'ar' ? 'جرام' : 'gm' },
+    ];
     // Delivery options
     const deliveryOptions = [
       { value: 'Regular', label: locale === 'ar' ? 'عادي' : 'Regular' },
@@ -82,6 +93,7 @@ export default {
       type: '',
       service: '',
       weight: '',
+      weight_unit: '',
       delivery_type: '',
       notes: '',
       client_id: props.client_id
@@ -89,7 +101,7 @@ export default {
     const submitForm = () => {
       form.post(route('reception.artifact.store', { client: props.client_id }))
     }
-    return { form, submitForm, typeOptions, serviceOptions, deliveryOptions }
+    return { form, submitForm, typeOptions, serviceOptions, weightUnitOptions, deliveryOptions }
   },
   methods: {
     __(key) {

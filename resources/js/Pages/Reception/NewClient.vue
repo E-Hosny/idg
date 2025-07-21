@@ -95,7 +95,13 @@
                   </select>
                 </td>
                 <td class="px-2 py-1">
-                  <input v-model="artifact.weight" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                  <div class="flex space-x-1">
+                    <input v-model="artifact.weight" type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded" />
+                    <select v-model="artifact.weight_unit" class="w-16 px-2 py-1 border border-gray-300 rounded text-xs">
+                      <option value="" disabled>{{ __("Unit") }}</option>
+                      <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                    </select>
+                  </div>
                 </td>
                 <td class="px-2 py-1">
                   <select v-model="artifact.delivery_type" class="w-full px-2 py-1 border border-gray-300 rounded">
@@ -176,6 +182,11 @@ export default {
       { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
       { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
     ];
+    // Weight unit options
+    const weightUnitOptions = [
+      { value: 'ct', label: locale === 'ar' ? 'قيراط' : 'ct' },
+      { value: 'gm', label: locale === 'ar' ? 'جرام' : 'gm' },
+    ];
     // Delivery options
     const deliveryOptions = [
       { value: 'Regular', label: locale === 'ar' ? 'عادي' : 'Regular' },
@@ -185,7 +196,7 @@ export default {
       { value: '18 hours', label: locale === 'ar' ? '18 ساعة' : '18 hours' },
       { value: '72 hours', label: locale === 'ar' ? '72 ساعة' : '72 hours' },
     ];
-    return { form, typeOptions, serviceOptions, deliveryOptions }
+    return { form, typeOptions, serviceOptions, weightUnitOptions, deliveryOptions }
   },
   data() {
     return {
@@ -244,7 +255,8 @@ export default {
         'Origin Country Placeholder': 'بلد المنشأ (مثال: مصر، العراق...)',
         'Year Made Placeholder': 'مثال: 1920 أو القرن 19',
         'Materials Placeholder': 'مثال: ذهب، فضة، خشب، برونز',
-        'Weight Placeholder': 'مثال: 50 جرام',
+        'Weight Placeholder': 'مثال: 50',
+        'Unit': 'وحدة',
         'Dimensions Placeholder': 'مثال: 10×15×5 سم',
         'Artifact Description Placeholder': 'وصف تفصيلي للقطعة...',
         'Artifact Notes Placeholder': 'أي ملاحظات إضافية عن القطعة...',
@@ -291,6 +303,7 @@ export default {
         type: '',
         service: '',
         weight: '',
+        weight_unit: '',
         notes: '',
         delivery_type: ''
       })

@@ -10,6 +10,7 @@
               <th class="px-4 py-2 text-left font-bold">{{ __('Code') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Service') }}</th>
+              <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Created At') }}</th>
@@ -22,6 +23,15 @@
               <td class="px-4 py-2">{{ artifact.artifact_code }}</td>
               <td class="px-4 py-2">{{ artifact.type }}</td>
               <td class="px-4 py-2">{{ artifact.service }}</td>
+              <td class="px-4 py-2">
+                <span v-if="artifact.weight">
+                  {{ artifact.weight }} 
+                  <span v-if="artifact.weight_unit" class="text-gray-600 text-sm">
+                    {{ __(artifact.weight_unit) }}
+                  </span>
+                </span>
+                <span v-else class="text-gray-400">-</span>
+              </td>
               <td class="px-4 py-2">
                 <span :class="{
                   'text-yellow-600 font-semibold': artifact.status === 'pending',
@@ -41,7 +51,7 @@
               </td>
             </tr>
             <tr v-if="!artifacts.data.length">
-              <td colspan="7" class="text-center text-gray-400 py-4">{{ __('No artifacts found.') }}</td>
+              <td colspan="8" class="text-center text-gray-400 py-4">{{ __('No artifacts found.') }}</td>
             </tr>
           </tbody>
         </table>
@@ -58,6 +68,7 @@ export default {
   props: {
     artifacts: Object
   },
+
   methods: {
     __(key) {
       const t = {
@@ -65,6 +76,9 @@ export default {
         'Code': 'الكود',
         'Type': 'النوع',
         'Service': 'الخدمة',
+        'Weight': 'الوزن',
+        'ct': 'قيراط',
+        'gm': 'جرام',
         'Status': 'الحالة',
         'Client': 'العميل',
         'Created At': 'تاريخ الإنشاء',

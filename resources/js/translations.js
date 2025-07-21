@@ -16,6 +16,11 @@ export default {
     'Pickup': 'Pickup',
     'Courier': 'Courier',
     'Other': 'Other',
+    // Weight Units
+    'ct': 'ct',
+    'gm': 'gm',
+    'Weight Unit': 'Weight Unit',
+    'Select Weight Unit': 'Select Weight Unit',
     // UI
     'Select Type': 'Select Type',
     'Select Service': 'Select Service',
@@ -38,6 +43,11 @@ export default {
     'Pickup': 'استلام ذاتي',
     'Courier': 'مندوب',
     'Other': 'أخرى',
+    // Weight Units
+    'ct': 'قيراط',
+    'gm': 'جرام',
+    'Weight Unit': 'وحدة الوزن',
+    'Select Weight Unit': 'اختر وحدة الوزن',
     // UI
     'Select Type': 'اختر النوع',
     'Select Service': 'اختر الخدمة',
