@@ -1,6 +1,6 @@
 <template>
   <DashboardLayout :pageTitle="__('New Client Registration')">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-full mx-auto px-4">
       <!-- Header -->
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ __('New Client Registration') }}</h2>
@@ -15,47 +15,47 @@
             <i class="fas fa-user mr-2 text-blue-500"></i>
             {{ __('Client Information') }}
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Full Name') }} <span class="text-red-500">*</span>
               </label>
-              <input v-model="form.full_name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.full_name }" required />
+              <input v-model="form.full_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.full_name }" required />
               <p v-if="errors.full_name" class="text-red-500 text-sm mt-1">{{ errors.full_name }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Company Name') }}
               </label>
-              <input v-model="form.company_name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.company_name }" />
+              <input v-model="form.company_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.company_name }" />
               <p v-if="errors.company_name" class="text-red-500 text-sm mt-1">{{ errors.company_name }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Mobile') }} <span class="text-red-500">*</span>
               </label>
-              <input v-model="form.mobile" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.mobile }" required />
+              <input v-model="form.mobile" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.mobile }" required />
               <p v-if="errors.mobile" class="text-red-500 text-sm mt-1">{{ errors.mobile }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Email') }}
               </label>
-              <input v-model="form.email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.email }" />
+              <input v-model="form.email" type="email" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.email }" />
               <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('City') }}
               </label>
-              <input v-model="form.city" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.city }" />
+              <input v-model="form.city" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.city }" />
               <p v-if="errors.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Delivery Date') }}
               </label>
-              <input v-model="form.delivery_date" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" :class="{ 'border-red-500': errors.delivery_date }" />
+              <input v-model="form.delivery_date" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.delivery_date }" />
               <p v-if="errors.delivery_date" class="text-red-500 text-sm mt-1">{{ errors.delivery_date }}</p>
             </div>
           </div>
@@ -67,72 +67,88 @@
             <i class="fas fa-gem mr-2 text-green-500"></i>
             {{ __('Artifacts Information') }}
           </h3>
-          <table class="min-w-full bg-white rounded shadow mb-4">
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded shadow mb-4">
             <thead>
               <tr>
-                <th class="px-2 py-1">#</th>
-                <th class="px-2 py-1">{{ __('Type') }}</th>
-                <th class="px-2 py-1">{{ __('Service') }}</th>
-                <th class="px-2 py-1">{{ __('Weight') }}</th>
-                <th class="px-2 py-1">{{ __('Delivery Type') }}</th>
-                <th class="px-2 py-1">{{ __('Notes') }}</th>
-                <th class="px-2 py-1"></th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50">#</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[130px]">{{ __('Type') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[160px]">{{ __('Service') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[100px]">{{ __('Weight') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[80px]">{{ __('Price') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[120px]">{{ __('Delivery Type') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[150px]">{{ __('Notes') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 w-[60px]"></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(artifact, idx) in form.artifacts" :key="idx">
-                <td class="px-2 py-1">{{ idx + 1 }}</td>
-                <td class="px-2 py-1">
-                  <select v-model="artifact.type" class="w-full px-2 py-1 border border-gray-300 rounded">
-                    <option value="" disabled>{{ __("Select Type") }}</option>
+              <tr v-for="(artifact, idx) in form.artifacts" :key="idx" class="border-b hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3 text-center font-medium">{{ idx + 1 }}</td>
+                <td class="px-4 py-3">
+                  <select v-model="artifact.type" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="" disabled selected>{{ __("Select Type") }}</option>
                     <option v-for="option in typeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
                   </select>
                 </td>
-                <td class="px-2 py-1">
-                  <select v-model="artifact.service" class="w-full px-2 py-1 border border-gray-300 rounded">
-                    <option value="" disabled>{{ __("Select Service") }}</option>
-                    <option v-for="option in serviceOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                <td class="px-4 py-3">
+                  <select v-model="artifact.service" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="" disabled selected>{{ __("Select Service") }}</option>
+                    <option v-for="option in getServiceOptions(artifact.type)" :key="option.value" :value="option.value">{{ option.label }}</option>
                   </select>
                 </td>
-                <td class="px-2 py-1">
+                <td class="px-4 py-3">
                   <div class="flex space-x-1">
-                    <input v-model="artifact.weight" type="text" class="flex-1 px-2 py-1 border border-gray-300 rounded" />
-                    <select v-model="artifact.weight_unit" class="w-16 px-2 py-1 border border-gray-300 rounded text-xs">
-                      <option value="" disabled>{{ __("Unit") }}</option>
+                    <input v-model="artifact.weight" type="text" class="w-16 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00" />
+                    <select v-model="artifact.weight_unit" class="w-16 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option value="" disabled selected>{{ __("Unit") }}</option>
                       <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
                     </select>
                   </div>
                 </td>
-                <td class="px-2 py-1">
-                  <select v-model="artifact.delivery_type" class="w-full px-2 py-1 border border-gray-300 rounded">
-                    <option value="" disabled>{{ __("Select Delivery Type") }}</option>
+                <td class="px-4 py-3">
+                  <div class="flex items-center space-x-1">
+                    <input v-model="artifact.price" type="text" readonly class="w-20 px-2 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm" placeholder="0.00" />
+                    <button v-if="artifact.type && artifact.service && artifact.weight" @click="calculatePriceForArtifact(idx)" type="button" class="px-2 py-2 bg-blue-500 text-white rounded-md text-xs hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                      {{ __("Calc") }}
+                    </button>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <select v-model="artifact.delivery_type" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="" disabled selected>{{ __("Select Delivery Type") }}</option>
                     <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
                   </select>
                 </td>
-                <td class="px-2 py-1">
-                  <input v-model="artifact.notes" type="text" class="w-full px-2 py-1 border border-gray-300 rounded" />
+                <td class="px-4 py-3">
+                  <input v-model="artifact.notes" type="text" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ملاحظات..." />
                 </td>
-                <td class="px-2 py-1">
-                  <button type="button" @click="removeArtifact(idx)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                <td class="px-4 py-3 text-center">
+                  <button type="button" @click="removeArtifact(idx)" class="text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
-          <button type="button" @click="addArtifact" class="btn btn-secondary"><i class="fas fa-plus mr-1"></i> {{ __('Add Artifact') }}</button>
+          </div>
+          <button type="button" @click="addArtifact" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors font-medium shadow-sm">
+            <i class="fas fa-plus mr-2"></i> {{ __('Add Artifact') }}
+          </button>
         </div>
 
         <!-- Submit Buttons -->
-        <div class="flex justify-end space-x-4 pt-6 border-t">
+        <div class="flex justify-end space-x-6 pt-8 border-t border-gray-200">
           <Link 
             :href="$route('reception.index')" 
-            class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="px-8 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
           >
+            <i class="fas fa-times mr-2"></i>
             {{ __('Cancel') }}
           </Link>
           <button 
             type="submit" 
             :disabled="loading"
-            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
           >
             <span v-if="loading" class="flex items-center">
               <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -175,13 +191,22 @@ export default {
       { value: 'Colorless Diamonds', label: locale === 'ar' ? 'ألماس عديم اللون' : 'Colorless Diamonds' },
       { value: 'Jewellery', label: locale === 'ar' ? 'مجوهرات' : 'Jewellery' },
     ];
-    // Service options
-    const serviceOptions = [
-      { value: 'Regular - ID Report', label: locale === 'ar' ? 'عادي - تقرير هوية' : 'Regular - ID Report' },
-      { value: 'Regular - ID + Origin', label: locale === 'ar' ? 'عادي - هوية + أصل' : 'Regular - ID + Origin' },
-      { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
-      { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
-    ];
+    // Service options - ديناميكية بناءً على نوع القطعة
+    const getServiceOptions = (artifactType) => {
+      const allServices = [
+        { value: 'Regular - ID Report', label: locale === 'ar' ? 'عادي - تقرير هوية' : 'Regular - ID Report' },
+        { value: 'Regular - ID + Origin', label: locale === 'ar' ? 'عادي - هوية + أصل' : 'Regular - ID + Origin' },
+        { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
+        { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
+      ];
+
+      // Other Colored Gemstones لا يحتوي على ID + Origin
+      if (artifactType === 'Other Colored Gemstones') {
+        return allServices.filter(service => !service.value.includes('ID + Origin'));
+      }
+
+      return allServices;
+    };
     // Weight unit options
     const weightUnitOptions = [
       { value: 'ct', label: locale === 'ar' ? 'قيراط' : 'ct' },
@@ -196,7 +221,7 @@ export default {
       { value: '18 hours', label: locale === 'ar' ? '18 ساعة' : '18 hours' },
       { value: '72 hours', label: locale === 'ar' ? '72 ساعة' : '72 hours' },
     ];
-    return { form, typeOptions, serviceOptions, weightUnitOptions, deliveryOptions }
+    return { form, typeOptions, getServiceOptions, weightUnitOptions, deliveryOptions }
   },
   data() {
     return {
@@ -236,6 +261,9 @@ export default {
         'Year Made': 'سنة الصنع',
         'Materials': 'المواد',
         'Weight': 'الوزن',
+        'Price': 'السعر',
+        'Calc': 'حساب',
+        'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.': 'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.',
         'Dimensions': 'الأبعاد',
         'Condition': 'الحالة',
         'Select Condition': 'اختر الحالة',
@@ -304,13 +332,121 @@ export default {
         service: '',
         weight: '',
         weight_unit: '',
+        price: '',
         notes: '',
         delivery_type: ''
       })
+    },
+    async calculatePriceForArtifact(index) {
+      const artifact = this.form.artifacts[index]
+      if (!artifact.type || !artifact.service || !artifact.weight) {
+        return
+      }
+
+      try {
+        // الحصول على CSRF token بطريقة آمنة
+        const csrfToken = this.$page.props.csrf_token || 
+                         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                         document.querySelector('input[name="_token"]')?.value
+
+        const response = await fetch('/reception/calculate-price', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            type: artifact.type,
+            service: artifact.service,
+            weight: parseFloat(artifact.weight)
+          })
+        })
+
+        const data = await response.json()
+        
+        if (data.price) {
+          this.form.artifacts[index].price = data.price
+        } else {
+          this.form.artifacts[index].price = 'N/A'
+        }
+      } catch (error) {
+        console.error('Error calculating price:', error)
+        this.form.artifacts[index].price = 'Error'
+        // إظهار رسالة خطأ للمستخدم
+        alert(this.__('خطأ في حساب السعر. يرجى المحاولة مرة أخرى.'))
+      }
     },
     removeArtifact(index) {
       this.form.artifacts.splice(index, 1)
     }
   }
 }
-</script> 
+</script>
+
+<style scoped>
+/* تحسين مظهر القوائم المنسدلة */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px !important;
+}
+
+select option {
+  padding: 12px;
+  font-size: 14px;
+}
+
+select option:first-child {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* تحسين مظهر الجدول */
+table {
+  border-collapse: collapse;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+th, td {
+  border: 1px solid #e5e7eb;
+}
+
+/* تحسين مظهر الأزرار */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* تحسين مظهر الحقول */
+input, select {
+  transition: all 0.2s ease-in-out;
+}
+
+input:focus, select:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+}
+
+/* تحسين مظهر النموذج */
+.form-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* تحسين مظهر العناوين */
+.section-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+</style> 

@@ -18,6 +18,7 @@ class Artifact extends Model
         'service',
         'weight',
         'weight_unit',
+        'price',
         'notes',
         'delivery_type',
         'title',

@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Artifact;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Services\PricingService;
 
 class ReceptionController extends Controller
 {
@@ -42,6 +43,7 @@ class ReceptionController extends Controller
             'artifacts.*.type' => 'required|string|max:100',
             'artifacts.*.service' => 'nullable|string|max:100',
             'artifacts.*.weight' => 'nullable|string|max:50',
+            'artifacts.*.weight_unit' => 'nullable|in:ct,gm',
             'artifacts.*.notes' => 'nullable|string|max:1000',
             'artifacts.*.delivery_type' => 'nullable|string|max:100',
         ]);
@@ -78,6 +80,17 @@ class ReceptionController extends Controller
 
             foreach ($data['artifacts'] as $artifactData) {
                 \Log::info('Creating artifact with data:', $artifactData);
+                // حساب السعر تلقائياً
+                $price = null;
+                if ($artifactData['type'] && $artifactData['service'] && $artifactData['weight']) {
+                    $weight = floatval($artifactData['weight']);
+                    $price = PricingService::calculatePrice(
+                        $artifactData['type'],
+                        $artifactData['service'],
+                        $weight
+                    );
+                }
+
                 $artifact = \App\Models\Artifact::create([
                     'client_id' => $client->id,
                     'artifact_code' => \App\Models\Artifact::generateArtifactCode(),
@@ -85,6 +98,7 @@ class ReceptionController extends Controller
                     'service' => $artifactData['service'] ?? null,
                     'weight' => $artifactData['weight'] ?? null,
                     'weight_unit' => $artifactData['weight_unit'] ?? null,
+                    'price' => $price,
                     'notes' => $artifactData['notes'] ?? null,
                     'delivery_type' => $artifactData['delivery_type'] ?? null,
                     'status' => 'pending',
@@ -135,6 +149,17 @@ class ReceptionController extends Controller
             'delivery_type' => 'nullable|string|max:100',
             'notes' => 'nullable|string|max:1000',
         ]);
+        // حساب السعر تلقائياً
+        $price = null;
+        if ($data['type'] && $data['service'] && $data['weight']) {
+            $weight = floatval($data['weight']);
+            $price = PricingService::calculatePrice(
+                $data['type'],
+                $data['service'],
+                $weight
+            );
+        }
+
         \Log::info('Creating single artifact with data:', $data);
         $artifact = \App\Models\Artifact::create([
             'client_id' => $clientId,
@@ -143,6 +168,7 @@ class ReceptionController extends Controller
             'service' => $data['service'] ?? null,
             'weight' => $data['weight'] ?? null,
             'weight_unit' => $data['weight_unit'] ?? null,
+            'price' => $price,
             'delivery_type' => $data['delivery_type'] ?? null,
             'notes' => $data['notes'] ?? null,
             'status' => 'pending',
@@ -152,5 +178,35 @@ class ReceptionController extends Controller
         ]);
         \Log::info('Single artifact created:', $artifact->toArray());
         return redirect()->route('reception.client.show', $clientId)->with('success', 'Artifact added successfully.');
+    }
+
+    /**
+     * حساب السعر في الوقت الفعلي
+     */
+    public function calculatePrice(Request $request)
+    {
+        $data = $request->validate([
+            'type' => 'required|string',
+            'service' => 'required|string',
+            'weight' => 'required|numeric|min:0',
+        ]);
+
+        $price = PricingService::calculatePrice(
+            $data['type'],
+            $data['service'],
+            $data['weight']
+        );
+
+        $weightRange = PricingService::getWeightRange(
+            $data['type'],
+            $data['service'],
+            $data['weight']
+        );
+
+        return response()->json([
+            'price' => $price,
+            'weight_range' => $weightRange,
+            'currency' => 'SAR'
+        ]);
     }
 } 

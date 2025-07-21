@@ -40,6 +40,7 @@
               <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Service') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
+              <th class="px-4 py-2 text-left font-bold">{{ __('Price') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Notes') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Delivery Type') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
@@ -60,6 +61,12 @@
                 </span>
                 <span v-else class="text-gray-400">-</span>
               </td>
+              <td class="px-4 py-2">
+                <span v-if="artifact.price" class="font-semibold text-green-600">
+                  {{ artifact.price }} SAR
+                </span>
+                <span v-else class="text-gray-400">-</span>
+              </td>
               <td class="px-4 py-2">{{ artifact.notes }}</td>
               <td class="px-4 py-2">{{ artifact.delivery_type }}</td>
               <td class="px-4 py-2">
@@ -74,7 +81,7 @@
               </td>
             </tr>
             <tr v-if="!client.artifacts.length">
-              <td colspan="6" class="text-center text-gray-400 py-4">{{ __('No artifacts found.') }}</td>
+              <td colspan="8" class="text-center text-gray-400 py-4">{{ __('No artifacts found.') }}</td>
             </tr>
           </tbody>
         </table>
@@ -117,6 +124,7 @@ export default {
         'Type': 'النوع',
         'Service': 'الخدمة',
         'Weight': 'الوزن',
+        'Price': 'السعر',
         'ct': 'قيراط',
         'gm': 'جرام',
         'Notes': 'ملاحظات',

@@ -21,6 +21,9 @@ export default {
     'gm': 'gm',
     'Weight Unit': 'Weight Unit',
     'Select Weight Unit': 'Select Weight Unit',
+    'Price': 'Price',
+    'Calculate Price': 'Calculate Price',
+    'Calc': 'Calc',
     // UI
     'Select Type': 'Select Type',
     'Select Service': 'Select Service',
@@ -48,6 +51,9 @@ export default {
     'gm': 'جرام',
     'Weight Unit': 'وحدة الوزن',
     'Select Weight Unit': 'اختر وحدة الوزن',
+    'Price': 'السعر',
+    'Calculate Price': 'حساب السعر',
+    'Calc': 'حساب',
     // UI
     'Select Type': 'اختر النوع',
     'Select Service': 'اختر الخدمة',
