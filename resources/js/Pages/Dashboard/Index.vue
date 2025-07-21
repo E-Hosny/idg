@@ -56,14 +56,14 @@
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <a @click.prevent="goToArtifacts('pending')" class="font-medium text-yellow-700 hover:text-yellow-900 cursor-pointer">
+              <a @click.prevent="goToPendingArtifacts()" class="font-medium text-yellow-700 hover:text-yellow-900 cursor-pointer">
                 {{ __('Review pending') }}
               </a>
             </div>
           </div>
         </div>
 
-        <!-- Under Evaluation -->
+        <!-- Evaluated Artifacts -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -73,11 +73,11 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 truncate">
-                    {{ __('Under Evaluation') }}
+                    {{ __('Evaluated') }}
                   </dt>
                   <dd>
                     <div class="text-lg font-medium text-gray-900">
-                      {{ stats.under_evaluation }}
+                      {{ stats.evaluated_artifacts }}
                     </div>
                   </dd>
                 </dl>
@@ -86,8 +86,8 @@
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <a @click.prevent="goToEvaluations('under_evaluation')" class="font-medium text-blue-700 hover:text-blue-900 cursor-pointer">
-                {{ __('Track progress') }}
+              <a @click.prevent="goToEvaluatedArtifacts()" class="font-medium text-blue-700 hover:text-blue-900 cursor-pointer">
+                {{ __('View evaluated') }}
               </a>
             </div>
           </div>
@@ -249,8 +249,12 @@ export default {
           'Dashboard': 'Dashboard',
           'Total Artifacts': 'Total Artifacts',
           'Pending Evaluations': 'Pending Evaluations',
-          'Under Evaluation': 'Under Evaluation',
+          'Evaluated': 'Evaluated',
           'Certified Artifacts': 'Certified Artifacts',
+          'View all': 'View all',
+          'Review pending': 'Review pending',
+          'View evaluated': 'View evaluated',
+          'View certified': 'View certified',
           'Welcome to IDG Artifacts Dashboard': 'Welcome to IDG Artifacts Dashboard',
           'Manage and evaluate precious artifacts with our comprehensive system': 'Manage and evaluate precious artifacts with our comprehensive system',
           'Quick Actions': 'Quick Actions',
@@ -263,8 +267,12 @@ export default {
           'Dashboard': 'لوحة التحكم',
           'Total Artifacts': 'إجمالي القطع الأثرية',
           'Pending Evaluations': 'التقييمات المعلقة',
-          'Under Evaluation': 'قيد التقييم',
+          'Evaluated': 'تم التقييم',
           'Certified Artifacts': 'القطع المعتمدة',
+          'View all': 'عرض الكل',
+          'Review pending': 'مراجعة المعلق',
+          'View evaluated': 'عرض المقيم',
+          'View certified': 'عرض المعتمد',
           'Welcome to IDG Artifacts Dashboard': 'مرحباً بكم في لوحة تحكم القطع الأثرية',
           'Manage and evaluate precious artifacts with our comprehensive system': 'إدارة وتقييم القطع الأثرية الثمينة من خلال نظامنا الشامل',
           'Quick Actions': 'إجراءات سريعة',
@@ -282,11 +290,19 @@ export default {
       if (status === 'certified') {
         this.$inertia.visit(route('dashboard.artifacts', { status: 'certified' }))
       } else {
+        // عرض جميع القطع (Total Artifacts)
         this.$inertia.visit(route('dashboard.artifacts'))
       }
     },
+    goToPendingArtifacts() {
+      // عرض القطع المعلقة فقط
+      this.$inertia.visit(route('dashboard.artifacts', { view: 'pending' }))
+    },
     goToEvaluations(status) {
       this.$inertia.visit(route('dashboard.evaluations', { status }))
+    },
+    goToEvaluatedArtifacts() {
+      this.$inertia.visit('/dashboard/evaluated-artifacts')
     },
   }
 }

@@ -79,6 +79,11 @@ class Artifact extends Model
         return $this->hasOne(ArtifactEvaluation::class)->where('is_final', true);
     }
 
+    public function diamondEvaluations(): HasMany
+    {
+        return $this->hasMany(DiamondEvaluation::class);
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);
