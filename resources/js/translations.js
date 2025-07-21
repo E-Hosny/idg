@@ -10,6 +10,10 @@ export default {
     'Regular - ID + Origin': 'Regular - ID + Origin',
     'Mini Card Report - ID Report': 'Mini Card Report - ID Report',
     'Mini Card Report - ID + Origin': 'Mini Card Report - ID + Origin',
+    'Regular - Diamond Grading Report': 'Regular - Diamond Grading Report',
+    'Mini Card Report - Mini Report': 'Mini Card Report - Mini Report',
+    'Regular - Jewellery Report': 'Regular - Jewellery Report',
+    'Mini Card Report - Mini Jewellery Report': 'Mini Card Report - Mini Jewellery Report',
     // Delivery Types
     'Normal': 'Normal',
     'Express': 'Express',
@@ -40,6 +44,10 @@ export default {
     'Regular - ID + Origin': 'عادي - هوية + أصل',
     'Mini Card Report - ID Report': 'تقرير بطاقة مصغرة - تقرير هوية',
     'Mini Card Report - ID + Origin': 'تقرير بطاقة مصغرة - هوية + أصل',
+    'Regular - Diamond Grading Report': 'عادي - تقرير تصنيف الألماس',
+    'Mini Card Report - Mini Report': 'تقرير بطاقة مصغرة - تقرير مصغر',
+    'Regular - Jewellery Report': 'عادي - تقرير المجوهرات',
+    'Mini Card Report - Mini Jewellery Report': 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر',
     // Delivery Types
     'Normal': 'عادي',
     'Express': 'سريع',
