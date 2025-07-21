@@ -95,12 +95,35 @@ export default {
         { value: 'Mini Card Report - Mini Jewellery Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر' : 'Mini Card Report - Mini Jewellery Report' },
       ];
 
-      // Other Colored Gemstones لا يحتوي على ID + Origin
-      if (artifactType === 'Other Colored Gemstones') {
-        return allServices.filter(service => !service.value.includes('ID + Origin'));
+      // تصفية الخدمات حسب نوع القطعة
+      switch (artifactType) {
+        case 'Colored Gemstones':
+          // يحتوي على جميع خدمات ID Report و ID + Origin
+          return allServices.filter(service => 
+            service.value.includes('ID Report') || service.value.includes('ID + Origin')
+          );
+        
+        case 'Other Colored Gemstones':
+          // يحتوي على ID Report فقط (لا يحتوي على ID + Origin)
+          return allServices.filter(service => 
+            service.value.includes('ID Report') && !service.value.includes('ID + Origin')
+          );
+        
+        case 'Colorless Diamonds':
+          // يحتوي على Diamond Grading Report و Mini Report فقط
+          return allServices.filter(service => 
+            service.value.includes('Diamond Grading Report') || service.value.includes('Mini Report')
+          );
+        
+        case 'Jewellery':
+          // يحتوي على Jewellery Report و Mini Jewellery Report فقط
+          return allServices.filter(service => 
+            service.value.includes('Jewellery Report')
+          );
+        
+        default:
+          return [];
       }
-
-      return allServices;
     };
 
     const serviceOptions = computed(() => getServiceOptions(form.type));
@@ -180,6 +203,16 @@ export default {
       }
     }
 
+    // إعادة تعيين الخدمة عند تغيير نوع القطعة
+    const resetServiceWhenTypeChanges = () => {
+      const availableServices = getServiceOptions(form.type);
+      const currentServiceExists = availableServices.some(service => service.value === form.service);
+      
+      if (!currentServiceExists) {
+        form.service = '';
+      }
+    };
+
     return { 
       form, 
       submitForm, 
@@ -189,7 +222,8 @@ export default {
       deliveryOptions,
       calculatedPrice,
       priceInfo,
-      calculatePrice
+      calculatePrice,
+      resetServiceWhenTypeChanges
     }
   },
   methods: {

@@ -204,12 +204,35 @@ export default {
         { value: 'Mini Card Report - Mini Jewellery Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر' : 'Mini Card Report - Mini Jewellery Report' },
       ];
 
-      // Other Colored Gemstones لا يحتوي على ID + Origin
-      if (artifactType === 'Other Colored Gemstones') {
-        return allServices.filter(service => !service.value.includes('ID + Origin'));
+      // تصفية الخدمات حسب نوع القطعة
+      switch (artifactType) {
+        case 'Colored Gemstones':
+          // يحتوي على جميع خدمات ID Report و ID + Origin
+          return allServices.filter(service => 
+            service.value.includes('ID Report') || service.value.includes('ID + Origin')
+          );
+        
+        case 'Other Colored Gemstones':
+          // يحتوي على ID Report فقط (لا يحتوي على ID + Origin)
+          return allServices.filter(service => 
+            service.value.includes('ID Report') && !service.value.includes('ID + Origin')
+          );
+        
+        case 'Colorless Diamonds':
+          // يحتوي على Diamond Grading Report و Mini Report فقط
+          return allServices.filter(service => 
+            service.value.includes('Diamond Grading Report') || service.value.includes('Mini Report')
+          );
+        
+        case 'Jewellery':
+          // يحتوي على Jewellery Report و Mini Jewellery Report فقط
+          return allServices.filter(service => 
+            service.value.includes('Jewellery Report')
+          );
+        
+        default:
+          return [];
       }
-
-      return allServices;
     };
     // Weight unit options
     const weightUnitOptions = [
@@ -225,7 +248,18 @@ export default {
       { value: '18 hours', label: locale === 'ar' ? '18 ساعة' : '18 hours' },
       { value: '72 hours', label: locale === 'ar' ? '72 ساعة' : '72 hours' },
     ];
-    return { form, typeOptions, getServiceOptions, weightUnitOptions, deliveryOptions }
+    // إعادة تعيين الخدمة عند تغيير نوع القطعة
+    const resetServiceWhenTypeChanges = (artifactIndex) => {
+      const artifact = form.artifacts[artifactIndex];
+      const availableServices = getServiceOptions(artifact.type);
+      const currentServiceExists = availableServices.some(service => service.value === artifact.service);
+      
+      if (!currentServiceExists) {
+        artifact.service = '';
+      }
+    };
+
+    return { form, typeOptions, getServiceOptions, weightUnitOptions, deliveryOptions, resetServiceWhenTypeChanges }
   },
   data() {
     return {
