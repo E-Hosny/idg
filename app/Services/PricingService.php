@@ -17,7 +17,16 @@ class PricingService
 
         $pricing = Pricing::findPrice($artifactType, $serviceType, $weight);
         
-        return $pricing ? $pricing->price : null;
+        if (!$pricing) {
+            return null;
+        }
+
+        // إذا كان السعر null، فهذا يعني "On request"
+        if ($pricing->price === null) {
+            return 'On request';
+        }
+
+        return $pricing->price;
     }
 
     /**
@@ -54,6 +63,12 @@ class PricingService
             $range .= '∞';
         }
         
-        return $range . ' ct';
+        // تحديد الوحدة بناءً على نوع القطعة
+        $unit = 'ct';
+        if ($artifactType === 'Jewellery') {
+            $unit = 'gm';
+        }
+        
+        return $range . ' ' . $unit;
     }
 } 

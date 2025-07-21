@@ -71,8 +71,41 @@ class PricingSeeder extends Seeder
             ['Other Colored Gemstones', 'Mini Card Report - ID Report', 50.00, null, 150],
         ];
 
+        // بيانات أسعار Colorless Diamonds
+        $colorlessDiamondsPrices = [
+            // REGULAR - Diamond Grading Report
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 0.15, 0.22, 300],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 0.23, 0.46, 330],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 0.47, 0.69, 350],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 0.70, 0.99, 400],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 1.00, 1.49, 460],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 1.50, 1.99, 635],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 2.00, 2.99, 935],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 3.00, 3.99, 1230],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 4.00, 4.99, 1740],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 5.00, 5.99, 2050],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 6.00, 7.99, 2450],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 8.00, 9.99, 3380],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 10.00, 11.99, 3955],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 12.00, 14.99, 4850],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 15.00, 19.99, 5750],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 20.00, 24.99, 6700],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 25.00, 29.99, 7750],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 30.00, 39.99, 9310],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 40.00, 49.99, 10800],
+            ['Colorless Diamonds', 'Regular - Diamond Grading Report', 50.00, null, null], // On request
+            
+            // Mini Card Report - Mini Report (متاح فقط حتى 1.49 ct)
+            ['Colorless Diamonds', 'Mini Card Report - Mini Report', 0.15, 0.22, 220],
+            ['Colorless Diamonds', 'Mini Card Report - Mini Report', 0.23, 0.46, 240],
+            ['Colorless Diamonds', 'Mini Card Report - Mini Report', 0.47, 0.69, 280],
+            ['Colorless Diamonds', 'Mini Card Report - Mini Report', 0.70, 0.99, 320],
+            ['Colorless Diamonds', 'Mini Card Report - Mini Report', 1.00, 1.49, 435],
+            // لا يوجد تسعير للأوزان 1.50 ct وما فوق (N/A)
+        ];
+
         // دمج جميع الأسعار
-        $allPrices = array_merge($coloredGemstonesPrices, $otherColoredGemstonesPrices);
+        $allPrices = array_merge($coloredGemstonesPrices, $otherColoredGemstonesPrices, $colorlessDiamondsPrices);
 
         // إدخال البيانات
         foreach ($allPrices as $priceData) {

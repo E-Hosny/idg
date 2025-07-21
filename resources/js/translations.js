@@ -28,6 +28,8 @@ export default {
     'Price': 'Price',
     'Calculate Price': 'Calculate Price',
     'Calc': 'Calc',
+    'On request': 'On request',
+    'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.': 'Error calculating price. Please try again.',
     // UI
     'Select Type': 'Select Type',
     'Select Service': 'Select Service',
@@ -62,6 +64,8 @@ export default {
     'Price': 'السعر',
     'Calculate Price': 'حساب السعر',
     'Calc': 'حساب',
+    'On request': 'على الطلب',
+    'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.': 'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.',
     // UI
     'Select Type': 'اختر النوع',
     'Select Service': 'اختر الخدمة',
