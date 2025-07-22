@@ -147,6 +147,59 @@
         </div>
       </div>
 
+      <!-- Back Cover Preview (Not printed - only for preview) -->
+      <div class="certificate-back-preview mt-8">
+        <div class="bg-gradient-to-br from-green-900 via-green-700 to-green-600 relative overflow-hidden" 
+             style="width: 100%; height: 600px; border-radius: 12px;">
+          
+          <!-- Decorative Border -->
+          <div class="absolute inset-4 border-2 border-yellow-400 border-opacity-30 rounded-lg">
+            <div class="absolute inset-2 border border-yellow-400 border-opacity-20 rounded-md"></div>
+          </div>
+          
+          <!-- Main Content -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
+            
+            <!-- Logo Section -->
+            <div class="mb-8">
+              <div class="relative w-48 h-48 mx-auto mb-6">
+                <!-- Outer decorative circles -->
+                <div class="absolute -inset-4 border border-yellow-400 border-opacity-40 rounded-full"></div>
+                <div class="absolute -inset-6 border border-yellow-400 border-opacity-20 rounded-full"></div>
+                
+                <!-- Main logo circle -->
+                <div class="w-48 h-48 rounded-full bg-white bg-opacity-10 border-2 border-yellow-400 border-opacity-80 flex items-center justify-center backdrop-blur-sm">
+                  <!-- Inner dotted circle -->
+                  <div class="absolute inset-2 border-2 border-dotted border-yellow-400 border-opacity-60 rounded-full"></div>
+                  
+                  <!-- Logo -->
+                  <img src="/images/idg_logo.jpg" alt="IDG" class="w-32 h-32 rounded-full object-cover z-10" />
+                </div>
+              </div>
+              
+              <h1 class="text-5xl font-bold text-yellow-400 text-center mb-4 tracking-wider" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                IDG Laboratory
+              </h1>
+            </div>
+            
+            <!-- Report Type -->
+            <div class="text-2xl font-light text-white text-opacity-90 tracking-widest uppercase mb-12">
+              {{ getReportType() }}
+            </div>
+            
+            <!-- Footer -->
+            <div class="absolute bottom-16 text-center">
+              <div class="text-lg text-white text-opacity-80 mb-2">www.idg-lab.com.sa</div>
+              <div class="text-base text-white text-opacity-60">Riyadh, Saudi Arabia</div>
+            </div>
+          </div>
+          
+          <!-- Decorative rotating elements -->
+          <div class="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-radial from-yellow-400 from-0% via-transparent via-70% to-transparent opacity-10 animate-spin-slow"></div>
+          <div class="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-radial from-yellow-400 from-0% via-transparent via-70% to-transparent opacity-5 animate-spin-reverse-slow"></div>
+        </div>
+      </div>
+
       <!-- Action Buttons -->
       <div class="flex justify-between items-center mt-8 print:hidden">
         <Link 
@@ -270,7 +323,15 @@ export default {
     },
 
     printCertificate() {
+      // Hide the back cover when printing (will be handled by PDF)
+      const backCover = document.querySelector('.certificate-back-preview')
+      if (backCover) {
+        backCover.style.display = 'none'
+      }
       window.print()
+      if (backCover) {
+        backCover.style.display = 'block'
+      }
     },
 
     downloadPDF() {
@@ -288,6 +349,24 @@ export default {
           alert('حدث خطأ أثناء توليد رمز QR.')
         }
       })
+    },
+
+    getReportType() {
+      const identification = this.certificate?.identification?.toUpperCase()
+      
+      switch (identification) {
+        case 'DIAMOND':
+          return 'Diamond Report'
+        case 'SAPPHIRE':
+        case 'RUBY':
+        case 'EMERALD':
+          return 'Gemstone Report'
+        case 'JEWELLERY':
+        case 'JEWELRY':
+          return 'Jewelry Report'
+        default:
+          return 'Gemstone Report'
+      }
     }
   }
 }
@@ -377,6 +456,42 @@ export default {
   
   .p-12 {
     padding: 2rem;
+  }
+}
+
+/* Custom animations for back cover */
+.animate-spin-slow {
+  animation: spin 20s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse 25s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Gradient radial utility */
+.bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
+}
+
+/* Hide back cover in print */
+@media print {
+  .certificate-back-preview {
+    display: none !important;
+  }
+  
+  .animate-spin-slow,
+  .animate-spin-reverse-slow {
+    animation: none !important;
   }
 }
 </style> 

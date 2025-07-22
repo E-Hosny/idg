@@ -72,3 +72,33 @@ Route::get('/lang/{locale}', function ($locale) {
 // Public Certificate Routes (outside auth middleware)
 Route::get('/certificate/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 Route::post('/certificate/verify', [\App\Http\Controllers\PublicCertificateController::class, 'verify'])->name('public.certificate.verify');
+
+// Temporary test route for PDF (remove in production)
+Route::get('/test-pdf/{id}', function($id) {
+    $certificate = \App\Models\Certificate::find($id);
+    if (!$certificate) {
+        abort(404);
+    }
+    
+    $data = [
+        'certificate' => $certificate->load(['artifact.client', 'generatedBy']),
+    ];
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('minimal-test', $data)
+        ->setPaper('a4', 'portrait')
+        ->setOptions([
+            'dpi' => 150,
+            'defaultFont' => 'Arial',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'enable_javascript' => false,
+            'debugKeepTemp' => false,
+            'chroot' => public_path(),
+        ]);
+    
+    // Test the improved PDF template
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('certificates.pdf', $data)
+        ->setPaper('a4', 'portrait');
+    
+    return $pdf->download("certificate-{$certificate->certificate_number}.pdf");
+});

@@ -498,5 +498,118 @@
             </div>
         </div>
     </div>
+
+    <!-- Page Break for Back Cover -->
+    <div style="page-break-before: always;"></div>
+
+    <!-- Back Cover -->
+    <div class="certificate-back">
+        <!-- Simple border -->
+        <div style="border: 2px solid #ffd700; margin: 20px; padding: 20px; border-radius: 10px;">
+        
+        <div class="back-container">
+            <!-- Logo Section -->
+            <div class="back-logo-circle">
+                <img src="{{ public_path('images/idg_logo.jpg') }}" alt="IDG" class="back-logo-img" />
+            </div>
+            
+            <!-- Lab Name -->
+            <h1 class="lab-name">IDG Laboratory</h1>
+            
+            <!-- Report Type -->
+            <div class="report-type">
+                @php
+                    $reportType = match($certificate->identification) {
+                        'DIAMOND' => 'Diamond Report',
+                        'SAPPHIRE', 'RUBY', 'EMERALD' => 'Gemstone Report', 
+                        'JEWELLERY', 'JEWELRY' => 'Jewelry Report',
+                        default => 'Gemstone Report'
+                    };
+                @endphp
+                {{ $reportType }}
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="back-footer">
+            <div class="website-info">www.idg-lab.com.sa</div>
+            <div class="location">Riyadh, Saudi Arabia</div>
+        </div>
+        </div>
+        </div>
+    </div>
+
+    <style>
+        /* Back Cover Styles - Simplified for PDF */
+        .certificate-back {
+            background-color: #047857;
+            color: white;
+            text-align: center;
+            padding: 100px 50px;
+            page-break-before: always;
+            min-height: 500px;
+        }
+        
+
+        
+        .back-container {
+            text-align: center;
+        }
+        
+        .back-logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            margin: 0 auto 30px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-logo-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        
+        .lab-name {
+            font-size: 36pt;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 20px 0;
+            letter-spacing: 1px;
+        }
+        
+        .report-type {
+            font-size: 24pt;
+            font-weight: 300;
+            color: white;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+        
+        .back-footer {
+            margin-top: 80px;
+            text-align: center;
+        }
+        
+        .website-info {
+            font-size: 14pt;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+        }
+        
+        .location {
+            font-size: 12pt;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Remove animations for PDF */
+        .certificate-back::before,
+        .certificate-back::after {
+            display: none;
+        }
+    </style>
 </body>
 </html> 

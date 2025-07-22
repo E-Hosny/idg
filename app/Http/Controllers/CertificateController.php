@@ -132,6 +132,9 @@ class CertificateController extends Controller
                 'defaultFont' => 'Arial',
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,
+                'enable_javascript' => false,
+                'debugKeepTemp' => false,
+                'chroot' => public_path(),
             ]);
         
         return $pdf->download("certificate-{$certificate->certificate_number}.pdf");
