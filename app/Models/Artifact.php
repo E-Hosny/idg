@@ -84,6 +84,16 @@ class Artifact extends Model
         return $this->hasMany(DiamondEvaluation::class);
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    public function latestCertificate()
+    {
+        return $this->hasOne(Certificate::class)->latest();
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);

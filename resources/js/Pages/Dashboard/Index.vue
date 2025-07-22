@@ -288,7 +288,7 @@ export default {
     },
     goToArtifacts(status) {
       if (status === 'certified') {
-        this.$inertia.visit(route('dashboard.artifacts', { status: 'certified' }))
+        this.$inertia.visit('/certificates/certified/list')
       } else {
         // عرض جميع القطع (Total Artifacts)
         this.$inertia.visit(route('dashboard.artifacts'))

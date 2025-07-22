@@ -101,6 +101,16 @@
                   >
                     🖨️
                   </button>
+                  
+                  <!-- زر إنشاء الشهادة للقطع المقيمة -->
+                  <button 
+                    v-if="artifact.status === 'evaluated'"
+                    @click.stop="generateCertificate(artifact)" 
+                    class="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-xs font-semibold"
+                    :title="__('Generate Certificate')"
+                  >
+                    📜
+                  </button>
                 </div>
               </td>
             </tr>
@@ -167,6 +177,7 @@ export default {
         'View Evaluation': 'عرض التقييم',
         'View Report': 'عرض التقرير',
         'Print Report': 'طباعة التقرير',
+        'Generate Certificate': 'إنشاء شهادة',
         'All Artifacts': 'جميع القطع',
         'Total': 'المجموع',
         'artifacts': 'قطعة',
@@ -215,6 +226,23 @@ export default {
         return this.__('No pending artifacts found.')
       }
       return this.__('No artifacts found.')
+    },
+
+    generateCertificate(artifact) {
+      // Navigate to certificate generation
+      this.$inertia.post(`/certificates/generate/${artifact.id}`, {}, {
+        onSuccess: () => {
+          alert('تم إنشاء الشهادة بنجاح!')
+        },
+        onError: (errors) => {
+          console.error('Certificate generation errors:', errors)
+          if (errors.error) {
+            alert(errors.error)
+          } else {
+            alert('حدث خطأ أثناء إنشاء الشهادة. يرجى المحاولة مرة أخرى.')
+          }
+        }
+      })
     }
   }
 }

@@ -32,6 +32,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/artifacts/{artifact}/evaluation', [\App\Http\Controllers\DashboardController::class, 'showEvaluation'])->name('dashboard.artifacts.evaluation.show');
     Route::get('/dashboard/evaluated-artifacts', [\App\Http\Controllers\DashboardController::class, 'evaluatedArtifacts'])->name('dashboard.evaluated-artifacts');
     
+    // Certificate routes
+    Route::prefix('certificates')->name('certificates.')->group(function () {
+        Route::get('/artifact/{artifact}', [\App\Http\Controllers\CertificateController::class, 'index'])->name('artifact');
+        Route::post('/generate/{artifact}', [\App\Http\Controllers\CertificateController::class, 'generate'])->name('generate');
+        Route::get('/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('show');
+        Route::post('/{certificate}/issue', [\App\Http\Controllers\CertificateController::class, 'issue'])->name('issue');
+        Route::get('/{certificate}/pdf', [\App\Http\Controllers\CertificateController::class, 'generatePDF'])->name('pdf');
+        Route::get('/certified/list', [\App\Http\Controllers\CertificateController::class, 'certified'])->name('certified');
+    });
+    
     // Redirect /home to dashboard
     Route::get('/home', function () {
         return redirect()->route('dashboard');

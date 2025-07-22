@@ -104,14 +104,23 @@
                       {{ __('View Report') }}
                     </button>
                     
-                    <!-- Print Button -->
-                    <button 
-                      @click="printEvaluation(artifact)" 
-                      class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold"
-                      :title="__('Print Report')"
-                    >
-                      🖨️ {{ __('Print') }}
-                    </button>
+                                         <!-- Print Button -->
+                     <button 
+                       @click="printEvaluation(artifact)" 
+                       class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold"
+                       :title="__('Print Report')"
+                     >
+                       🖨️ {{ __('Print') }}
+                     </button>
+                     
+                     <!-- Generate Certificate Button -->
+                     <button 
+                       @click="generateCertificate(artifact)" 
+                       class="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-xs font-semibold"
+                       :title="__('Generate Certificate')"
+                     >
+                       📜 {{ __('Certificate') }}
+                     </button>
                   </div>
                 </td>
               </tr>
@@ -217,6 +226,8 @@ export default {
         'Actions': 'الإجراءات',
         'View Report': 'عرض التقرير',
         'Print': 'طباعة',
+        'Certificate': 'شهادة',
+        'Generate Certificate': 'إنشاء شهادة',
         'View Evaluation Report': 'عرض تقرير التقييم',
         'Print Report': 'طباعة التقرير',
         'No evaluated artifacts found.': 'لا توجد قطع مقيمة.',
@@ -284,6 +295,23 @@ export default {
           }, 500)
         })
       }
+    },
+
+    generateCertificate(artifact) {
+      // Navigate to certificate generation
+      this.$inertia.post(`/certificates/generate/${artifact.id}`, {}, {
+        onSuccess: () => {
+          alert('تم إنشاء الشهادة بنجاح!')
+        },
+        onError: (errors) => {
+          console.error('Certificate generation errors:', errors)
+          if (errors.error) {
+            alert(errors.error)
+          } else {
+            alert('حدث خطأ أثناء إنشاء الشهادة. يرجى المحاولة مرة أخرى.')
+          }
+        }
+      })
     }
   }
 }
