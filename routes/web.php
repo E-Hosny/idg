@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/generate/{artifact}', [\App\Http\Controllers\CertificateController::class, 'generate'])->name('generate');
         Route::get('/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('show');
         Route::post('/{certificate}/issue', [\App\Http\Controllers\CertificateController::class, 'issue'])->name('issue');
+        Route::post('/{certificate}/regenerate-qr', [\App\Http\Controllers\CertificateController::class, 'regenerateQR'])->name('regenerate-qr');
         Route::get('/{certificate}/pdf', [\App\Http\Controllers\CertificateController::class, 'generatePDF'])->name('pdf');
         Route::get('/certified/list', [\App\Http\Controllers\CertificateController::class, 'certified'])->name('certified');
     });
@@ -67,3 +68,7 @@ Route::get('/lang/{locale}', function ($locale) {
     }
     return redirect()->back();
 })->name('lang.switch');
+
+// Public Certificate Routes (outside auth middleware)
+Route::get('/certificate/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
+Route::post('/certificate/verify', [\App\Http\Controllers\PublicCertificateController::class, 'verify'])->name('public.certificate.verify');

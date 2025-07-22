@@ -463,7 +463,11 @@
             <div class="footer-grid">
                 <!-- QR Code -->
                 <div class="qr-code">
-                    QR CODE
+                    @if($certificate->qr_code_path && file_exists(public_path('storage/' . $certificate->qr_code_path)))
+                        <img src="{{ public_path('storage/' . $certificate->qr_code_path) }}" alt="QR Code" style="width: 50px; height: 50px;">
+                    @else
+                        QR CODE
+                    @endif
                 </div>
 
                 <!-- Signature -->

@@ -86,8 +86,13 @@ class CertificateController extends Controller
      */
     public function show(Certificate $certificate)
     {
+        $certificateData = $certificate->load(['artifact.client', 'generatedBy']);
+        
+        // Add QR code URL to the response
+        $certificateData->qr_code_url = $certificate->qr_code_url;
+        
         return Inertia::render('Dashboard/Certificates/Show', [
-            'certificate' => $certificate->load(['artifact.client', 'generatedBy']),
+            'certificate' => $certificateData,
         ]);
     }
 
@@ -99,6 +104,16 @@ class CertificateController extends Controller
         $certificate->markAsIssued();
 
         return back()->with('success', 'Certificate issued successfully!');
+    }
+
+    /**
+     * Regenerate QR Code for certificate
+     */
+    public function regenerateQR(Certificate $certificate)
+    {
+        $certificate->generateQRCode();
+
+        return back()->with('success', 'QR Code regenerated successfully!');
     }
 
     /**

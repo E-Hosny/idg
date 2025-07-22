@@ -34,6 +34,9 @@ class Certificate extends Model
         'test_method',
         'report_number',
         'certificate_file_path',
+        'qr_code_token',
+        'qr_code_path',
+        'qr_code_generated_at',
     ];
 
     protected $casts = [
@@ -41,6 +44,12 @@ class Certificate extends Model
         'report_date' => 'date',
         'test_date' => 'date',
         'weight' => 'decimal:3',
+        'qr_code_generated_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'qr_code_url',
+        'public_url'
     ];
 
     /**
@@ -115,7 +124,67 @@ class Certificate extends Model
     }
 
     /**
-     * Boot method to generate certificate number
+     * Generate QR Code for certificate
+     */
+    public function generateQRCode()
+    {
+        if (empty($this->qr_code_token)) {
+            $this->qr_code_token = \Str::random(32);
+        }
+
+        $url = url('/certificate/' . $this->qr_code_token);
+        
+        // Create QR codes directory if it doesn't exist
+        $qrDir = public_path('storage/qr-codes');
+        if (!file_exists($qrDir)) {
+            mkdir($qrDir, 0755, true);
+        }
+
+        $qrPath = 'qr-codes/certificate-' . $this->certificate_number . '.svg';
+        $fullPath = public_path('storage/' . $qrPath);
+
+        // Generate QR Code
+        $qrCodeSvg = \QrCode::format('svg')
+            ->size(200)
+            ->margin(2)
+            ->generate($url);
+
+        // Save SVG to file
+        file_put_contents($fullPath, $qrCodeSvg);
+
+        $this->update([
+            'qr_code_token' => $this->qr_code_token,
+            'qr_code_path' => $qrPath,
+            'qr_code_generated_at' => now(),
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Get QR Code URL
+     */
+    public function getQrCodeUrlAttribute()
+    {
+        if ($this->qr_code_path) {
+            return asset('storage/' . $this->qr_code_path);
+        }
+        return null;
+    }
+
+    /**
+     * Get public certificate URL
+     */
+    public function getPublicUrlAttribute()
+    {
+        if ($this->qr_code_token) {
+            return url('/certificate/' . $this->qr_code_token);
+        }
+        return null;
+    }
+
+    /**
+     * Boot method to generate certificate number and QR code
      */
     protected static function boot()
     {
@@ -125,6 +194,16 @@ class Certificate extends Model
             if (empty($certificate->certificate_number)) {
                 $certificate->certificate_number = $certificate->generateCertificateNumber();
             }
+            
+            // Generate QR code token
+            if (empty($certificate->qr_code_token)) {
+                $certificate->qr_code_token = \Str::random(32);
+            }
+        });
+
+        static::created(function ($certificate) {
+            // Generate QR code after certificate is created
+            $certificate->generateQRCode();
         });
     }
 }

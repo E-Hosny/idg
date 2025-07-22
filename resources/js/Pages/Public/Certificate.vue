@@ -1,12 +1,49 @@
 <template>
-  <DashboardLayout :page-title="__('Certificate')">
-    <div class="max-w-5xl mx-auto">
-      <!-- Certificate Display -->
-      <div id="certificate" class="bg-white shadow-lg print:shadow-none print:p-0 relative">
+  <div class="min-h-screen bg-gray-100">
+    <!-- Public Header -->
+    <div class="bg-white shadow-sm border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <img src="/images/idg_logo.jpg" alt="IDG Laboratory" class="w-12 h-12 rounded-full" />
+            <div>
+              <h1 class="text-xl font-bold text-green-700">IDG Laboratory</h1>
+              <p class="text-sm text-gray-600">{{ __('Certificate Verification') }}</p>
+            </div>
+          </div>
+          <div class="text-sm text-gray-500">
+            {{ __('Verified Certificate') }} ✅
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate Content -->
+    <div class="max-w-4xl mx-auto py-8 px-4">
+      <!-- Draft Warning -->
+      <div v-if="certificate.is_draft" class="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-yellow-800">
+              {{ __('Draft Certificate') }}
+            </h3>
+            <div class="mt-2 text-sm text-yellow-700">
+              <p>{{ __('This is a draft certificate and has not been officially issued yet.') }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         
         <!-- Green Header Bar -->
-        <div class="bg-green-700" style="background-color: #047857;">
-          <div class="flex justify-between items-center px-8 py-4">
+        <div class="bg-green-700 px-8 py-4">
+          <div class="flex justify-between items-center">
             <!-- Left: IDG Logo and Lab Info -->
             <div class="flex items-center space-x-4">
               <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center p-1">
@@ -111,18 +148,10 @@
             <!-- Center: QR Code and Signature -->
             <div class="flex items-center space-x-8">
               <!-- QR Code -->
-              <div class="w-16 h-16 bg-white flex items-center justify-center p-1">
-                <img 
-                  v-if="certificate.qr_code_url" 
-                  :src="certificate.qr_code_url" 
-                  alt="QR Code" 
-                  class="w-full h-full object-contain"
-                />
-                <div 
-                  v-else 
-                  class="w-12 h-12 bg-gray-300 flex items-center justify-center text-xs font-bold"
-                >
-                  QR<br/>CODE
+              <div class="w-16 h-16 bg-white flex items-center justify-center">
+                <div class="text-xs font-bold text-center">
+                  <div>✓</div>
+                  <div>VERIFIED</div>
                 </div>
               </div>
               
@@ -147,236 +176,92 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex justify-between items-center mt-8 print:hidden">
-        <Link 
-          :href="`/dashboard/artifacts/${certificate.artifact.id}/evaluation`"
-          class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-        >
-          {{ __('Back to Evaluation') }}
-        </Link>
-        
-        <div class="flex space-x-4">
-          <button 
-            v-if="certificate.status === 'draft'"
-            @click="issueCertificate"
-            class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
-            {{ __('Issue Certificate') }}
-          </button>
-          
-          <button 
-            @click="printCertificate"
-            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            {{ __('Print Certificate') }}
-          </button>
-          
-          <button 
-            @click="downloadPDF"
-            class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-          >
-            {{ __('Download PDF') }}
-          </button>
-          
-          <button 
-            v-if="!certificate.qr_code_url"
-            @click="regenerateQR"
-            class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-          >
-            {{ __('Generate QR Code') }}
-          </button>
+      <!-- Verification Notice -->
+      <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <div class="text-green-600 mr-3">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-green-800 font-semibold">{{ __('Certificate Verified') }}</h3>
+            <p class="text-green-700 text-sm">
+              {{ __('This certificate has been verified as authentic and issued by IDG Laboratory.') }}
+              {{ __('Generated on') }}: {{ formatDateTime(certificate.created_at) }}
+            </p>
+          </div>
         </div>
       </div>
+
+      <!-- Print Button -->
+      <div class="mt-6 text-center">
+        <button 
+          @click="printCertificate"
+          class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+        >
+          {{ __('Print Certificate') }}
+        </button>
+      </div>
     </div>
-  </DashboardLayout>
+  </div>
 </template>
 
 <script>
-import DashboardLayout from '@/Layouts/DashboardLayout.vue'
-import { Link } from '@inertiajs/vue3'
-
 export default {
-  components: { DashboardLayout, Link },
   props: {
-    certificate: Object
+    certificate: Object,
+    isPublic: Boolean
   },
 
   methods: {
     __(key) {
-      const translations = {
-        'Certificate': 'الشهادة',
-        'Received Date': 'تاريخ الاستلام',
-        'Report Date': 'تاريخ التقرير',
-        'Test Date': 'تاريخ الفحص',
-        'Report No': 'رقم التقرير',
-        'Test Method': 'طريقة الفحص',
-        'IDENTIFICATION': 'التعريف',
-        'Shape/Cut': 'الشكل/القطع',
-        'Weight': 'الوزن',
-        'Color': 'اللون',
-        'Dimensions': 'الأبعاد',
-        'Transparency': 'الشفافية',
-        'Phenomena': 'الظواهر',
-        'Species': 'النوع',
-        'Variety': 'الصنف',
-        'Group': 'المجموعة',
-        'Origin Opinion': 'رأي المنشأ',
-        'Conclusion': 'الخلاصة',
-        'Comments': 'التعليقات',
-        'Signature': 'التوقيع',
-        'Contact Info': 'معلومات الاتصال',
-        'Address': 'العنوان',
-        'Website': 'الموقع الإلكتروني',
-        'Gemstone Properties': 'خصائص الحجر الكريم',
-        'Authorized Gemologist': 'أخصائي الأحجار المعتمد',
-        'Contact Information': 'معلومات الاتصال',
-        'Phone': 'الهاتف',
-        'Email': 'البريد الإلكتروني',
-        'Certification Details': 'تفاصيل الشهادة',
-        'This certificate is valid only for the described item': 'هذه الشهادة صالحة فقط للقطعة الموصوفة',
-        'Visit website for Terms & Conditions': 'زر الموقع للشروط والأحكام',
-        'Contact': 'الاتصال',
-        'Back to Evaluation': 'العودة للتقييم',
-        'Issue Certificate': 'إصدار الشهادة',
-        'Print Certificate': 'طباعة الشهادة',
-        'Download PDF': 'تحميل PDF',
-        'Generate QR Code': 'توليد رمز QR'
-      }
-      
-      return this.$page.props.locale === 'ar' ? translations[key] || key : key
+      // For public page, always display in English
+      return key
     },
 
     formatDate(dateString) {
       if (!dateString) return '-'
       const date = new Date(dateString)
-      return date.toLocaleDateString(this.$page.props.locale === 'ar' ? 'ar-EG' : 'en-US', {
+      return date.toLocaleDateString('en-US', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric'
       })
     },
 
-    issueCertificate() {
-      this.$inertia.post(`/certificates/${this.certificate.id}/issue`, {}, {
-        onSuccess: () => {
-          alert('تم إصدار الشهادة بنجاح!')
-        },
-        onError: (errors) => {
-          console.error('Certificate issue errors:', errors)
-          alert('حدث خطأ أثناء إصدار الشهادة.')
-        }
+    formatDateTime(dateString) {
+      if (!dateString) return '-'
+      const date = new Date(dateString)
+      return date.toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       })
     },
 
     printCertificate() {
       window.print()
-    },
-
-    downloadPDF() {
-      window.open(`/certificates/${this.certificate.id}/pdf`, '_blank')
-    },
-
-    regenerateQR() {
-      this.$inertia.post(`/certificates/${this.certificate.id}/regenerate-qr`, {}, {
-        onSuccess: () => {
-          alert('تم توليد رمز QR بنجاح!')
-          location.reload()
-        },
-        onError: (errors) => {
-          console.error('QR regeneration errors:', errors)
-          alert('حدث خطأ أثناء توليد رمز QR.')
-        }
-      })
     }
   }
 }
 </script>
 
 <style scoped>
-/* Custom Gold Color */
-.bg-gold-500 {
-  background-color: #d4af37;
-}
-
-/* Elegant Animations */
-.hover\:bg-green-50:hover {
-  transition: background-color 0.2s ease-in-out;
-}
-
-/* Certificate Paper Effect */
-#certificate {
-  background-image: 
-    radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%), 
-    radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%);
-  background-size: 100px 100px;
-  background-position: 0 0, 50px 50px;
-}
-
-/* Elegant Shadow Effects */
-.shadow-elegant {
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
-}
-
-/* Print Styles */
 @media print {
-  .print\:hidden {
-    display: none !important;
-  }
-  
-  .print\:shadow-none {
-    box-shadow: none !important;
-  }
-  
-  .print\:p-0 {
-    padding: 0 !important;
-  }
-  
-  body {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  #certificate {
+  .bg-gray-100 {
     background: white !important;
+  }
+  
+  .shadow-lg,
+  .shadow-sm {
     box-shadow: none !important;
   }
   
-  /* Ensure gradients print correctly */
-  .bg-gradient-to-r,
-  .bg-gradient-to-br,
-  .bg-gradient-to-l {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  /* Page breaks */
-  .page-break-inside-avoid {
-    page-break-inside: avoid;
-  }
-  
-  /* Print margins */
-  @page {
-    margin: 0.5in;
-    size: A4;
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .grid-cols-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-  }
-  
-  .gap-12 {
-    gap: 2rem;
-  }
-  
-  .p-12 {
-    padding: 2rem;
+  button {
+    display: none !important;
   }
 }
 </style> 
