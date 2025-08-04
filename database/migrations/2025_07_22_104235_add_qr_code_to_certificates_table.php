@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('certificates', function (Blueprint $table) {
-            $table->string('qr_code_token')->unique()->nullable()->after('certificate_file_path');
-            $table->string('qr_code_path')->nullable()->after('qr_code_token');
-            $table->timestamp('qr_code_generated_at')->nullable()->after('qr_code_path');
+            $table->string('qr_code_token')->unique()->nullable();
+            $table->string('qr_code_path')->nullable();
+            $table->timestamp('qr_code_generated_at')->nullable();
         });
     }
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('clients', 'receiving_record_no')) {
             Schema::table('clients', function (Blueprint $table) {
-                $table->string('receiving_record_no')->unique()->nullable()->after('customer_code');
+                $table->string('receiving_record_no')->unique()->nullable();
             });
         }
         // معالجة القيم القديمة

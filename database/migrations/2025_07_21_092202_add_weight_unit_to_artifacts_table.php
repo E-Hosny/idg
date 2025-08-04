@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('artifacts', function (Blueprint $table) {
-            $table->enum('weight_unit', ['ct', 'gm'])->nullable()->after('weight');
+            $table->enum('weight_unit', ['ct', 'gm'])->nullable();
         });
     }
 

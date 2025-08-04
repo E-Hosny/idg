@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('artifacts', function (Blueprint $table) {
-            $table->string('type')->nullable()->after('artifact_code');
-            $table->string('service')->nullable()->after('type');
-            $table->string('weight')->nullable()->after('service');
-            $table->text('notes')->nullable()->after('weight');
+            $table->string('type')->nullable();
+            $table->string('service')->nullable();
+            $table->string('weight')->nullable();
+            $table->text('notes')->nullable();
             if (!Schema::hasColumn('artifacts', 'delivery_type')) {
-                $table->string('delivery_type')->nullable()->after('notes');
+                $table->string('delivery_type')->nullable();
             }
         });
     }

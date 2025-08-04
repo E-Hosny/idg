@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->string('company_name')->nullable();
             $table->string('customer_code')->nullable();
-            $table->string('receiving_record_no')->unique()->nullable()->after('customer_code');
+            $table->string('receiving_record_no')->unique()->nullable();
             $table->date('received_date')->nullable();
             $table->date('delivery_date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
