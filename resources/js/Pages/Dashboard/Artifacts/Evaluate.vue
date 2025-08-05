@@ -38,19 +38,22 @@
             <div>
               <label class="block text-gray-700">Transparency</label>
               <select v-model="form.transparency" class="input">
-                <option v-for="option in transparencyOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر الشفافية' : 'Select Transparency' }}</option>
+                <option v-for="option in transparencyOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
             <div>
               <label class="block text-gray-700">Lustre</label>
               <select v-model="form.lustre" class="input">
-                <option v-for="option in lustreOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر اللمعان' : 'Select Lustre' }}</option>
+                <option v-for="option in lustreOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
             <div>
               <label class="block text-gray-700">Tone</label>
               <select v-model="form.tone" class="input">
-                <option v-for="option in toneOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر النغمة' : 'Select Tone' }}</option>
+                <option v-for="option in toneOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
             <div>
@@ -60,7 +63,8 @@
             <div>
               <label class="block text-gray-700">Saturation</label>
               <select v-model="form.saturation" class="input">
-                <option v-for="option in saturationOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر التشبع' : 'Select Saturation' }}</option>
+                <option v-for="option in saturationOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
             <div>
@@ -70,7 +74,8 @@
             <div>
               <label class="block text-gray-700">Shape/Cut</label>
               <select v-model="form.shape_cut" class="input">
-                <option v-for="option in shapeOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر الشكل' : 'Select Shape' }}</option>
+                <option v-for="option in shapeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
           </div>
@@ -90,7 +95,8 @@
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٤. خصائص البصرية' : '4. Optic Character' }}</h2>
           <select v-model="form.optic_character" class="input">
-            <option v-for="option in opticCharacterOptions" :key="option" :value="option">{{ option }}</option>
+            <option value="">{{ locale === 'ar' ? 'اختر الخصائص البصرية' : 'Select Optic Character' }}</option>
+            <option v-for="option in opticCharacterOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
           </select>
         </section>
 
@@ -138,13 +144,15 @@
             <div>
               <label class="block text-gray-700">Long Wave</label>
               <select v-model="form.fluorescence_long" class="input">
-                <option v-for="option in fluorescenceOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر الفلورسنس' : 'Select Fluorescence' }}</option>
+                <option v-for="option in fluorescenceOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
             <div>
               <label class="block text-gray-700">Short Wave</label>
               <select v-model="form.fluorescence_short" class="input">
-                <option v-for="option in fluorescenceOptions" :key="option" :value="option">{{ option }}</option>
+                <option value="">{{ locale === 'ar' ? 'اختر الفلورسنس' : 'Select Fluorescence' }}</option>
+                <option v-for="option in fluorescenceOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
           </div>
@@ -164,13 +172,15 @@
           <div class="mt-2">
             <label class="block text-gray-700">Variety</label>
             <select v-model="form.variety" class="input">
-              <option v-for="option in varietyOptions" :key="option" :value="option">{{ option }}</option>
+              <option value="">{{ locale === 'ar' ? 'اختر النوع' : 'Select Variety' }}</option>
+              <option v-for="option in varietyOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
             </select>
           </div>
           <div class="mt-2">
             <label class="block text-gray-700">Species/Group</label>
             <select v-model="form.species_group" class="input">
-              <option v-for="option in speciesOptions" :key="option" :value="option">{{ option }}</option>
+              <option value="">{{ locale === 'ar' ? 'اختر مجموعة الأنواع' : 'Select Species Group' }}</option>
+              <option v-for="option in speciesOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
             </select>
           </div>
         </section>
@@ -276,7 +286,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, useForm } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
 const props = defineProps({ artifact: Object });
@@ -289,7 +299,7 @@ const artifactType = computed(() => artifact.value?.type || (locale === 'ar' ? '
 const today = new Date().toISOString().split('T')[0];
 const user = usePage().props.auth?.user || { name: 'Current User' };
 
-const form = ref({
+const form = useForm({
   test_date: today,
   test_location: '',
   item_id: '',
@@ -412,8 +422,30 @@ function submitEvaluation() {
     return;
   }
   
-  // TODO: Send form data to backend
-  alert('Evaluation saved!');
+  console.log('Submitting evaluation data:', form.data());
+  
+  // إرسال البيانات إلى الخادم
+  form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
+    onSuccess: () => {
+      alert('Evaluation saved successfully!');
+    },
+    onError: (errors) => {
+      console.error('Evaluation save errors:', errors);
+      
+      // عرض رسالة خطأ أكثر تفصيلاً
+      let errorMessage = 'Error saving evaluation.';
+      if (errors.error) {
+        errorMessage += ' ' + errors.error;
+      } else if (typeof errors === 'object') {
+        const errorKeys = Object.keys(errors);
+        if (errorKeys.length > 0) {
+          errorMessage += ' Please check the following fields: ' + errorKeys.join(', ');
+        }
+      }
+      
+      alert(errorMessage);
+    }
+  });
 }
 </script>
 

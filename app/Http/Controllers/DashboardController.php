@@ -246,24 +246,39 @@ class DashboardController extends Controller
             if ($artifact->type === 'Colorless Diamonds') {
                 $this->storeDiamondEvaluation($request, $artifact);
                 $message = 'Diamond evaluation saved successfully!';
+            } elseif ($artifact->type === 'Jewellery') {
+                $this->storeJewelleryEvaluation($request, $artifact);
+                $message = 'Jewellery evaluation saved successfully!';
             } else {
-                // يمكن إضافة تقييمات أخرى هنا لاحقاً
+                // Colored Gemstones & Other Colored Gemstones
                 $this->storeGeneralEvaluation($request, $artifact);
                 $message = 'Evaluation saved successfully!';
             }
 
             // تحديث حالة القطعة حسب نوع التقييم
-            if ($request->status === 'completed') {
+            if ($artifact->type === 'Colorless Diamonds') {
+                // للألماس، تحقق من status
+                if ($request->status === 'completed') {
+                    $artifact->update([
+                        'status' => 'evaluated',
+                        'assigned_to' => auth()->id(),
+                    ]);
+                } else {
+                    $artifact->update([
+                        'status' => 'under_evaluation',
+                        'assigned_to' => auth()->id(),
+                    ]);
+                }
+            } else {
+                // للأنواع الأخرى، التقييم النهائي يعني evaluated
                 $artifact->update([
                     'status' => 'evaluated',
                     'assigned_to' => auth()->id(),
                 ]);
-            } else {
-                $artifact->update([
-                    'status' => 'under_evaluation',
-                    'assigned_to' => auth()->id(),
-                ]);
             }
+
+            // تحديث إضافي للحالة للتأكد من التحديث الصحيح
+            $this->updateArtifactStatus($artifact, $artifact->type === 'Colorless Diamonds' ? 'diamond' : 'general');
 
             return redirect()
                 ->route('dashboard.artifacts')
@@ -272,6 +287,42 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             \Log::error('Evaluation save error: ' . $e->getMessage());
             return back()->withErrors(['error' => 'An error occurred while saving the evaluation. Please try again.']);
+        }
+    }
+
+    /**
+     * Update artifact status based on evaluation completion
+     */
+    private function updateArtifactStatus(Artifact $artifact, $evaluationType = 'general')
+    {
+        try {
+            if ($evaluationType === 'diamond') {
+                // للألماس، تحقق من وجود تقييم مكتمل
+                $hasCompletedEvaluation = $artifact->diamondEvaluations()
+                    ->where('status', 'completed')
+                    ->exists();
+            } else {
+                // للأنواع الأخرى، تحقق من وجود تقييم نهائي
+                $hasCompletedEvaluation = $artifact->evaluations()
+                    ->where('is_final', true)
+                    ->exists();
+            }
+
+            if ($hasCompletedEvaluation) {
+                $artifact->update([
+                    'status' => 'evaluated',
+                    'assigned_to' => auth()->id(),
+                ]);
+                \Log::info('Artifact status updated to evaluated:', [
+                    'artifact_id' => $artifact->id,
+                    'artifact_code' => $artifact->artifact_code
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error updating artifact status:', [
+                'artifact_id' => $artifact->id,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -380,22 +431,160 @@ class DashboardController extends Controller
 
     private function storeGeneralEvaluation(Request $request, Artifact $artifact)
     {
-        // هذه الطريقة يمكن تطويرها لاحقاً للتقييمات العامة
-        // حالياً سنحفظ في ArtifactEvaluation القديم
-        
+        // التحقق من صحة البيانات للتقييم العام
         $validatedData = $request->validate([
-            'comments' => 'nullable|string',
-            'result' => 'nullable|string',
+            'test_date' => 'nullable|date',
+            'test_location' => 'nullable|string|max:255',
+            'weight' => 'nullable|numeric|min:0',
+            'colour' => 'nullable|string|max:100',
+            'transparency' => 'nullable|string|max:50',
+            'lustre' => 'nullable|string|max:50',
+            'tone' => 'nullable|string|max:50',
+            'phenomena' => 'nullable|string|max:255',
+            'saturation' => 'nullable|string|max:50',
+            'measurements' => 'nullable|string|max:100',
+            'shape_cut' => 'nullable|string|max:100',
+            'pleochroism' => 'nullable|string|max:50',
+            'optic_character' => 'nullable|string|max:50',
+            'refractive_index' => 'nullable|array',
+            'ri_result' => 'nullable|string|max:255',
+            'inclusion' => 'nullable|string|max:1000',
+            'weight_air' => 'nullable|numeric|min:0',
+            'weight_water' => 'nullable|numeric|min:0',
+            'sg_result' => 'nullable|string|max:255',
+            'fluorescence_long' => 'nullable|string|max:50',
+            'fluorescence_short' => 'nullable|string|max:50',
+            'result' => 'nullable|string|max:255',
+            'variety' => 'nullable|string|max:100',
+            'species_group' => 'nullable|string|max:100',
+            'comments' => 'nullable|string|max:1000',
+            'grader_name' => 'nullable|string|max:255',
+            'grader_date' => 'nullable|date',
+            'analytical_interpretation' => 'nullable|string|max:2000',
+            'retaining_place' => 'nullable|string|max:255',
+            'retained_by' => 'nullable|string|max:255',
+            'retained_date' => 'nullable|date',
+            'report_done' => 'nullable|boolean',
+            'label_done' => 'nullable|boolean',
+            'checked_by' => 'nullable|string|max:255',
+            'checked_date' => 'nullable|date',
         ]);
 
-        ArtifactEvaluation::create([
-            'artifact_id' => $artifact->id,
-            'evaluator_id' => auth()->id(),
-            'evaluation_date' => now(),
-            'comments' => $validatedData['comments'] ?? '',
-            'result' => $validatedData['result'] ?? '',
-            'is_final' => true,
+        // إضافة البيانات الإضافية
+        $validatedData['artifact_id'] = $artifact->id;
+        $validatedData['evaluator_id'] = auth()->id();
+        $validatedData['evaluation_date'] = now();
+        $validatedData['is_final'] = true;
+        $validatedData['detailed_notes'] = ['en' => '', 'ar' => ''];
+        $validatedData['supporting_documents'] = [];
+
+        // حفظ التقييم
+        try {
+            $evaluation = ArtifactEvaluation::create($validatedData);
+            \Log::info('General evaluation saved successfully:', $evaluation->toArray());
+            return $evaluation;
+        } catch (\Exception $e) {
+            \Log::error('Error creating evaluation:', [
+                'error' => $e->getMessage(),
+                'data' => $validatedData
+            ]);
+            throw $e;
+        }
+    }
+
+    private function storeJewelleryEvaluation(Request $request, Artifact $artifact)
+    {
+        // التحقق من صحة البيانات للمجوهرات
+        $validatedData = $request->validate([
+            // Job Information
+            'test_date' => 'nullable|date',
+            'test_location' => 'nullable|string|max:255',
+            'item_product_id' => 'nullable|string|max:255',
+            'receiving_record' => 'nullable|string|max:255',
+            'prepared_by' => 'nullable|string|max:255',
+            'approved_by' => 'nullable|string|max:255',
+            
+            // Product Information
+            'product_type' => 'nullable|string|max:255',
+            'metal_type' => 'nullable|string|max:255',
+            'stamp' => 'nullable|string|max:255',
+            'weight' => 'nullable|numeric|min:0',
+            'dimensions' => 'nullable|string|max:255',
+            
+            // Diamond Information
+            'diamond_count' => 'nullable|string|max:255',
+            'diamond_weight' => 'nullable|numeric|min:0',
+            'diamond_shape' => 'nullable|string|max:255',
+            'diamond_colour' => 'nullable|string|max:255',
+            'diamond_clarity' => 'nullable|string|max:255',
+            'diamond_conclusion' => 'nullable|string|max:255',
+            'diamond_note' => 'nullable|string|max:1000',
+            
+            // Colored Stones Information
+            'coloured_stones_weight' => 'nullable|numeric|min:0',
+            'coloured_stones_shape' => 'nullable|string|max:255',
+            'coloured_stones_count' => 'nullable|string|max:255',
+            'coloured_stones_group' => 'nullable|string|max:255',
+            'coloured_stones_species' => 'nullable|string|max:255',
+            'coloured_stones_conclusion' => 'nullable|string|max:255',
+            'coloured_stones_note' => 'nullable|string|max:1000',
+            
+            // Result
+            'result' => 'nullable|string|max:255',
+            'comments' => 'nullable|string|max:1000',
+            
+            // Grader
+            'grader_name' => 'nullable|string|max:255',
+            'grader_date' => 'nullable|date',
+            'grader_signature' => 'nullable|string|max:255',
+            
+            // Analytical Equipment
+            'analytical_name' => 'nullable|string|max:255',
+            'analytical_date' => 'nullable|date',
+            'analytical_signature' => 'nullable|string|max:255',
+            
+            // Product Photography
+            'image1_taken_by' => 'nullable|string|max:255',
+            'image1_date' => 'nullable|date',
+            'image1_signature' => 'nullable|string|max:255',
+            'image2_taken_by' => 'nullable|string|max:255',
+            'image2_date' => 'nullable|date',
+            'image2_signature' => 'nullable|string|max:255',
+            
+            // Retaining Information
+            'retaining_place' => 'nullable|string|max:255',
+            'retaining_by' => 'nullable|string|max:255',
+            'retaining_date' => 'nullable|date',
+            'retaining_signature' => 'nullable|string|max:255',
+            
+            // Reporting Information
+            'report_done' => 'nullable|string|max:255',
+            'label_done' => 'nullable|string|max:255',
+            'report_done_by' => 'nullable|string|max:255',
+            'checked_by' => 'nullable|string|max:255',
+            'report_number' => 'nullable|string|max:255',
         ]);
+
+        // إضافة البيانات الإضافية
+        $validatedData['artifact_id'] = $artifact->id;
+        $validatedData['evaluator_id'] = auth()->id();
+        $validatedData['evaluation_date'] = now();
+        $validatedData['is_final'] = true;
+        $validatedData['detailed_notes'] = ['en' => '', 'ar' => ''];
+        $validatedData['supporting_documents'] = [];
+
+        // حفظ التقييم
+        try {
+            $evaluation = ArtifactEvaluation::create($validatedData);
+            \Log::info('Jewellery evaluation saved successfully:', $evaluation->toArray());
+            return $evaluation;
+        } catch (\Exception $e) {
+            \Log::error('Error creating jewellery evaluation:', [
+                'error' => $e->getMessage(),
+                'data' => $validatedData
+            ]);
+            throw $e;
+        }
     }
 
     public function showEvaluation(Artifact $artifact)

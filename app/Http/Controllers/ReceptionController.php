@@ -80,6 +80,28 @@ class ReceptionController extends Controller
 
             foreach ($data['artifacts'] as $artifactData) {
                 \Log::info('Creating artifact with data:', $artifactData);
+                
+                // Generate artifact code with retry mechanism
+                $artifactCode = null;
+                $maxRetries = 5;
+                $retryCount = 0;
+                
+                while ($retryCount < $maxRetries) {
+                    try {
+                        $artifactCode = \App\Models\Artifact::generateArtifactCode();
+                        \Log::info("Generated artifact code: {$artifactCode}");
+                        break;
+                    } catch (\Exception $e) {
+                        $retryCount++;
+                        \Log::warning("Failed to generate artifact code, attempt {$retryCount}: " . $e->getMessage());
+                        if ($retryCount >= $maxRetries) {
+                            throw new \Exception('Failed to generate unique artifact code after multiple attempts');
+                        }
+                        // Small delay before retry
+                        usleep(100000); // 0.1 seconds
+                    }
+                }
+                
                 // حساب السعر تلقائياً
                 $price = null;
                 if ($artifactData['type'] && $artifactData['service'] && $artifactData['weight']) {
@@ -93,7 +115,7 @@ class ReceptionController extends Controller
 
                 $artifact = \App\Models\Artifact::create([
                     'client_id' => $client->id,
-                    'artifact_code' => \App\Models\Artifact::generateArtifactCode(),
+                    'artifact_code' => $artifactCode,
                     'type' => $artifactData['type'],
                     'service' => $artifactData['service'] ?? null,
                     'weight' => $artifactData['weight'] ?? null,
@@ -102,8 +124,8 @@ class ReceptionController extends Controller
                     'notes' => $artifactData['notes'] ?? null,
                     'delivery_type' => $artifactData['delivery_type'] ?? null,
                     'status' => 'pending',
-                    'title' => json_encode(['en' => '', 'ar' => '']),
-                    'description' => json_encode(['en' => '', 'ar' => '']),
+                    'title' => ['en' => '', 'ar' => ''],
+                    'description' => ['en' => '', 'ar' => ''],
                     'category_id' => null,
                 ]);
                 \Log::info('Artifact created:', $artifact->toArray());

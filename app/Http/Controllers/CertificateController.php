@@ -52,6 +52,7 @@ class CertificateController extends Controller
                 $evaluationData = $this->mapDiamondEvaluationData($evaluation, $artifact);
             }
         } else {
+            // للأنواع الأخرى (Colored Gemstones & Jewellery)
             $evaluation = $artifact->evaluations()
                 ->where('is_final', true)
                 ->latest()
@@ -62,9 +63,28 @@ class CertificateController extends Controller
             }
         }
 
+        // إضافة معلومات التقييم للـ log للتشخيص
+        if ($evaluation) {
+            \Log::info('Evaluation details:', [
+                'evaluation_id' => $evaluation->id,
+                'evaluation_data' => $evaluation->toArray(),
+                'artifact_type' => $artifact->type,
+                'artifact_weight' => $artifact->weight,
+                'artifact_weight_unit' => $artifact->weight_unit
+            ]);
+        }
+
         if (!$evaluation) {
             return back()->withErrors(['error' => 'No completed evaluation found for this artifact.']);
         }
+
+        \Log::info('Creating certificate with evaluation data:', [
+            'artifact_id' => $artifact->id,
+            'evaluation_data' => $evaluationData,
+            'evaluation_id' => $evaluation->id,
+            'artifact_type' => $artifact->type,
+            'evaluation_type' => $artifact->type === 'Colorless Diamonds' ? 'diamond' : 'general'
+        ]);
 
         // إنشاء الشهادة
         $certificate = Certificate::create([
@@ -75,6 +95,18 @@ class CertificateController extends Controller
             'test_date' => $evaluation->created_at->toDateString(),
             ...$evaluationData,
             'status' => 'draft',
+        ]);
+
+        // تحديث حالة القطعة إلى certified
+        $artifact->update([
+            'status' => 'certified',
+            'assigned_to' => auth()->id(),
+        ]);
+
+        \Log::info('Certificate created successfully:', $certificate->toArray());
+        \Log::info('Artifact status updated to certified:', [
+            'artifact_id' => $artifact->id,
+            'artifact_code' => $artifact->artifact_code
         ]);
 
         return redirect()->route('certificates.show', $certificate)
@@ -163,7 +195,7 @@ class CertificateController extends Controller
         return [
             'identification' => 'DIAMOND',
             'shape_cut' => $evaluation->shape ?? 'Round',
-            'weight' => $evaluation->weight,
+            'weight' => $evaluation->weight ? floatval($evaluation->weight) : 0.00,
             'color' => $evaluation->colour ?? 'Colorless',
             'dimensions' => $evaluation->diameter ? "{$evaluation->diameter} mm" : null,
             'transparency' => 'Transparent',
@@ -184,22 +216,118 @@ class CertificateController extends Controller
      */
     private function mapGeneralEvaluationData($evaluation, $artifact)
     {
-        return [
+        // استخدام البيانات الفعلية من التقييم
+        $weight = 0.00;
+        if ($evaluation->weight) {
+            $weight = floatval($evaluation->weight);
+        } elseif ($artifact->weight) {
+            $weight = floatval($artifact->weight);
+        }
+
+        // معالجة خاصة للمجوهرات
+        if ($artifact->type === 'Jewellery') {
+            return [
+                'identification' => 'JEWELLERY',
+                'shape_cut' => $evaluation->product_type ?? 'Ring',
+                'weight' => $weight,
+                'color' => $evaluation->metal_type ?? 'Various',
+                'dimensions' => $evaluation->dimensions ?? '0.00 x 0.00 x 0.00 mm',
+                'transparency' => 'Opaque',
+                'phenomena' => $evaluation->stamp ?? '-',
+                'species' => 'Jewellery',
+                'variety' => $evaluation->product_type ?? 'Ring',
+                'group' => 'Jewellery',
+                'origin_opinion' => 'Not requested',
+                'conclusion' => $evaluation->result ?? 'Pass',
+                'comments' => $evaluation->comments ?? 'Jewellery evaluation completed',
+                'test_method' => 'SOPOI',
+                'report_number' => null,
+            ];
+        }
+
+        // للأنواع الأخرى (Colored Gemstones) - استخدام البيانات الفعلية
+        $extractedData = $this->extractEvaluationData($evaluation, $artifact);
+        
+        return array_merge([
             'identification' => strtoupper($artifact->type),
-            'shape_cut' => 'Oval/Mix',
-            'weight' => $artifact->weight,
-            'color' => 'Various',
-            'dimensions' => null,
-            'transparency' => 'Transparent',
-            'phenomena' => null,
-            'species' => '-',
-            'variety' => '-',
-            'group' => '-',
             'origin_opinion' => 'Not requested',
-            'conclusion' => $evaluation->result ?? 'Natural',
-            'comments' => $evaluation->comments,
             'test_method' => 'SOPOI',
             'report_number' => null,
-        ];
+        ], $extractedData);
+    }
+
+    /**
+     * Extract actual evaluation data for certificate
+     */
+    private function extractEvaluationData($evaluation, $artifact)
+    {
+        $data = [];
+        
+        // استخراج البيانات الفعلية من التقييم
+        if ($evaluation->weight) {
+            $data['weight'] = floatval($evaluation->weight);
+        } elseif ($artifact->weight) {
+            $data['weight'] = floatval($artifact->weight);
+        } else {
+            $data['weight'] = 0.00;
+        }
+        
+        if ($evaluation->colour) {
+            $data['color'] = $evaluation->colour;
+        } else {
+            $data['color'] = 'Various';
+        }
+        
+        if ($evaluation->shape_cut) {
+            $data['shape_cut'] = $evaluation->shape_cut;
+        } else {
+            $data['shape_cut'] = 'Oval/Mix';
+        }
+        
+        if ($evaluation->measurements) {
+            $data['dimensions'] = $evaluation->measurements;
+        } else {
+            $data['dimensions'] = '0.00 x 0.00 x 0.00 mm';
+        }
+        
+        if ($evaluation->transparency) {
+            $data['transparency'] = $evaluation->transparency;
+        } else {
+            $data['transparency'] = 'Transparent';
+        }
+        
+        if ($evaluation->phenomena) {
+            $data['phenomena'] = $evaluation->phenomena;
+        } else {
+            $data['phenomena'] = '-';
+        }
+        
+        if ($evaluation->species_group) {
+            $data['species'] = $evaluation->species_group;
+            $data['group'] = $evaluation->species_group;
+        } else {
+            $data['species'] = '-';
+            $data['group'] = '-';
+        }
+        
+        if ($evaluation->variety) {
+            $data['variety'] = $evaluation->variety;
+        } else {
+            $data['variety'] = '-';
+        }
+        
+        if ($evaluation->result) {
+            $data['conclusion'] = $evaluation->result;
+        } else {
+            $data['conclusion'] = 'Pass';
+        }
+        
+        if ($evaluation->comments) {
+            $data['comments'] = $evaluation->comments;
+        } else {
+            $data['comments'] = 'Test evaluation for ' . $artifact->type;
+        }
+        
+        return $data;
     }
 }

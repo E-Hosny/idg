@@ -347,6 +347,21 @@ export default {
         this.addArtifact()
       }
       
+      // التحقق من صحة البيانات
+      let hasValidArtifact = false
+      for (let artifact of this.form.artifacts) {
+        if (artifact.type && artifact.service && artifact.weight) {
+          hasValidArtifact = true
+          break
+        }
+      }
+      
+      if (!hasValidArtifact) {
+        this.loading = false
+        alert('يرجى إدخال نوع القطعة والخدمة والوزن لقطعة واحدة على الأقل')
+        return
+      }
+      
       console.log('Sending data:', this.form.data())
       
       this.form.post(this.$route('reception.store'), {
@@ -358,6 +373,15 @@ export default {
         onError: (errors) => {
           console.log('Errors:', errors)
           this.loading = false
+          
+          // إظهار رسالة خطأ للمستخدم
+          if (errors.error) {
+            alert(errors.error)
+          } else if (errors.artifacts) {
+            alert('يرجى التأكد من إدخال معلومات القطع بشكل صحيح')
+          } else {
+            alert('حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.')
+          }
         },
         onFinish: () => {
           this.loading = false

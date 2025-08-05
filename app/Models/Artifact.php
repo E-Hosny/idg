@@ -158,9 +158,24 @@ class Artifact extends Model
     public static function generateArtifactCode()
     {
         $year = date('Y');
-        $lastArtifact = self::whereYear('created_at', $year)->orderBy('id', 'desc')->first();
-        $number = $lastArtifact ? (int) substr($lastArtifact->artifact_code, -3) + 1 : 1;
         
-        return 'IDG-' . $year . '-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        // Use database transaction to prevent race conditions
+        return \DB::transaction(function () use ($year) {
+            // Get the highest number for this year by looking at all artifact codes
+            $lastArtifact = self::where('artifact_code', 'like', 'IDG-' . $year . '-%')
+                ->get()
+                ->map(function ($artifact) {
+                    // Extract the number from codes like IDG-2025-001, IDG-2025-TEST6, etc.
+                    if (preg_match('/IDG-' . date('Y') . '-(\d+)$/', $artifact->artifact_code, $matches)) {
+                        return (int) $matches[1];
+                    }
+                    return 0;
+                })
+                ->max();
+            
+            $number = $lastArtifact ? $lastArtifact + 1 : 1;
+            
+            return 'IDG-' . $year . '-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        });
     }
 }
