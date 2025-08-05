@@ -207,11 +207,15 @@ class ReceptionController extends Controller
      */
     public function calculatePrice(Request $request)
     {
+        \Log::info('calculatePrice endpoint called with:', $request->all());
+
         $data = $request->validate([
             'type' => 'required|string',
             'service' => 'required|string',
             'weight' => 'required|numeric|min:0',
         ]);
+
+        \Log::info('Validated data:', $data);
 
         $price = PricingService::calculatePrice(
             $data['type'],
@@ -225,10 +229,52 @@ class ReceptionController extends Controller
             $data['weight']
         );
 
-        return response()->json([
+        $response = [
             'price' => $price,
             'weight_range' => $weightRange,
             'currency' => 'SAR'
+        ];
+
+        \Log::info('calculatePrice response:', $response);
+
+        return response()->json($response);
+    }
+
+    /**
+     * اختبار حساب السعر - للتشخيص
+     */
+    public function testPricing(Request $request)
+    {
+        \Log::info('testPricing called');
+        
+        // اختبار البيانات المرسلة
+        \Log::info('Request data:', $request->all());
+        
+        // اختبار البحث المباشر
+        $pricing = \App\Models\Pricing::where('artifact_type', 'Colored Gemstones')
+            ->where('service_type', 'Regular - ID Report')
+            ->where('min_weight', '<=', 2.0)
+            ->where(function($query) {
+                $query->where('max_weight', '>=', 2.0)
+                      ->orWhereNull('max_weight');
+            })
+            ->orderBy('min_weight', 'desc')
+            ->first();
+            
+        if ($pricing) {
+            \Log::info('Direct query found pricing:', $pricing->toArray());
+        } else {
+            \Log::warning('Direct query found no pricing');
+        }
+        
+        // اختبار جميع البيانات المتاحة
+        $allPricing = \App\Models\Pricing::all(['artifact_type', 'service_type', 'min_weight', 'max_weight', 'price']);
+        \Log::info('All pricing data:', $allPricing->toArray());
+        
+        return response()->json([
+            'test_pricing' => $pricing ? $pricing->toArray() : null,
+            'total_pricing_records' => $allPricing->count(),
+            'sample_records' => $allPricing->take(5)->toArray()
         ]);
     }
 } 

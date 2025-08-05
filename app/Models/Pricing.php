@@ -30,15 +30,35 @@ class Pricing extends Model
      */
     public static function findPrice($artifactType, $serviceType, $weight)
     {
-        return self::where('artifact_type', $artifactType)
+        \Log::info('Pricing::findPrice called with:', [
+            'artifactType' => $artifactType,
+            'serviceType' => $serviceType,
+            'weight' => $weight
+        ]);
+
+        $query = self::where('artifact_type', $artifactType)
             ->where('service_type', $serviceType)
             ->where('min_weight', '<=', $weight)
             ->where(function($query) use ($weight) {
                 $query->where('max_weight', '>=', $weight)
                       ->orWhereNull('max_weight');
             })
-            ->orderBy('min_weight', 'desc')
-            ->first();
+            ->orderBy('min_weight', 'desc');
+
+        \Log::info('SQL Query:', [
+            'sql' => $query->toSql(),
+            'bindings' => $query->getBindings()
+        ]);
+
+        $result = $query->first();
+
+        if ($result) {
+            \Log::info('Pricing record found:', $result->toArray());
+        } else {
+            \Log::warning('No pricing record found');
+        }
+
+        return $result;
     }
 
     /**
