@@ -230,7 +230,7 @@ export default {
 
     generateCertificate(artifact) {
       // Navigate to certificate generation
-      this.$inertia.post(`/certificates/generate/${artifact.id}`, {}, {
+      this.$inertia.post(`/certificates/${artifact.id}/generate`, {}, {
         onSuccess: () => {
           alert('تم إنشاء الشهادة بنجاح!')
         },
