@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     // Certificate routes
     Route::get('/certificates/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('certificates.show');
     Route::post('/certificates/{artifact}/generate', [\App\Http\Controllers\CertificateController::class, 'generate'])->name('certificates.generate');
-    Route::get('/certificates/certified/list', [\App\Http\Controllers\CertificateController::class, 'certifiedList'])->name('certificates.certified.list');
+    Route::get('/certificates/certified/list', [\App\Http\Controllers\CertificateController::class, 'certified'])->name('certificates.certified.list');
     
     // Public certificate route (no auth required)
     Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
