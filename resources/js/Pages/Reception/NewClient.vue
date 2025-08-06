@@ -364,7 +364,7 @@ export default {
       
       console.log('Sending data:', this.form.data())
       
-      this.form.post(this.$route('reception.store'), {
+      this.form.post(this.$route('reception.store-client'), {
         onSuccess: (page) => {
           console.log('Success!', page)
           this.loading = false

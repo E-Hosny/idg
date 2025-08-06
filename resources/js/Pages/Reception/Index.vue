@@ -2,7 +2,7 @@
   <DashboardLayout :pageTitle="__('Reception Dashboard')">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-xl font-bold">{{ __('Clients List') }}</h2>
-      <Link :href="$route('reception.new')" class="btn btn-primary">
+      <Link :href="$route('reception.new-client')" class="btn btn-primary">
         <i class="fas fa-user-plus mr-2"></i> {{ __('New Client') }}
       </Link>
     </div>
@@ -30,10 +30,10 @@
             <td class="px-4 py-2">{{ client.email }}</td>
             <td class="px-4 py-2">{{ client.artifacts.length }}</td>
             <td class="px-4 py-2 flex gap-2" @click.stop>
-              <Link :href="$route('reception.artifact.create', { client: client.id })" class="inline-flex items-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs font-semibold">
+              <button @click="addArtifact(client.id)" class="inline-flex items-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs font-semibold">
                 <i class="fas fa-plus mr-1"></i> {{ __('Add Artifact') }}
-              </Link>
-              <Link :href="$route('reception.client.show', client.id)" class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-xs font-semibold border border-blue-200">
+              </button>
+              <Link :href="$route('reception.show-client', client.id)" class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-xs font-semibold border border-blue-200">
                 <i class="fas fa-eye mr-1"></i> {{ __('Show Details') }}
               </Link>
             </td>
@@ -70,7 +70,11 @@ export default {
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     },
     goToDetails(id) {
-      this.$inertia.visit(this.$route('reception.client.show', id))
+      this.$inertia.visit(this.$route('reception.show-client', id))
+    },
+    addArtifact(clientId) {
+      // Redirect to client details page where artifacts can be added
+      this.$inertia.visit(this.$route('reception.show-client', clientId))
     }
   }
 }

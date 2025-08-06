@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Reception routes
     Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index');
-    Route::get('/reception/new-client', [ReceptionController::class, 'newClient'])->name('reception.new-client');
+    Route::get('/reception/new-client', [ReceptionController::class, 'createClient'])->name('reception.new-client');
     Route::post('/reception/store-client', [ReceptionController::class, 'storeClient'])->name('reception.store-client');
     Route::get('/reception/clients/{client}', [ReceptionController::class, 'showClient'])->name('reception.show-client');
     Route::post('/reception/calculate-price', [ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
