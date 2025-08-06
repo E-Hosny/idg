@@ -34,38 +34,27 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'storeEvaluation'])->name('dashboard.artifacts.evaluate.store');
     Route::get('/dashboard/artifacts/{artifact}/evaluation', [\App\Http\Controllers\DashboardController::class, 'showEvaluation'])->name('dashboard.artifacts.evaluation.show');
     
-    // Test endpoint for debugging
     Route::get('/dashboard/evaluated-artifacts', [\App\Http\Controllers\DashboardController::class, 'evaluatedArtifacts'])->name('dashboard.evaluated-artifacts');
     
-    // Certificate routes
-    Route::prefix('certificates')->name('certificates.')->group(function () {
-        Route::get('/artifact/{artifact}', [\App\Http\Controllers\CertificateController::class, 'index'])->name('artifact');
-        Route::post('/generate/{artifact}', [\App\Http\Controllers\CertificateController::class, 'generate'])->name('generate');
-        Route::get('/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('show');
-        Route::post('/{certificate}/issue', [\App\Http\Controllers\CertificateController::class, 'issue'])->name('issue');
-        Route::post('/{certificate}/regenerate-qr', [\App\Http\Controllers\CertificateController::class, 'regenerateQR'])->name('regenerate-qr');
-        Route::get('/{certificate}/pdf', [\App\Http\Controllers\CertificateController::class, 'generatePDF'])->name('pdf');
-        Route::get('/certified/list', [\App\Http\Controllers\CertificateController::class, 'certified'])->name('certified');
-    });
-    
-    // Redirect /home to dashboard
-    Route::get('/home', function () {
-        return redirect()->route('dashboard');
-    })->name('home');
-
+    // Reception routes
     Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index');
-    Route::get('/reception/new', [ReceptionController::class, 'createClient'])->name('reception.new');
-    Route::post('/reception/store', [ReceptionController::class, 'storeClient'])->name('reception.store');
-    Route::get('/reception/client/{client}', [ReceptionController::class, 'showClient'])->name('reception.client.show');
-    Route::get('/reception/client/{client}/artifact/new', [\App\Http\Controllers\ReceptionController::class, 'createArtifact'])->name('reception.artifact.create');
-    Route::post('/reception/client/{client}/artifact/store', [\App\Http\Controllers\ReceptionController::class, 'storeArtifact'])->name('reception.artifact.store');
-    Route::post('/reception/calculate-price', [\App\Http\Controllers\ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
-Route::get('/reception/test-pricing', [\App\Http\Controllers\ReceptionController::class, 'testPricing'])->name('reception.test-pricing');
-
-    Route::get('/test-gate', function () {
-        return [auth()->user()->role, \Gate::allows('isReceptionist')];
-    });
+    Route::get('/reception/new-client', [ReceptionController::class, 'newClient'])->name('reception.new-client');
+    Route::post('/reception/store-client', [ReceptionController::class, 'storeClient'])->name('reception.store-client');
+    Route::get('/reception/clients/{client}', [ReceptionController::class, 'showClient'])->name('reception.show-client');
+    Route::post('/reception/calculate-price', [ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
+    Route::get('/reception/test-pricing', [ReceptionController::class, 'testPricing'])->name('reception.test-pricing');
+    
+    // Certificate routes
+    Route::get('/certificates/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('certificates.show');
+    Route::post('/certificates/{artifact}/generate', [\App\Http\Controllers\CertificateController::class, 'generate'])->name('certificates.generate');
+    Route::get('/certificates/certified/list', [\App\Http\Controllers\CertificateController::class, 'certifiedList'])->name('certificates.certified.list');
+    
+    // Public certificate route (no auth required)
+    Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 });
+
+// Public certificate route (no auth required)
+Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 
 // Language switcher
 Route::get('/lang/{locale}', function ($locale) {
@@ -74,10 +63,6 @@ Route::get('/lang/{locale}', function ($locale) {
     }
     return redirect()->back();
 })->name('lang.switch');
-
-// Public Certificate Routes (outside auth middleware)
-Route::get('/certificate/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
-Route::post('/certificate/verify', [\App\Http\Controllers\PublicCertificateController::class, 'verify'])->name('public.certificate.verify');
 
 // Temporary test route for PDF (remove in production)
 Route::get('/test-pdf/{id}', function($id) {
