@@ -11,6 +11,9 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Test endpoint for debugging (public)
+Route::get('/test-evaluation', [\App\Http\Controllers\TestController::class, 'testEvaluation'])->name('test.evaluation');
+
 // Authentication routes (manual routes instead of Auth::routes())
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -30,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
     Route::post('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'storeEvaluation'])->name('dashboard.artifacts.evaluate.store');
     Route::get('/dashboard/artifacts/{artifact}/evaluation', [\App\Http\Controllers\DashboardController::class, 'showEvaluation'])->name('dashboard.artifacts.evaluation.show');
+    
+    // Test endpoint for debugging
     Route::get('/dashboard/evaluated-artifacts', [\App\Http\Controllers\DashboardController::class, 'evaluatedArtifacts'])->name('dashboard.evaluated-artifacts');
     
     // Certificate routes

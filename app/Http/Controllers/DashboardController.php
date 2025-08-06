@@ -236,24 +236,39 @@ class DashboardController extends Controller
 
     public function storeEvaluation(Request $request, Artifact $artifact)
     {
+        \Log::info('storeEvaluation called:', [
+            'artifact_id' => $artifact->id,
+            'artifact_type' => $artifact->type,
+            'artifact_code' => $artifact->artifact_code,
+            'user_id' => auth()->id(),
+            'request_method' => $request->method(),
+            'request_url' => $request->url()
+        ]);
+
         // التحقق من أن المستخدم مسجل دخول
         if (!auth()->check()) {
+            \Log::error('User not authenticated');
             return redirect()->route('login');
         }
 
         try {
             // التحقق من نوع القطعة وحفظ التقييم المناسب
             if ($artifact->type === 'Colorless Diamonds') {
+                \Log::info('Processing diamond evaluation');
                 $this->storeDiamondEvaluation($request, $artifact);
                 $message = 'Diamond evaluation saved successfully!';
             } elseif ($artifact->type === 'Jewellery') {
+                \Log::info('Processing jewellery evaluation');
                 $this->storeJewelleryEvaluation($request, $artifact);
                 $message = 'Jewellery evaluation saved successfully!';
             } else {
+                \Log::info('Processing general evaluation for type: ' . $artifact->type);
                 // Colored Gemstones & Other Colored Gemstones
                 $this->storeGeneralEvaluation($request, $artifact);
                 $message = 'Evaluation saved successfully!';
             }
+
+            \Log::info('Evaluation saved successfully, updating artifact status');
 
             // تحديث حالة القطعة حسب نوع التقييم
             if ($artifact->type === 'Colorless Diamonds') {
@@ -263,11 +278,13 @@ class DashboardController extends Controller
                         'status' => 'evaluated',
                         'assigned_to' => auth()->id(),
                     ]);
+                    \Log::info('Diamond artifact status updated to evaluated');
                 } else {
                     $artifact->update([
                         'status' => 'under_evaluation',
                         'assigned_to' => auth()->id(),
                     ]);
+                    \Log::info('Diamond artifact status updated to under_evaluation');
                 }
             } else {
                 // للأنواع الأخرى، التقييم النهائي يعني evaluated
@@ -275,17 +292,28 @@ class DashboardController extends Controller
                     'status' => 'evaluated',
                     'assigned_to' => auth()->id(),
                 ]);
+                \Log::info('General artifact status updated to evaluated');
             }
 
             // تحديث إضافي للحالة للتأكد من التحديث الصحيح
             $this->updateArtifactStatus($artifact, $artifact->type === 'Colorless Diamonds' ? 'diamond' : 'general');
+
+            \Log::info('Evaluation process completed successfully');
 
             return redirect()
                 ->route('dashboard.artifacts')
                 ->with('success', $message);
 
         } catch (\Exception $e) {
-            \Log::error('Evaluation save error: ' . $e->getMessage());
+            \Log::error('Evaluation save error: ' . $e->getMessage(), [
+                'artifact_id' => $artifact->id,
+                'artifact_type' => $artifact->type,
+                'user_id' => auth()->id(),
+                'error_code' => $e->getCode(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withErrors(['error' => 'An error occurred while saving the evaluation. Please try again.']);
         }
     }
@@ -431,44 +459,61 @@ class DashboardController extends Controller
 
     private function storeGeneralEvaluation(Request $request, Artifact $artifact)
     {
-        // التحقق من صحة البيانات للتقييم العام
-        $validatedData = $request->validate([
-            'test_date' => 'nullable|date',
-            'test_location' => 'nullable|string|max:255',
-            'weight' => 'nullable|numeric|min:0',
-            'colour' => 'nullable|string|max:100',
-            'transparency' => 'nullable|string|max:50',
-            'lustre' => 'nullable|string|max:50',
-            'tone' => 'nullable|string|max:50',
-            'phenomena' => 'nullable|string|max:255',
-            'saturation' => 'nullable|string|max:50',
-            'measurements' => 'nullable|string|max:100',
-            'shape_cut' => 'nullable|string|max:100',
-            'pleochroism' => 'nullable|string|max:50',
-            'optic_character' => 'nullable|string|max:50',
-            'refractive_index' => 'nullable|array',
-            'ri_result' => 'nullable|string|max:255',
-            'inclusion' => 'nullable|string|max:1000',
-            'weight_air' => 'nullable|numeric|min:0',
-            'weight_water' => 'nullable|numeric|min:0',
-            'sg_result' => 'nullable|string|max:255',
-            'fluorescence_long' => 'nullable|string|max:50',
-            'fluorescence_short' => 'nullable|string|max:50',
-            'result' => 'nullable|string|max:255',
-            'variety' => 'nullable|string|max:100',
-            'species_group' => 'nullable|string|max:100',
-            'comments' => 'nullable|string|max:1000',
-            'grader_name' => 'nullable|string|max:255',
-            'grader_date' => 'nullable|date',
-            'analytical_interpretation' => 'nullable|string|max:2000',
-            'retaining_place' => 'nullable|string|max:255',
-            'retained_by' => 'nullable|string|max:255',
-            'retained_date' => 'nullable|date',
-            'report_done' => 'nullable|boolean',
-            'label_done' => 'nullable|boolean',
-            'checked_by' => 'nullable|string|max:255',
-            'checked_date' => 'nullable|date',
+        \Log::info('storeGeneralEvaluation called with:', [
+            'artifact_id' => $artifact->id,
+            'artifact_type' => $artifact->type,
+            'request_data' => $request->all()
         ]);
+
+        // التحقق من صحة البيانات للتقييم العام
+        try {
+            $validatedData = $request->validate([
+                'test_date' => 'nullable|date',
+                'test_location' => 'nullable|string|max:255',
+                'weight' => 'nullable|numeric|min:0',
+                'colour' => 'nullable|string|max:100',
+                'transparency' => 'nullable|string|max:50',
+                'lustre' => 'nullable|string|max:50',
+                'tone' => 'nullable|string|max:50',
+                'phenomena' => 'nullable|string|max:255',
+                'saturation' => 'nullable|string|max:50',
+                'measurements' => 'nullable|string|max:100',
+                'shape_cut' => 'nullable|string|max:100',
+                'pleochroism' => 'nullable|string|max:50',
+                'optic_character' => 'nullable|string|max:50',
+                'refractive_index' => 'nullable|array',
+                'ri_result' => 'nullable|string|max:255',
+                'inclusion' => 'nullable|string|max:1000',
+                'weight_air' => 'nullable|numeric|min:0',
+                'weight_water' => 'nullable|numeric|min:0',
+                'sg_result' => 'nullable|string|max:255',
+                'fluorescence_long' => 'nullable|string|max:50',
+                'fluorescence_short' => 'nullable|string|max:50',
+                'result' => 'nullable|string|max:255',
+                'variety' => 'nullable|string|max:100',
+                'species_group' => 'nullable|string|max:100',
+                'comments' => 'nullable|string|max:1000',
+                'grader_name' => 'nullable|string|max:255',
+                'grader_date' => 'nullable|date',
+                'analytical_interpretation' => 'nullable|string|max:2000',
+                'retaining_place' => 'nullable|string|max:255',
+                'retained_by' => 'nullable|string|max:255',
+                'retained_date' => 'nullable|date',
+                'report_done' => 'nullable|boolean',
+                'label_done' => 'nullable|boolean',
+                'checked_by' => 'nullable|string|max:255',
+                'checked_date' => 'nullable|date',
+            ]);
+
+            \Log::info('Validation passed, validated data:', $validatedData);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed:', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+            throw $e;
+        }
 
         // إضافة البيانات الإضافية
         $validatedData['artifact_id'] = $artifact->id;
@@ -478,6 +523,8 @@ class DashboardController extends Controller
         $validatedData['detailed_notes'] = ['en' => '', 'ar' => ''];
         $validatedData['supporting_documents'] = [];
 
+        \Log::info('Final data to be saved:', $validatedData);
+
         // حفظ التقييم
         try {
             $evaluation = ArtifactEvaluation::create($validatedData);
@@ -486,6 +533,9 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             \Log::error('Error creating evaluation:', [
                 'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
                 'data' => $validatedData
             ]);
             throw $e;
@@ -628,5 +678,78 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard/Artifacts/EvaluatedIndex', [
             'artifacts' => $artifacts,
         ]);
+    }
+
+    /**
+     * Test endpoint for debugging evaluation issues on server
+     */
+    public function testEvaluation(Request $request)
+    {
+        \Log::info('testEvaluation endpoint called');
+        
+        try {
+            // Test 1: Check if we can create a basic evaluation
+            $testData = [
+                'artifact_id' => 1,
+                'evaluator_id' => 1,
+                'test_date' => '2025-08-06',
+                'test_location' => 'test',
+                'weight' => 12,
+                'colour' => 'black',
+                'transparency' => 'Translucent',
+                'lustre' => 'Resinous',
+                'tone' => 'Medium',
+                'phenomena' => '21',
+                'saturation' => 'Weak',
+                'is_final' => true,
+                'evaluation_date' => now(),
+                'detailed_notes' => ['en' => '', 'ar' => ''],
+                'supporting_documents' => []
+            ];
+
+            \Log::info('Test data:', $testData);
+
+            $evaluation = ArtifactEvaluation::create($testData);
+            \Log::info('Test evaluation created successfully:', $evaluation->toArray());
+
+            // Test 2: Check database connection and table structure
+            $columns = \DB::select('DESCRIBE artifact_evaluations');
+            $columnNames = array_column($columns, 'Field');
+            
+            \Log::info('Database columns:', $columnNames);
+
+            // Test 3: Check if artifact exists
+            $artifact = Artifact::find(1);
+            if ($artifact) {
+                \Log::info('Artifact found:', $artifact->toArray());
+            } else {
+                \Log::warning('Artifact with ID 1 not found');
+            }
+
+            return response()->json([
+                'success' => true,
+                'test_evaluation_id' => $evaluation->id,
+                'columns' => $columnNames,
+                'artifact_exists' => $artifact ? true : false,
+                'message' => 'All tests passed'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Test evaluation failed:', [
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine()
+            ], 500);
+        }
     }
 }
