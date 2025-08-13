@@ -228,15 +228,18 @@ class CertificateController extends Controller
             ->latest()
             ->first();
             
-        // Always use verification page to show IDG authentication
-        // This gives credibility that the artifact is certified by IDG Laboratory
-        $verificationUrl = url('/verify-artifact/' . $token);
+        // Decide target URL: direct file if uploaded, otherwise verification page
+        if ($uploadedCertificate && $uploadedCertificate->uploaded_certificate_path) {
+            $targetUrl = url('/certificate-file/' . $uploadedCertificate->uploaded_certificate_path);
+        } else {
+            $targetUrl = url('/verify-artifact/' . $token);
+        }
         
         // Generate SVG first (no ImageMagick dependency)
         $qrCodeSvg = \QrCode::format('svg')
             ->size(300)
             ->margin(1)
-            ->generate($verificationUrl);
+            ->generate($targetUrl);
 
         // Create an HTML page that will automatically convert SVG to PNG and download
         $htmlContent = '
