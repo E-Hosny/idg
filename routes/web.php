@@ -66,6 +66,15 @@ Route::get('/verify-artifact/{token}', [\App\Http\Controllers\PublicCertificateC
 // Direct certificate download route
 Route::get('/download-certificate/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'downloadUploadedCertificate'])->name('public.download-certificate');
 
+// Custom file access route to avoid 403 errors
+Route::get('/files/{filename}', function($filename) {
+    $path = storage_path('app/public/' . $filename);
+    if (file_exists($path)) {
+        return response()->file($path);
+    }
+    abort(404);
+})->name('files.show');
+
 // Language switcher
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'ar'])) {

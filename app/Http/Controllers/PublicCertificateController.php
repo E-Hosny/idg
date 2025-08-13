@@ -90,9 +90,8 @@ class PublicCertificateController extends Controller
             ->first();
 
         if ($certificate && $certificate->uploaded_certificate_path) {
-            // For uploaded certificates, redirect directly to the PDF file
-            // This ensures QR codes embedded in printed certificates lead to the file
-            $certificateFileUrl = asset('storage/' . $certificate->uploaded_certificate_path);
+            // For uploaded certificates, redirect to custom file route to avoid 403 errors
+            $certificateFileUrl = url('/files/' . $certificate->uploaded_certificate_path);
             return redirect($certificateFileUrl);
         }
 
