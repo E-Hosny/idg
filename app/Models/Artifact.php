@@ -42,6 +42,8 @@ class Artifact extends Model
         'assigned_to',
         'evaluation_deadline',
         'internal_notes',
+        'qr_token',
+        'qr_code_path',
     ];
 
     protected $casts = [

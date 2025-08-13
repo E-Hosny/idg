@@ -34,6 +34,12 @@ export default {
     'Select Type': 'Select Type',
     'Select Service': 'Select Service',
     'Select Delivery Type': 'Select Delivery Type',
+    // Certificate
+    'View PDF': 'View PDF',
+    'Download PDF': 'Download PDF',
+    'Officially Certified by IDG': 'Officially Certified by IDG',
+    'Authentic Certificate from IDG Laboratory': 'Authentic Certificate from IDG Laboratory',
+    'This certificate has been verified and is officially issued by IDG Laboratory. The QR code confirms the authenticity of this certification.': 'This certificate has been verified and is officially issued by IDG Laboratory. The QR code confirms the authenticity of this certification.',
   },
   ar: {
     // Artifact Types
@@ -70,5 +76,11 @@ export default {
     'Select Type': 'اختر النوع',
     'Select Service': 'اختر الخدمة',
     'Select Delivery Type': 'اختر طريقة التسليم',
+    // Certificate
+    'View PDF': 'عرض PDF',
+    'Download PDF': 'تحميل PDF',
+    'Officially Certified by IDG': 'موثق رسمياً من مختبر IDG',
+    'Authentic Certificate from IDG Laboratory': 'شهادة أصلية من مختبر IDG',
+    'This certificate has been verified and is officially issued by IDG Laboratory. The QR code confirms the authenticity of this certification.': 'تم التحقق من هذه الشهادة وتم إصدارها رسمياً من مختبر IDG. رمز QR يؤكد صحة هذه الشهادة.',
   }
 }; 

@@ -75,35 +75,61 @@
                 <td class="px-4 py-2">{{ formatDate(artifact.latest_certificate?.created_at) }}</td>
                 <td class="px-4 py-2">
                   <div class="flex space-x-2">
-                    <!-- View Certificate Button -->
-                    <button 
-                      v-if="artifact.latest_certificate"
-                      @click="viewCertificate(artifact.latest_certificate)" 
-                      class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold"
-                      :title="__('View Certificate')"
-                    >
-                      📜 {{ __('View') }}
-                    </button>
-                    
-                    <!-- Print Certificate Button -->
-                    <button 
-                      v-if="artifact.latest_certificate"
-                      @click="printCertificate(artifact.latest_certificate)" 
-                      class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold"
-                      :title="__('Print Certificate')"
-                    >
-                      🖨️ {{ __('Print') }}
-                    </button>
-                    
-                    <!-- Download PDF Button -->
-                    <button 
-                      v-if="artifact.latest_certificate"
-                      @click="downloadPDF(artifact.latest_certificate)" 
-                      class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-semibold"
-                      :title="__('Download PDF')"
-                    >
-                      📄 {{ __('PDF') }}
-                    </button>
+                    <!-- For issued certificates (system generated) -->
+                    <template v-if="artifact.latest_certificate && artifact.latest_certificate.status === 'issued'">
+                      <!-- View Certificate Button -->
+                      <button 
+                        @click="viewCertificate(artifact.latest_certificate)" 
+                        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold"
+                        :title="__('View Certificate')"
+                      >
+                        📜 {{ __('View') }}
+                      </button>
+                      
+                      <!-- Print Certificate Button -->
+                      <button 
+                        @click="printCertificate(artifact.latest_certificate)" 
+                        class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold"
+                        :title="__('Print Certificate')"
+                      >
+                        🖨️ {{ __('Print') }}
+                      </button>
+                      
+                      <!-- Download PDF Button -->
+                      <button 
+                        @click="downloadPDF(artifact.latest_certificate)" 
+                        class="px-3 py-1 bg-red-600 text-white rounded hover:red-700 text-xs font-semibold"
+                        :title="__('Download PDF')"
+                      >
+                        📄 {{ __('PDF') }}
+                      </button>
+                    </template>
+
+                    <!-- For uploaded certificates (user uploaded) -->
+                    <template v-if="artifact.latest_certificate && artifact.latest_certificate.status === 'uploaded'">
+                      <!-- View Uploaded Certificate -->
+                      <button 
+                        @click="viewUploadedCertificate(artifact.latest_certificate)" 
+                        class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold"
+                        :title="__('View Uploaded Certificate')"
+                      >
+                        📋 {{ __('View') }}
+                      </button>
+                      
+                      <!-- Download Uploaded PDF -->
+                      <button 
+                        @click="downloadUploadedPDF(artifact.latest_certificate)" 
+                        class="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-xs font-semibold"
+                        :title="__('Download Uploaded PDF')"
+                      >
+                        📄 {{ __('Download') }}
+                      </button>
+
+                      <!-- Status Badge -->
+                      <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-semibold">
+                        {{ __('Uploaded') }}
+                      </span>
+                    </template>
                   </div>
                 </td>
               </tr>
@@ -205,6 +231,12 @@ export default {
         // Weight units
         'ct': 'قيراط',
         'gm': 'جرام',
+        
+        // Upload-related translations
+        'View Uploaded Certificate': 'عرض الشهادة المرفوعة',
+        'Download Uploaded PDF': 'تحميل الشهادة المرفوعة',
+        'Uploaded': 'مرفوعة',
+        'No uploaded certificate found': 'لم يتم العثور على شهادة مرفوعة',
       }
       
       return this.$page.props.locale === 'ar' ? translations[key] || key : key
@@ -225,6 +257,31 @@ export default {
     viewCertificate(certificate) {
       // Navigate to certificate view page
       this.$inertia.visit(`/certificates/${certificate.id}`)
+    },
+
+    viewUploadedCertificate(certificate) {
+      // Open uploaded certificate in new window
+      if (certificate.uploaded_certificate_path) {
+        const url = `/storage/${certificate.uploaded_certificate_path}`
+        window.open(url, '_blank')
+      } else {
+        alert(this.__('No uploaded certificate found'))
+      }
+    },
+
+    downloadUploadedPDF(certificate) {
+      // Download the uploaded PDF
+      if (certificate.uploaded_certificate_path) {
+        const url = `/storage/${certificate.uploaded_certificate_path}`
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `uploaded-certificate-${certificate.certificate_number}.pdf`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } else {
+        alert(this.__('No uploaded certificate found'))
+      }
     },
 
     printCertificate(certificate) {

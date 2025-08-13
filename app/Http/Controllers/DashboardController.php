@@ -670,9 +670,9 @@ class DashboardController extends Controller
 
     public function evaluatedArtifacts()
     {
-        $artifacts = Artifact::with(['client', 'category'])
+        $artifacts = Artifact::with(['client', 'category', 'latestCertificate'])
             ->whereIn('status', ['evaluated', 'certified'])
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         return Inertia::render('Dashboard/Artifacts/EvaluatedIndex', [

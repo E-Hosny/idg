@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
+use App\Models\Artifact;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -66,6 +67,96 @@ class PublicCertificateController extends Controller
                 'client_name' => $certificate->artifact->client->full_name ?? 'N/A',
             ],
             'message' => 'Certificate is valid and authentic.'
+        ]);
+    }
+
+    /**
+     * Verify artifact by QR token and show certificate/evaluation
+     */
+    public function verifyArtifact($token)
+    {
+        $artifact = Artifact::where('qr_token', $token)
+            ->with(['client', 'category'])
+            ->first();
+
+        if (!$artifact) {
+            abort(404, 'Artifact not found or invalid QR code.');
+        }
+
+        // Check if artifact has uploaded certificate
+        $certificate = Certificate::where('artifact_id', $artifact->id)
+            ->where('status', 'uploaded')
+            ->latest()
+            ->first();
+
+        if ($certificate && $certificate->uploaded_certificate_path) {
+            // For uploaded certificates, redirect directly to the PDF file
+            // This ensures QR codes embedded in printed certificates lead to the file
+            $certificateFileUrl = asset('storage/' . $certificate->uploaded_certificate_path);
+            return redirect($certificateFileUrl);
+        }
+
+        // If no uploaded certificate, check for evaluations
+        $evaluation = null;
+        $evaluationData = [];
+
+        if ($artifact->type === 'Colorless Diamonds') {
+            $evaluation = $artifact->diamondEvaluations()
+                ->where('status', 'completed')
+                ->latest()
+                ->first();
+        } else {
+            $evaluation = $artifact->evaluations()
+                ->where('is_final', true)
+                ->latest()
+                ->first();
+        }
+
+        if (!$evaluation) {
+            abort(404, 'No evaluation found for this artifact.');
+        }
+
+        // Show evaluation data as certificate format
+        return Inertia::render('Public/ArtifactVerification', [
+            'artifact' => $artifact,
+            'evaluation' => $evaluation,
+            'isPublic' => true,
+        ]);
+    }
+
+    /**
+     * Download uploaded certificate directly
+     */
+    public function downloadUploadedCertificate($token = null, Certificate $certificate = null)
+    {
+        // If token is provided, find certificate by artifact token
+        if ($token) {
+            $artifact = Artifact::where('qr_token', $token)->first();
+            if (!$artifact) {
+                abort(404, 'Artifact not found.');
+            }
+            
+            $certificate = Certificate::where('artifact_id', $artifact->id)
+                ->where('status', 'uploaded')
+                ->latest()
+                ->first();
+        }
+
+        if (!$certificate || !$certificate->uploaded_certificate_path) {
+            abort(404, 'Certificate file not found.');
+        }
+
+        $filePath = storage_path('app/public/' . $certificate->uploaded_certificate_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'Certificate file not found on disk.');
+        }
+
+        $artifact = $certificate->artifact;
+        $fileName = 'certificate-' . $artifact->artifact_code . '.pdf';
+
+        return response()->download($filePath, $fileName, [
+            'Content-Type' => 'application/pdf',
         ]);
     }
 }

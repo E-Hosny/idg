@@ -37,6 +37,8 @@ class Certificate extends Model
         'qr_code_token',
         'qr_code_path',
         'qr_code_generated_at',
+        'uploaded_certificate_path',
+        'uploaded_at',
     ];
 
     protected $casts = [
@@ -45,6 +47,7 @@ class Certificate extends Model
         'test_date' => 'date',
         'weight' => 'decimal:3',
         'qr_code_generated_at' => 'datetime',
+        'uploaded_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -78,6 +81,11 @@ class Certificate extends Model
         return $query->where('status', 'draft');
     }
 
+    public function scopeUploaded($query)
+    {
+        return $query->where('status', 'uploaded');
+    }
+
     /**
      * Helper Methods
      */
@@ -108,6 +116,7 @@ class Certificate extends Model
         return match($this->status) {
             'draft' => 'yellow',
             'issued' => 'green',
+            'uploaded' => 'blue',
             'cancelled' => 'red',
             default => 'gray'
         };
@@ -118,6 +127,7 @@ class Certificate extends Model
         return match($this->status) {
             'draft' => 'Draft',
             'issued' => 'Issued',
+            'uploaded' => 'Uploaded',
             'cancelled' => 'Cancelled',
             default => 'Unknown'
         };

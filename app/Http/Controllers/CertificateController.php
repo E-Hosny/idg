@@ -173,12 +173,15 @@ class CertificateController extends Controller
     }
 
     /**
-     * Display all certified artifacts
+     * Display all certified artifacts including uploaded certificates
      */
     public function certified()
     {
         $artifacts = Artifact::with(['client', 'latestCertificate'])
             ->where('status', 'certified')
+            ->whereHas('latestCertificate', function($query) {
+                $query->whereIn('status', ['issued', 'uploaded']);
+            })
             ->orderBy('updated_at', 'desc')
             ->paginate(15);
 
@@ -186,6 +189,239 @@ class CertificateController extends Controller
             'artifacts' => $artifacts,
         ]);
     }
+
+    /**
+     * Download QR Code as PNG for a specific artifact
+     */
+    public function downloadQR(Artifact $artifact)
+    {
+        // Check if artifact has an evaluation
+        $evaluation = null;
+        if ($artifact->type === 'Colorless Diamonds') {
+            $evaluation = $artifact->diamondEvaluations()
+                ->where('status', 'completed')
+                ->latest()
+                ->first();
+        } else {
+            $evaluation = $artifact->evaluations()
+                ->where('is_final', true)
+                ->latest()
+                ->first();
+        }
+
+        if (!$evaluation) {
+            return back()->withErrors(['error' => 'No completed evaluation found for this artifact.']);
+        }
+
+        // Generate unique token for this artifact's QR code
+        $token = \Str::random(32);
+        
+        // Create QR codes directory if it doesn't exist
+        $qrDir = public_path('storage/qr-codes');
+        if (!file_exists($qrDir)) {
+            mkdir($qrDir, 0755, true);
+        }
+
+        // Check if artifact has uploaded certificate to determine URL
+        $uploadedCertificate = Certificate::where('artifact_id', $artifact->id)
+            ->where('status', 'uploaded')
+            ->latest()
+            ->first();
+            
+        // Always use verification page to show IDG authentication
+        // This gives credibility that the artifact is certified by IDG Laboratory
+        $verificationUrl = url('/verify-artifact/' . $token);
+        
+        // Generate SVG first (no ImageMagick dependency)
+        $qrCodeSvg = \QrCode::format('svg')
+            ->size(300)
+            ->margin(1)
+            ->generate($verificationUrl);
+
+        // Create an HTML page that will automatically convert SVG to PNG and download
+        $htmlContent = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>QR Code Generator</title>
+            <style>
+                body { margin: 0; padding: 20px; text-align: center; font-family: Arial, sans-serif; background: #f5f5f5; }
+                .container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .qr-code { margin: 20px 0; }
+                .artifact-info { font-weight: bold; margin-bottom: 20px; font-size: 18px; color: #333; }
+                .loading { margin-top: 20px; color: #666; }
+                .success { color: #28a745; font-weight: bold; }
+                canvas { border: 2px solid #ddd; border-radius: 8px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="artifact-info">IDG Laboratory<br/>QR Code for: ' . $artifact->artifact_code . '<br/>' . 
+                ($uploadedCertificate ? '<span style="color: #28a745;">📄 Direct Certificate Access</span>' : '<span style="color: #007bff;">🔐 Official Authentication</span>') . '</div>
+                <div class="qr-code" id="qr-container">' . $qrCodeSvg . '</div>
+                <div class="loading" id="status">جاري إنشاء ملف PNG...</div>
+                <canvas id="canvas" style="display:none;"></canvas>
+            </div>
+
+            <script>
+                window.onload = function() {
+                    // Get the SVG element
+                    const svg = document.querySelector(\'svg\');
+                    const canvas = document.getElementById(\'canvas\');
+                    const ctx = canvas.getContext(\'2d\');
+                    const status = document.getElementById(\'status\');
+                    
+                    // Set canvas size
+                    canvas.width = 350;
+                    canvas.height = 350;
+                    
+                    // Create image from SVG
+                    const svgData = new XMLSerializer().serializeToString(svg);
+                    const svgBlob = new Blob([svgData], {type: \'image/svg+xml;charset=utf-8\'});
+                    const url = URL.createObjectURL(svgBlob);
+                    
+                    const img = new Image();
+                    img.onload = function() {
+                        // Clear canvas with white background
+                        ctx.fillStyle = \'#ffffff\';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Draw image centered
+                        const size = 300;
+                        const x = (canvas.width - size) / 2;
+                        const y = (canvas.height - size) / 2;
+                        ctx.drawImage(img, x, y, size, size);
+                        
+                        // Convert to PNG and download
+                        canvas.toBlob(function(blob) {
+                            const link = document.createElement(\'a\');
+                            link.download = \'QR-' . $artifact->artifact_code . '.png\';
+                            link.href = URL.createObjectURL(blob);
+                            
+                            // Update status
+                            status.innerHTML = \'<span class="success">✅ تم إنشاء الملف بنجاح!</span>\';
+                            
+                            // Auto download
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            // Cleanup
+                            URL.revokeObjectURL(url);
+                            URL.revokeObjectURL(link.href);
+                            
+                            setTimeout(() => {
+                                window.close();
+                            }, 1000);
+                        }, \'image/png\');
+                    };
+                    
+                    img.onerror = function() {
+                        status.innerHTML = \'خطأ في إنشاء الصورة\';
+                    };
+                    
+                    img.src = url;
+                };
+            </script>
+        </body>
+        </html>';
+
+        // Store the token in the artifact for later verification
+        $artifact->update([
+            'qr_token' => $token,
+            'qr_code_path' => 'qr-codes/artifact-' . $artifact->artifact_code . '.png',
+        ]);
+
+        // Return the HTML page that will handle PNG conversion and download
+        return response($htmlContent)
+            ->header('Content-Type', 'text/html');
+    }
+
+    /**
+     * Upload certificate PDF with QR code
+     */
+    public function uploadCertificate(Request $request, Artifact $artifact)
+    {
+        try {
+            // Increase memory limit for large file processing
+            ini_set('memory_limit', '512M');
+            set_time_limit(600); // 10 minutes
+            
+            $request->validate([
+                'certificate_file' => 'required|file|mimes:pdf|max:102400', // 100MB max
+            ]);
+
+            // Check if artifact has QR token, create one if missing
+            if (!$artifact->qr_token) {
+                $artifact->update(['qr_token' => \Str::random(32)]);
+                $artifact->refresh(); // Reload the artifact with the new token
+            }
+
+            // Store the uploaded file
+            $certificateFile = $request->file('certificate_file');
+            $fileName = 'certificate-' . $artifact->artifact_code . '-' . time() . '.pdf';
+            $filePath = $certificateFile->storeAs('certificates', $fileName, 'public');
+
+            // Find or create certificate record (get the latest one)
+            $certificate = Certificate::where('artifact_id', $artifact->id)->latest()->first();
+            
+            if (!$certificate) {
+                // Create a basic certificate record
+                $certificate = Certificate::create([
+                    'artifact_id' => $artifact->id,
+                    'generated_by' => auth()->id(),
+                    'received_date' => $artifact->created_at->toDateString(),
+                    'report_date' => now()->toDateString(),
+                    'test_date' => now()->toDateString(),
+                    'status' => 'uploaded',
+                    'qr_code_token' => $artifact->qr_token,
+                    'identification' => strtoupper($artifact->type),
+                    'weight' => $artifact->weight ?? 0,
+                    'conclusion' => 'Uploaded Certificate',
+                ]);
+            } else {
+                // Update existing certificate to ensure it has required fields
+                if (!$certificate->certificate_number) {
+                    $certificate->certificate_number = $certificate->generateCertificateNumber();
+                }
+                if (!$certificate->qr_code_token) {
+                    $certificate->qr_code_token = $artifact->qr_token;
+                }
+                $certificate->save();
+            }
+
+                    // Update certificate with uploaded file
+        $certificate->update([
+            'uploaded_certificate_path' => $filePath,
+            'uploaded_at' => now(),
+            'status' => 'uploaded',
+        ]);
+
+        // Update artifact status to certified if not already (without updating timestamps)
+        if ($artifact->status !== 'certified') {
+            $artifact->timestamps = false;
+            $artifact->update(['status' => 'certified']);
+            $artifact->timestamps = true;
+        }
+
+        \Log::info('Certificate uploaded successfully', [
+            'artifact_code' => $artifact->artifact_code,
+            'certificate_id' => $certificate->id,
+            'file_path' => $filePath
+        ]);
+
+        return redirect()->back()->with('success', 'Certificate uploaded successfully!');
+            
+        } catch (\Illuminate\Http\Exceptions\PostTooLargeException $e) {
+            return back()->withErrors(['error' => 'File is too large. Maximum allowed size is 100MB.']);
+        } catch (\Exception $e) {
+            \Log::error('Certificate upload error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Upload failed: ' . $e->getMessage()]);
+        }
+    }
+
+
 
     /**
      * Map diamond evaluation data to certificate format

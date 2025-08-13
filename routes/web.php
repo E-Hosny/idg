@@ -49,12 +49,22 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/certificates/{artifact}/generate', [\App\Http\Controllers\CertificateController::class, 'generate'])->name('certificates.generate');
     Route::get('/certificates/certified/list', [\App\Http\Controllers\CertificateController::class, 'certified'])->name('certificates.certified.list');
     
+    // New QR and Certificate Upload routes
+    Route::get('/artifacts/{artifact}/download-qr', [\App\Http\Controllers\CertificateController::class, 'downloadQR'])->name('artifacts.download-qr');
+    Route::post('/artifacts/{artifact}/upload-certificate', [\App\Http\Controllers\CertificateController::class, 'uploadCertificate'])->name('artifacts.upload-certificate');
+    
     // Public certificate route (no auth required)
     Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 });
 
 // Public certificate route (no auth required)
 Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
+
+// Public artifact verification route
+Route::get('/verify-artifact/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'verifyArtifact'])->name('public.verify-artifact');
+
+// Direct certificate download route
+Route::get('/download-certificate/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'downloadUploadedCertificate'])->name('public.download-certificate');
 
 // Language switcher
 Route::get('/lang/{locale}', function ($locale) {

@@ -1,6 +1,6 @@
 <template>
   <DashboardLayout :pageTitle="__('Evaluated Artifacts')">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-full mx-auto px-2">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">{{ __('Evaluated Artifacts') }}</h2>
@@ -26,7 +26,7 @@
       </div>
 
       <!-- Artifacts Table -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-lg shadow-md p-4">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-lg font-semibold text-gray-800">{{ __('Evaluated Artifacts List') }}</h3>
           <div class="flex space-x-4">
@@ -48,23 +48,23 @@
         </div>
 
         <div class="overflow-x-auto">
-          <table class="min-w-full bg-white rounded shadow border">
+          <table class="w-full bg-white rounded shadow border" style="min-width: 1200px;">
             <thead>
               <tr class="bg-gray-100 border-b">
-                <th class="px-4 py-2 text-left font-bold">#</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Code') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Service') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Evaluated At') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Actions') }}</th>
+                <th class="px-3 py-2 text-left font-bold w-12">#</th>
+                <th class="px-4 py-2 text-left font-bold w-32">{{ __('Code') }}</th>
+                <th class="px-4 py-2 text-left font-bold w-40">{{ __('Type') }}</th>
+                <th class="px-4 py-2 text-left font-bold w-32">{{ __('Service') }}</th>
+                <th class="px-4 py-2 text-left font-bold w-20">{{ __('Weight') }}</th>
+                <th class="px-4 py-2 text-left font-bold w-24">{{ __('Status') }}</th>
+                <th class="px-4 py-2 text-left font-bold w-32">{{ __('Client') }}</th>
+                <th class="px-4 py-2 text-left font-bold w-28">{{ __('Evaluated At') }}</th>
+                <th class="px-6 py-2 text-left font-bold w-72">{{ __('Actions') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(artifact, idx) in filteredArtifacts" :key="artifact.id" class="border-b hover:bg-gray-50 transition">
-                <td class="px-4 py-2">{{ getRowNumber(idx) }}</td>
+                <td class="px-3 py-2">{{ getRowNumber(idx) }}</td>
                 <td class="px-4 py-2">
                   <span class="font-medium text-blue-600">{{ artifact.artifact_code }}</span>
                 </td>
@@ -93,21 +93,21 @@
                 </td>
                 <td class="px-4 py-2">{{ artifact.client ? artifact.client.full_name : '-' }}</td>
                 <td class="px-4 py-2">{{ formatDate(artifact.updated_at) }}</td>
-                <td class="px-4 py-2">
-                  <div class="flex space-x-2">
+                <td class="px-6 py-3 w-72">
+                  <div class="flex flex-wrap gap-1.5 items-center justify-start">
                     <!-- View Evaluation Button -->
                     <button 
                       @click="viewEvaluation(artifact)" 
-                      class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold"
+                      class="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-medium whitespace-nowrap"
                       :title="__('View Evaluation Report')"
                     >
-                      {{ __('View Report') }}
+                      👁️ {{ __('View Report') }}
                     </button>
                     
-                                         <!-- Print Button -->
+                    <!-- Print Button -->
                      <button 
                        @click="printEvaluation(artifact)" 
-                       class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-semibold"
+                       class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium whitespace-nowrap"
                        :title="__('Print Report')"
                      >
                        🖨️ {{ __('Print') }}
@@ -116,11 +116,42 @@
                      <!-- Generate Certificate Button -->
                      <button 
                        @click="generateCertificate(artifact)" 
-                       class="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-xs font-semibold"
+                       class="px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-xs font-medium whitespace-nowrap"
                        :title="__('Generate Certificate')"
                      >
                        📜 {{ __('Certificate') }}
                      </button>
+
+                     <!-- Generate QR Code Button -->
+                     <button 
+                       @click="downloadQRCode(artifact)" 
+                       class="px-2 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs font-medium whitespace-nowrap"
+                       :title="__('Download QR Code PNG')"
+                     >
+                       📱 {{ __('Generate QR') }}
+                     </button>
+
+                                         <!-- Upload Certificate Button -->
+                    <template v-if="hasUploadedCertificate(artifact)">
+                      <!-- Certificate Already Uploaded -->
+                      <button 
+                        @click="viewUploadedCertificate(artifact)" 
+                        class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium whitespace-nowrap"
+                        :title="__('View Uploaded Certificate')"
+                      >
+                        ✅ {{ __('Uploaded') }}
+                      </button>
+                    </template>
+                    <template v-else>
+                      <!-- Upload Certificate Button -->
+                      <button 
+                        @click="showUploadModal(artifact)" 
+                        class="px-2 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-xs font-medium whitespace-nowrap"
+                        :title="__('Upload Certificate')"
+                      >
+                        📄 {{ __('Upload Certificate') }}
+                      </button>
+                    </template>
                   </div>
                 </td>
               </tr>
@@ -154,6 +185,67 @@
           </div>
         </div>
       </div>
+
+      <!-- Upload Certificate Modal -->
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">{{ __('Upload Certificate') }}</h3>
+            <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mb-4">
+            <p class="text-sm text-gray-600 mb-2">
+              {{ __('Upload certificate for artifact') }}: <strong>{{ selectedArtifact?.artifact_code }}</strong>
+            </p>
+            <p class="text-xs text-yellow-600 mb-4">
+              {{ __('Please ensure the QR code has been generated and added to the certificate before uploading.') }}
+            </p>
+          </div>
+
+          <form @submit.prevent="uploadCertificate" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                {{ __('Certificate File (PDF)') }}
+              </label>
+              <input 
+                type="file" 
+                ref="fileInput"
+                @change="handleFileSelect"
+                accept=".pdf"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                required
+              >
+              <p class="text-xs text-gray-500 mt-1">{{ __('Max file size: 100MB') }}</p>
+            </div>
+
+            <div v-if="uploadError" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {{ uploadError }}
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button 
+                type="button" 
+                @click="closeModal"
+                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                {{ __('Cancel') }}
+              </button>
+              <button 
+                type="submit" 
+                :disabled="uploading || !selectedFile"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              >
+                {{ uploading ? __('Uploading...') : __('Upload') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </DashboardLayout>
 </template>
@@ -172,6 +264,11 @@ export default {
   setup(props) {
     const statusFilter = ref('')
     const typeFilter = ref('')
+    const showModal = ref(false)
+    const selectedArtifact = ref(null)
+    const selectedFile = ref(null)
+    const uploading = ref(false)
+    const uploadError = ref('')
 
     const certifiedCount = computed(() => {
       return props.artifacts?.data?.filter(a => a.status === 'certified').length || 0
@@ -200,7 +297,12 @@ export default {
       typeFilter,
       certifiedCount,
       diamondCount,
-      filteredArtifacts
+      filteredArtifacts,
+      showModal,
+      selectedArtifact,
+      selectedFile,
+      uploading,
+      uploadError
     }
   },
 
@@ -230,11 +332,25 @@ export default {
         'Generate Certificate': 'إنشاء شهادة',
         'View Evaluation Report': 'عرض تقرير التقييم',
         'Print Report': 'طباعة التقرير',
+        'Generate QR': 'إنشاء رمز QR',
+        'Upload Certificate': 'رفع شهادة',
+        'Download QR Code PNG': 'تحميل رمز QR بصيغة PNG',
+        'Upload certificate for artifact': 'رفع شهادة للقطعة',
+        'Please ensure the QR code has been generated and added to the certificate before uploading.': 'يرجى التأكد من إنشاء رمز QR وإضافته للشهادة قبل الرفع.',
+        'Certificate File (PDF)': 'ملف الشهادة (PDF)',
+        'Max file size: 100MB': 'الحد الأقصى لحجم الملف: 100 ميجابايت',
+        'Cancel': 'إلغاء',
+        'Upload': 'رفع',
+        'Uploading...': 'جاري الرفع...',
         'No evaluated artifacts found.': 'لا توجد قطع مقيمة.',
         'Page': 'صفحة',
         'of': 'من',
         'Previous': 'السابق',
         'Next': 'التالي',
+        
+        // Upload status translations
+        'Uploaded': 'مرفوعة',
+        'View Uploaded Certificate': 'عرض الشهادة المرفوعة',
         
         // Artifact types
         'Colorless Diamonds': 'الألماس عديم اللون',
@@ -310,6 +426,107 @@ export default {
           } else {
             alert('حدث خطأ أثناء إنشاء الشهادة. يرجى المحاولة مرة أخرى.')
           }
+        }
+      })
+    },
+
+    downloadQRCode(artifact) {
+      // Open QR generator in new window for PNG download
+      window.open(`/artifacts/${artifact.id}/download-qr`, '_blank', 'width=500,height=600')
+    },
+
+    showUploadModal(artifact) {
+      this.selectedArtifact = artifact
+      this.showModal = true
+      this.uploadError = ''
+      this.selectedFile = null
+    },
+
+    closeModal() {
+      this.showModal = false
+      this.selectedArtifact = null
+      this.selectedFile = null
+      this.uploadError = ''
+      this.uploading = false
+    },
+
+    handleFileSelect(event) {
+      const file = event.target.files[0]
+      if (file) {
+        // Validate file type
+        if (file.type !== 'application/pdf') {
+          this.uploadError = 'يرجى اختيار ملف PDF فقط.'
+          this.selectedFile = null
+          return
+        }
+        
+        // Validate file size (100MB)
+        if (file.size > 100 * 1024 * 1024) {
+          this.uploadError = 'حجم الملف كبير جداً. الحد الأقصى 100 ميجابايت.'
+          this.selectedFile = null
+          return
+        }
+        
+        this.selectedFile = file
+        this.uploadError = ''
+      }
+    },
+
+    hasUploadedCertificate(artifact) {
+      // Check if artifact has a certificate with uploaded status
+      return artifact.latest_certificate && artifact.latest_certificate.status === 'uploaded'
+    },
+
+    viewUploadedCertificate(artifact) {
+      if (artifact.latest_certificate && artifact.latest_certificate.uploaded_certificate_path) {
+        const url = `/storage/${artifact.latest_certificate.uploaded_certificate_path}`
+        window.open(url, '_blank')
+      } else {
+        alert('لم يتم العثور على شهادة مرفوعة')
+      }
+    },
+
+    uploadCertificate() {
+      if (!this.selectedFile || !this.selectedArtifact) {
+        return
+      }
+
+      this.uploading = true
+      this.uploadError = ''
+
+      const formData = new FormData()
+      formData.append('certificate_file', this.selectedFile)
+      formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
+
+      // Add progress indication for large files
+      if (this.selectedFile.size > 50 * 1024 * 1024) { // Files larger than 50MB
+        this.uploadError = `جاري رفع الملف الكبير (${Math.round(this.selectedFile.size / 1024 / 1024)} MB)... يرجى الانتظار...`
+      }
+
+      this.$inertia.post(`/artifacts/${this.selectedArtifact.id}/upload-certificate`, formData, {
+        forceFormData: true,
+        onSuccess: () => {
+          alert('تم رفع الشهادة بنجاح!')
+          this.closeModal()
+          // Refresh the page to show updated data
+          this.$inertia.reload()
+        },
+        onError: (errors) => {
+          console.error('Upload errors:', errors)
+          if (errors.error) {
+            this.uploadError = errors.error
+          } else if (errors.certificate_file) {
+            this.uploadError = errors.certificate_file[0]
+          } else if (errors.message) {
+            this.uploadError = errors.message
+          } else if (errors.exception && errors.exception.includes('PostTooLargeException')) {
+            this.uploadError = 'الملف كبير جداً. يرجى التأكد من أن الملف أقل من 100 ميجابايت.'
+          } else {
+            this.uploadError = 'حدث خطأ أثناء رفع الشهادة. يرجى المحاولة مرة أخرى.'
+          }
+        },
+        onFinish: () => {
+          this.uploading = false
         }
       })
     }

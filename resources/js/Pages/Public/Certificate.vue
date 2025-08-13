@@ -11,8 +11,8 @@
               <p class="text-sm text-gray-600">{{ __('Certificate Verification') }}</p>
             </div>
           </div>
-          <div class="text-sm text-gray-500">
-            {{ __('Verified Certificate') }} ✅
+          <div class="text-sm text-green-600 font-semibold">
+            🔐 {{ __('Officially Certified by IDG') }} ✅
           </div>
         </div>
       </div>
@@ -20,8 +20,65 @@
 
     <!-- Certificate Content -->
     <div class="max-w-4xl mx-auto py-8 px-4">
+      <!-- Authentication Notice -->
+      <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-green-800">
+              🔐 {{ __('Authentic Certificate from IDG Laboratory') }}
+            </h3>
+            <div class="mt-1 text-sm text-green-700">
+              <p>{{ __('This certificate has been verified and is officially issued by IDG Laboratory. The QR code confirms the authenticity of this certification.') }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Uploaded Certificate Notice -->
+      <div v-if="isUploadedCertificate" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">
+                {{ __('Uploaded Certificate') }}
+              </h3>
+              <div class="mt-2 text-sm text-blue-700">
+                <p>{{ __('This is an uploaded certificate with embedded QR code verification.') }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <a 
+              v-if="certificateFileUrl" 
+              :href="certificateFileUrl" 
+              target="_blank"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+            >
+              📄 {{ __('View PDF') }}
+            </a>
+            <a 
+              v-if="certificateFileUrl" 
+              :href="certificateFileUrl" 
+              download
+              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+            >
+              📥 {{ __('Download PDF') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
       <!-- Draft Warning -->
-      <div v-if="certificate.is_draft" class="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div v-else-if="certificate.is_draft" class="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <div class="flex items-center">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
@@ -211,13 +268,26 @@
 export default {
   props: {
     certificate: Object,
-    isPublic: Boolean
+    isPublic: Boolean,
+    isUploadedCertificate: {
+      type: Boolean,
+      default: false
+    },
+    certificateFileUrl: {
+      type: String,
+      default: null
+    }
   },
 
   methods: {
     __(key) {
-      // For public page, always display in English
-      return key
+      // Simple translations for public page
+      const translations = {
+        'Uploaded Certificate': 'Uploaded Certificate',
+        'This is an uploaded certificate with embedded QR code verification.': 'This is an uploaded certificate with embedded QR code verification.',
+        'View PDF Certificate': 'View PDF Certificate'
+      }
+      return translations[key] || key
     },
 
     formatDate(dateString) {
