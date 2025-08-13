@@ -69,11 +69,32 @@ Route::get('/download-certificate/{token}', [\App\Http\Controllers\PublicCertifi
 // Custom file access route to avoid 403 errors
 Route::get('/files/{filename}', function($filename) {
     $path = storage_path('app/public/' . $filename);
-    if (file_exists($path)) {
+    
+    // Log the request for debugging
+    \Log::info('File access request', [
+        'filename' => $filename,
+        'full_path' => $path,
+        'exists' => file_exists($path),
+        'readable' => is_readable($path),
+        'permissions' => decoct(fileperms($path))
+    ]);
+    
+    if (file_exists($path) && is_readable($path)) {
+        // Set proper headers for PDF files
+        if (pathinfo($filename, PATHINFO_EXTENSION) === 'pdf') {
+            return response()->file($path, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . basename($filename) . '"'
+            ]);
+        }
         return response()->file($path);
     }
-    abort(404);
+    
+    abort(404, 'File not found or not accessible');
 })->name('files.show');
+
+// Alternative file access route using controller method
+Route::get('/certificate-file/{filename}', [\App\Http\Controllers\PublicCertificateController::class, 'serveFile'])->name('certificate.file');
 
 // Language switcher
 Route::get('/lang/{locale}', function ($locale) {

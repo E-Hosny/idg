@@ -91,7 +91,7 @@ class PublicCertificateController extends Controller
 
         if ($certificate && $certificate->uploaded_certificate_path) {
             // For uploaded certificates, redirect to custom file route to avoid 403 errors
-            $certificateFileUrl = url('/files/' . $certificate->uploaded_certificate_path);
+            $certificateFileUrl = url('/certificate-file/' . $certificate->uploaded_certificate_path);
             return redirect($certificateFileUrl);
         }
 
@@ -157,5 +157,55 @@ class PublicCertificateController extends Controller
         return response()->download($filePath, $fileName, [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    /**
+     * Serve certificate file directly to avoid 403 errors
+     */
+    public function serveFile($filename)
+    {
+        try {
+            $filePath = storage_path('app/public/' . $filename);
+            
+            // Log the request for debugging
+            \Log::info('Certificate file access', [
+                'filename' => $filename,
+                'full_path' => $filePath,
+                'exists' => file_exists($filePath),
+                'readable' => is_readable($filePath),
+                'permissions' => file_exists($filePath) ? decoct(fileperms($filePath)) : 'N/A'
+            ]);
+            
+            if (!file_exists($filePath)) {
+                \Log::warning('Certificate file not found', ['path' => $filePath]);
+                abort(404, 'Certificate file not found');
+            }
+            
+            if (!is_readable($filePath)) {
+                \Log::error('Certificate file not readable', ['path' => $filePath]);
+                abort(403, 'Certificate file not accessible');
+            }
+            
+            // For PDF files, serve inline
+            if (pathinfo($filename, PATHINFO_EXTENSION) === 'pdf') {
+                return response()->file($filePath, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . basename($filename) . '"',
+                    'Cache-Control' => 'public, max-age=3600'
+                ]);
+            }
+            
+            // For other file types
+            return response()->file($filePath);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error serving certificate file', [
+                'filename' => $filename,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            abort(500, 'Error serving file: ' . $e->getMessage());
+        }
     }
 }
