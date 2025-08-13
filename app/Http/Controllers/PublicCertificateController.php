@@ -168,12 +168,15 @@ class PublicCertificateController extends Controller
             $filePath = storage_path('app/public/' . $filename);
             
             // Log the request for debugging
-            \Log::info('Certificate file access', [
+            \Log::info('Certificate file access request', [
                 'filename' => $filename,
                 'full_path' => $filePath,
                 'exists' => file_exists($filePath),
                 'readable' => is_readable($filePath),
-                'permissions' => file_exists($filePath) ? decoct(fileperms($filePath)) : 'N/A'
+                'permissions' => file_exists($filePath) ? decoct(fileperms($filePath)) : 'N/A',
+                'file_size' => file_exists($filePath) ? filesize($filePath) : 'N/A',
+                'user_agent' => request()->header('User-Agent'),
+                'ip' => request()->ip()
             ]);
             
             if (!file_exists($filePath)) {
@@ -188,6 +191,7 @@ class PublicCertificateController extends Controller
             
             // For PDF files, serve inline
             if (pathinfo($filename, PATHINFO_EXTENSION) === 'pdf') {
+                \Log::info('Serving PDF file successfully', ['path' => $filePath]);
                 return response()->file($filePath, [
                     'Content-Type' => 'application/pdf',
                     'Content-Disposition' => 'inline; filename="' . basename($filename) . '"',

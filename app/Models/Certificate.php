@@ -142,7 +142,13 @@ class Certificate extends Model
             $this->qr_code_token = \Str::random(32);
         }
 
-        $url = url('/certificate/' . $this->qr_code_token);
+        // For uploaded certificates, direct to file access route to avoid 403 errors
+        if ($this->status === 'uploaded' && $this->uploaded_certificate_path) {
+            $url = url('/certificate-file/' . $this->uploaded_certificate_path);
+        } else {
+            // For other certificates, use the verification route
+            $url = url('/verify-artifact/' . $this->qr_code_token);
+        }
         
         // Create QR codes directory if it doesn't exist
         $qrDir = public_path('storage/qr-codes');
@@ -188,7 +194,12 @@ class Certificate extends Model
     public function getPublicUrlAttribute()
     {
         if ($this->qr_code_token) {
-            return url('/certificate/' . $this->qr_code_token);
+            // For uploaded certificates, direct to file access route
+            if ($this->status === 'uploaded' && $this->uploaded_certificate_path) {
+                return url('/certificate-file/' . $this->uploaded_certificate_path);
+            }
+            // For other certificates, use verification route
+            return url('/verify-artifact/' . $this->qr_code_token);
         }
         return null;
     }

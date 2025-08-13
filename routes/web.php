@@ -96,6 +96,39 @@ Route::get('/files/{filename}', function($filename) {
 // Alternative file access route using controller method
 Route::get('/certificate-file/{filename}', [\App\Http\Controllers\PublicCertificateController::class, 'serveFile'])->name('certificate.file');
 
+// Quick test route for PDF files (for debugging)
+Route::get('/test-pdf-file/{filename}', function($filename) {
+    $path = storage_path('app/public/' . $filename);
+    
+    if (!file_exists($path)) {
+        return response()->json([
+            'error' => 'File not found',
+            'path' => $path,
+            'exists' => false
+        ], 404);
+    }
+    
+    if (!is_readable($path)) {
+        return response()->json([
+            'error' => 'File not readable',
+            'path' => $path,
+            'permissions' => decoct(fileperms($path))
+        ], 403);
+    }
+    
+    // Return file info for testing
+    return response()->json([
+        'success' => true,
+        'filename' => $filename,
+        'path' => $path,
+        'exists' => true,
+        'readable' => true,
+        'size' => filesize($path),
+        'permissions' => decoct(fileperms($path)),
+        'url' => url('/certificate-file/' . $filename)
+    ]);
+})->name('test.pdf.file');
+
 // Language switcher
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'ar'])) {
