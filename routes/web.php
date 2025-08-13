@@ -94,7 +94,7 @@ Route::get('/files/{filename}', function($filename) {
 })->name('files.show');
 
 // Alternative file access route using controller method
-Route::get('/certificate-file/{filename}', [\App\Http\Controllers\PublicCertificateController::class, 'serveFile'])->name('certificate.file');
+Route::get('/certificate-file/{filename}', [\App\Http\Controllers\PublicCertificateController::class, 'serveFile'])->where('filename', '.*')->name('certificate.file');
 
 // Quick test route for PDF files (for debugging)
 Route::get('/test-pdf-file/{filename}', function($filename) {
