@@ -496,7 +496,15 @@ export default {
 
       const formData = new FormData()
       formData.append('certificate_file', this.selectedFile)
-      formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'))
+      
+      // الحصول على CSRF token بطريقة آمنة
+      const csrfToken = this.$page.props.csrf_token || 
+                       document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                       document.querySelector('input[name="_token"]')?.value
+      
+      if (csrfToken) {
+        formData.append('_token', csrfToken)
+      }
 
       // Add progress indication for large files
       if (this.selectedFile.size > 50 * 1024 * 1024) { // Files larger than 50MB
@@ -513,6 +521,17 @@ export default {
         },
         onError: (errors) => {
           console.error('Upload errors:', errors)
+          
+          // معالجة خطأ 419 (CSRF token expired)
+          if (errors.status === 419 || errors.message?.includes('419')) {
+            this.uploadError = 'انتهت صلاحية الجلسة. يرجى تحديث الصفحة والمحاولة مرة أخرى.'
+            // إعادة تحميل الصفحة تلقائياً بعد 3 ثوان
+            setTimeout(() => {
+              this.$inertia.reload()
+            }, 3000)
+            return
+          }
+          
           if (errors.error) {
             this.uploadError = errors.error
           } else if (errors.certificate_file) {
