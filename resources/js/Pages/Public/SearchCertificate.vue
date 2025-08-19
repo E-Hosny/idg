@@ -100,17 +100,6 @@
           </div>
           <div class="ml-3 flex-1">
             <p class="text-sm font-medium text-green-800">{{ $page.props.success }}</p>
-            <div v-if="$page.props.open_pdf_url" class="mt-2">
-              <button 
-                @click="openPdfInNewWindow" 
-                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-                Open Certificate PDF
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -124,17 +113,86 @@
           </div>
           <div class="ml-3 flex-1">
             <p class="text-sm font-medium text-blue-800">{{ $page.props.info }}</p>
-            <div v-if="$page.props.open_pdf_url" class="mt-2">
-              <button 
-                @click="openPdfInNewWindow" 
-                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-                View Certificate
-              </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificate Display -->
+      <div v-if="$page.props.certificate_data" class="mb-8">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
             </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Certificate Found</h3>
+            <p class="text-gray-600">Your IDG Laboratory certificate details</p>
+          </div>
+
+          <!-- Certificate Details -->
+          <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Artifact Code</label>
+                <p class="text-lg font-semibold text-gray-900">{{ $page.props.certificate_data.artifact_code }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Type</label>
+                <p class="text-lg font-semibold text-gray-900">{{ $page.props.certificate_data.type }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Weight</label>
+                <p class="text-lg font-semibold text-gray-900">{{ $page.props.certificate_data.weight }}</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Client</label>
+                <p class="text-lg font-semibold text-gray-900">{{ $page.props.certificate_data.client_name }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Issue Date</label>
+                <p class="text-lg font-semibold text-gray-900">{{ $page.props.certificate_data.issue_date }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Status</label>
+                <span v-if="$page.props.certificate_data.is_uploaded" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Uploaded Certificate
+                </span>
+                <span v-else class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Generated Certificate
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              @click="openPdfInNewWindow" 
+              class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              Open Certificate PDF
+            </button>
+            <button 
+              @click="downloadPdf" 
+              class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Download PDF
+            </button>
           </div>
         </div>
       </div>
@@ -257,8 +315,20 @@ export default {
     }
 
     const openPdfInNewWindow = () => {
-      if (page.props.open_pdf_url) {
-        window.open(page.props.open_pdf_url, '_blank');
+      if (page.props.certificate_data && page.props.certificate_data.pdf_url) {
+        window.open(page.props.certificate_data.pdf_url, '_blank');
+      }
+    };
+
+    const downloadPdf = () => {
+      if (page.props.certificate_data && page.props.certificate_data.pdf_url) {
+        // Create a temporary link to download the PDF
+        const link = document.createElement('a');
+        link.href = page.props.certificate_data.pdf_url;
+        link.download = `certificate-${page.props.certificate_data.artifact_code}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
     };
 
@@ -266,7 +336,8 @@ export default {
       form,
       loading,
       searchCertificate,
-      openPdfInNewWindow
+      openPdfInNewWindow,
+      downloadPdf
     }
   },
 

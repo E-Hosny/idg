@@ -284,17 +284,25 @@ class PublicCertificateController extends Controller
         ]);
 
         if ($uploadedCertificate) {
-            // If uploaded certificate exists, return success with PDF URL
+            // If uploaded certificate exists, return certificate data for display
             $fileUrl = url('/certificate-file/' . $uploadedCertificate->uploaded_certificate_path);
             
-            \Log::info('Certificate found, returning URL', [
+            \Log::info('Certificate found, returning data for display', [
                 'path' => $uploadedCertificate->uploaded_certificate_path,
                 'url' => $fileUrl
             ]);
             
             return Inertia::render('Public/SearchCertificate', [
-                'success' => 'Certificate found! Click the button below to open it.',
-                'open_pdf_url' => $fileUrl,
+                'success' => 'Certificate found!',
+                'certificate_data' => [
+                    'artifact_code' => $artifact->artifact_code,
+                    'type' => $artifact->type,
+                    'weight' => $artifact->weight,
+                    'client_name' => $artifact->client->full_name ?? 'N/A',
+                    'issue_date' => $uploadedCertificate->created_at->format('m/d/Y'),
+                    'pdf_url' => $fileUrl,
+                    'is_uploaded' => true
+                ],
                 'csrf_token' => csrf_token(),
             ]);
         }
@@ -315,14 +323,22 @@ class PublicCertificateController extends Controller
         // If no uploaded certificate, show info and redirect to generated certificate
         $certificateUrl = route('public.certificate.show', $certificate->qr_code_token ?? $certificate->id);
         
-        \Log::info('Generated certificate found, returning URL', [
+        \Log::info('Generated certificate found, returning data for display', [
             'certificate_id' => $certificate->id,
             'url' => $certificateUrl
         ]);
         
         return Inertia::render('Public/SearchCertificate', [
-            'info' => 'Generated certificate found. Click the button below to view it.',
-            'open_pdf_url' => $certificateUrl,
+            'info' => 'Generated certificate found.',
+            'certificate_data' => [
+                'artifact_code' => $artifact->artifact_code,
+                'type' => $artifact->type,
+                'weight' => $artifact->weight,
+                'client_name' => $artifact->client->full_name ?? 'N/A',
+                'issue_date' => $certificate->created_at->format('m/d/Y'),
+                'pdf_url' => $certificateUrl,
+                'is_uploaded' => false
+            ],
             'csrf_token' => csrf_token(),
         ]);
     }
