@@ -88,7 +88,7 @@ class ReceptionController extends Controller
                 
                 while ($retryCount < $maxRetries) {
                     try {
-                        $artifactCode = \App\Models\Artifact::generateArtifactCode();
+                        $artifactCode = \App\Models\Artifact::generateArtifactCode($artifactData['type']);
                         \Log::info("Generated artifact code: {$artifactCode}");
                         break;
                     } catch (\Exception $e) {
@@ -185,7 +185,7 @@ class ReceptionController extends Controller
         \Log::info('Creating single artifact with data:', $data);
         $artifact = \App\Models\Artifact::create([
             'client_id' => $clientId,
-            'artifact_code' => \App\Models\Artifact::generateArtifactCode(),
+            'artifact_code' => \App\Models\Artifact::generateArtifactCode($data['type']),
             'type' => $data['type'],
             'service' => $data['service'] ?? null,
             'weight' => $data['weight'] ?? null,
@@ -199,7 +199,7 @@ class ReceptionController extends Controller
             'category_id' => null,
         ]);
         \Log::info('Single artifact created:', $artifact->toArray());
-        return redirect()->route('reception.client.show', $clientId)->with('success', 'Artifact added successfully.');
+        return redirect()->route('reception.show-client', $clientId)->with('success', 'Artifact added successfully.');
     }
 
     /**

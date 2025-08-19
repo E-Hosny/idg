@@ -157,8 +157,38 @@ class Artifact extends Model
     }
 
     // Helper methods
-    public static function generateArtifactCode()
+    public static function generateArtifactCode($type = null)
     {
+        // تحديد البادئة بناءً على نوع القطعة
+        $prefix = match ($type) {
+            'Colored Gemstones', 'Other Colored Gemstones' => 'GR',
+            'Colorless Diamonds' => 'DR',
+            'Jewellery' => 'JR',
+            default => 'IDG-' . date('Y') . '-'
+        };
+        
+        // إذا كان النوع من الأنواع الجديدة، استخدم الصيغة الجديدة
+        if (in_array($type, ['Colored Gemstones', 'Other Colored Gemstones', 'Colorless Diamonds', 'Jewellery'])) {
+            return \DB::transaction(function () use ($prefix) {
+                // توليد 10 أرقام عشوائية
+                $randomNumbers = str_pad(mt_rand(1, 9999999999), 10, '0', STR_PAD_LEFT);
+                
+                // التأكد من أن المعرف فريد
+                $code = $prefix . $randomNumbers;
+                $attempts = 0;
+                $maxAttempts = 10;
+                
+                while (self::where('artifact_code', $code)->exists() && $attempts < $maxAttempts) {
+                    $randomNumbers = str_pad(mt_rand(1, 9999999999), 10, '0', STR_PAD_LEFT);
+                    $code = $prefix . $randomNumbers;
+                    $attempts++;
+                }
+                
+                return $code;
+            });
+        }
+        
+        // الصيغة القديمة للأنواع الأخرى
         $year = date('Y');
         
         // Use database transaction to prevent race conditions

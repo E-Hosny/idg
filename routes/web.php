@@ -41,6 +41,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reception/new-client', [ReceptionController::class, 'createClient'])->name('reception.new-client');
     Route::post('/reception/store-client', [ReceptionController::class, 'storeClient'])->name('reception.store-client');
     Route::get('/reception/clients/{client}', [ReceptionController::class, 'showClient'])->name('reception.show-client');
+    Route::get('/reception/clients/{client}/add-artifact', [ReceptionController::class, 'createArtifact'])->name('reception.artifact.create');
+    Route::post('/reception/clients/{client}/store-artifact', [ReceptionController::class, 'storeArtifact'])->name('reception.artifact.store');
     Route::post('/reception/calculate-price', [ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
     Route::get('/reception/test-pricing', [ReceptionController::class, 'testPricing'])->name('reception.test-pricing');
     

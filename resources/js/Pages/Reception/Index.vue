@@ -73,8 +73,8 @@ export default {
       this.$inertia.visit(this.$route('reception.show-client', id))
     },
     addArtifact(clientId) {
-      // Redirect to client details page where artifacts can be added
-      this.$inertia.visit(this.$route('reception.show-client', clientId))
+      // Redirect to add artifact page
+      this.$inertia.visit(this.$route('reception.artifact.create', clientId))
     }
   }
 }
