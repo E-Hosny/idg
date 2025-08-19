@@ -37,7 +37,6 @@
               <tr class="bg-gray-100 border-b">
                 <th class="px-4 py-2 text-left font-bold">#</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Artifact Code') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Certificate No') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
@@ -50,9 +49,6 @@
                 <td class="px-4 py-2">{{ getRowNumber(idx) }}</td>
                 <td class="px-4 py-2">
                   <span class="font-medium text-blue-600">{{ artifact.artifact_code }}</span>
-                </td>
-                <td class="px-4 py-2">
-                  <span class="font-medium text-green-600">{{ artifact.latest_certificate?.certificate_number || '-' }}</span>
                 </td>
                 <td class="px-4 py-2">
                   <div class="flex items-center gap-2">
@@ -134,7 +130,7 @@
                 </td>
               </tr>
               <tr v-if="!artifacts.data?.length">
-                <td colspan="8" class="text-center text-gray-400 py-8">{{ __('No certified artifacts found.') }}</td>
+                <td colspan="7" class="text-center text-gray-400 py-8">{{ __('No certified artifacts found.') }}</td>
               </tr>
             </tbody>
           </table>
@@ -210,7 +206,6 @@ export default {
         'Diamond Certificates': 'شهادات الألماس',
         'Certified Artifacts List': 'قائمة القطع المعتمدة',
         'Artifact Code': 'كود القطعة',
-        'Certificate No': 'رقم الشهادة',
         'Type': 'النوع',
         'Weight': 'الوزن',
         'Client': 'العميل',

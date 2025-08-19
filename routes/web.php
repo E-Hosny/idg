@@ -62,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
 // Public certificate route (no auth required)
 Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 
+// Public certificate search route (no auth required)
+Route::get('/search-certificate', [\App\Http\Controllers\PublicCertificateController::class, 'searchPage'])->name('public.certificate.search');
+Route::post('/search-certificate', [\App\Http\Controllers\PublicCertificateController::class, 'searchCertificate'])->name('public.certificate.search.post');
+
 // Public artifact verification route
 Route::get('/verify-artifact/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'verifyArtifact'])->name('public.verify-artifact');
 

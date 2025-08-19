@@ -212,4 +212,118 @@ class PublicCertificateController extends Controller
             abort(500, 'Error serving file: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Show certificate search page
+     */
+    public function searchPage()
+    {
+        // إضافة CSRF token للصفحة
+        return Inertia::render('Public/SearchCertificate', [
+            'csrf_token' => csrf_token(),
+        ]);
+    }
+
+    /**
+     * Search for certificate by artifact code
+     */
+    public function searchCertificate(Request $request)
+    {
+        // Log that the function was called
+        \Log::info('SearchCertificate function called', [
+            'request_data' => $request->all(),
+            'method' => $request->method(),
+            'url' => $request->url(),
+            'user_agent' => $request->header('User-Agent'),
+            'ip' => $request->ip()
+        ]);
+
+        $request->validate([
+            'certificate_number' => 'required|string|max:100'
+        ]);
+
+        $artifactCode = $request->certificate_number; // We keep the field name for compatibility
+
+        // Log the search request
+        \Log::info('Certificate search request', [
+            'artifact_code' => $artifactCode,
+            'user_ip' => request()->ip()
+        ]);
+
+        // Search for artifact by code
+        $artifact = Artifact::where('artifact_code', $artifactCode)
+            ->where('status', 'certified')
+            ->with(['client'])
+            ->first();
+
+        if (!$artifact) {
+            \Log::warning('Artifact not found', ['artifact_code' => $artifactCode]);
+            return back()->withErrors([
+                'certificate_number' => 'Artifact not found or not yet certified.'
+            ]);
+        }
+
+        \Log::info('Artifact found', [
+            'artifact_id' => $artifact->id,
+            'artifact_code' => $artifact->artifact_code,
+            'status' => $artifact->status
+        ]);
+
+        // First, check if there's an uploaded certificate for this artifact
+        $uploadedCertificate = Certificate::where('artifact_id', $artifact->id)
+            ->where('status', 'uploaded')
+            ->whereNotNull('uploaded_certificate_path')
+            ->latest()
+            ->first();
+
+        \Log::info('Uploaded certificate search result', [
+            'found' => $uploadedCertificate ? true : false,
+            'status' => $uploadedCertificate ? $uploadedCertificate->status : 'N/A',
+            'path' => $uploadedCertificate ? $uploadedCertificate->uploaded_certificate_path : 'N/A',
+            'artifact_id' => $artifact->id
+        ]);
+
+        if ($uploadedCertificate) {
+            // If uploaded certificate exists, return success with PDF URL
+            $fileUrl = url('/certificate-file/' . $uploadedCertificate->uploaded_certificate_path);
+            
+            \Log::info('Certificate found, returning URL', [
+                'path' => $uploadedCertificate->uploaded_certificate_path,
+                'url' => $fileUrl
+            ]);
+            
+            return Inertia::render('Public/SearchCertificate', [
+                'success' => 'Certificate found! Click the button below to open it.',
+                'open_pdf_url' => $fileUrl,
+                'csrf_token' => csrf_token(),
+            ]);
+        }
+
+        // If no uploaded certificate, get the latest generated certificate
+        $certificate = Certificate::where('artifact_id', $artifact->id)
+            ->with(['artifact.client', 'generatedBy'])
+            ->latest()
+            ->first();
+
+        if (!$certificate) {
+            \Log::warning('No certificate found for artifact', ['artifact_id' => $artifact->id]);
+            return back()->withErrors([
+                'certificate_number' => 'Certificate not found for this artifact.'
+            ]);
+        }
+
+        // If no uploaded certificate, show info and redirect to generated certificate
+        $certificateUrl = route('public.certificate.show', $certificate->qr_code_token ?? $certificate->id);
+        
+        \Log::info('Generated certificate found, returning URL', [
+            'certificate_id' => $certificate->id,
+            'url' => $certificateUrl
+        ]);
+        
+        return Inertia::render('Public/SearchCertificate', [
+            'info' => 'Generated certificate found. Click the button below to view it.',
+            'open_pdf_url' => $certificateUrl,
+            'csrf_token' => csrf_token(),
+        ]);
+    }
 }
