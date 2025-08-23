@@ -1,9 +1,11 @@
 <template>
-  <DashboardLayout :page-title="'Diamond Evaluation'">
+  <DashboardLayout :page-title="isEditing ? 'Edit Diamond Evaluation' : 'Diamond Evaluation'">
     <div class="bg-white rounded-lg shadow-lg p-8 max-w-6xl mx-auto mt-8 border border-green-700">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-green-800 mb-2">Loose Diamond Worksheet</h1>
+        <h1 class="text-3xl font-bold text-green-800 mb-2">
+          {{ isEditing ? 'Edit Diamond Evaluation' : 'Loose Diamond Worksheet' }}
+        </h1>
       </div>
 
       <form @submit.prevent="submitEvaluation" class="space-y-8">
@@ -478,8 +480,8 @@
               :disabled="loading"
               class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
             >
-              <span v-if="loading">Saving...</span>
-              <span v-else>Complete Evaluation</span>
+              <span v-if="loading">{{ isEditing ? 'Updating...' : 'Saving...' }}</span>
+              <span v-else>{{ isEditing ? 'Update Evaluation' : 'Complete Evaluation' }}</span>
             </button>
           </div>
         </div>
@@ -491,13 +493,17 @@
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 export default {
   components: { DashboardLayout, Link },
   props: {
     artifact: Object,
-    existingEvaluation: Object
+    existingEvaluation: Object,
+    isEditing: {
+      type: Boolean,
+      default: false
+    }
   },
   setup(props) {
     const loading = ref(false)
@@ -506,10 +512,52 @@ export default {
 
     // Safely access artifact data
     const artifact = computed(() => props.artifact || {})
+    
+    // Debug logging
+    console.log('EvaluateDiamond props:', {
+      existingEvaluation: props.existingEvaluation,
+      test_date: props.existingEvaluation?.test_date,
+      test_date_type: typeof props.existingEvaluation?.test_date,
+      grader_date: props.existingEvaluation?.grader_date,
+      grader_date_type: typeof props.existingEvaluation?.grader_date,
+    })
+    
+    // Helper function to format date
+    const formatDate = (date) => {
+      if (!date) return today
+      
+      console.log('formatDate input:', date, typeof date)
+      
+      // Handle Carbon date objects from Laravel
+      if (date && typeof date === 'object') {
+        // If it's a Carbon object with date property
+        if (date.date) {
+          return date.date.split(' ')[0]
+        }
+        // If it's a Carbon object with toISOString method
+        if (date.toISOString) {
+          return date.toISOString().split('T')[0]
+        }
+        // If it's a Date object
+        if (date instanceof Date) {
+          return date.toISOString().split('T')[0]
+        }
+      }
+      
+      if (typeof date === 'string') {
+        // If it's a datetime string, take only the date part
+        const formatted = date.includes(' ') ? date.split(' ')[0] : date
+        console.log('formatDate output:', formatted)
+        return formatted
+      }
+      
+      console.log('formatDate fallback:', date)
+      return date
+    }
 
     const form = useForm({
       // Job Information
-      test_date: props.existingEvaluation?.test_date || today,
+      test_date: formatDate(props.existingEvaluation?.test_date),
       test_location: props.existingEvaluation?.test_location || '',
       item_product_id: props.existingEvaluation?.item_product_id || artifact.value?.artifact_code || '',
       receiving_record: props.existingEvaluation?.receiving_record || '',
@@ -522,74 +570,96 @@ export default {
       laser_inscription: props.existingEvaluation?.laser_inscription || 'No',
 
       // Lab-Grown Diamond Screen
-      hpht_screen: '',
-      cvd_check: '',
+      hpht_screen: props.existingEvaluation?.hpht_screen || '',
+      cvd_check: props.existingEvaluation?.cvd_check || '',
 
       // Proportion Grade
-      diameter: '',
-      total_depth: '',
-      table: '',
-      star_facet: '',
-      crown_angle: '',
-      crown_height: '',
-      girdle_thickness_min: '',
-      girdle_thickness_max: '',
-      pavilion_depth: '',
-      pavilion_angle: '',
-      lower_girdle: '',
-      culet_size: '',
-      girdle_condition: '',
-      culet_condition: '',
+      diameter: props.existingEvaluation?.diameter || '',
+      total_depth: props.existingEvaluation?.total_depth || '',
+      table: props.existingEvaluation?.table || '',
+      star_facet: props.existingEvaluation?.star_facet || '',
+      crown_angle: props.existingEvaluation?.crown_angle || '',
+      crown_height: props.existingEvaluation?.crown_height || '',
+      girdle_thickness_min: props.existingEvaluation?.girdle_thickness_min || '',
+      girdle_thickness_max: props.existingEvaluation?.girdle_thickness_max || '',
+      pavilion_depth: props.existingEvaluation?.pavilion_depth || '',
+      pavilion_angle: props.existingEvaluation?.pavilion_angle || '',
+      lower_girdle: props.existingEvaluation?.lower_girdle || '',
+      culet_size: props.existingEvaluation?.culet_size || '',
+      girdle_condition: props.existingEvaluation?.girdle_condition || '',
+      culet_condition: props.existingEvaluation?.culet_condition || '',
 
       // Grade Information
-      polish: '',
-      symmetry: '',
-      cut: '',
+      polish: props.existingEvaluation?.polish || '',
+      symmetry: props.existingEvaluation?.symmetry || '',
+      cut: props.existingEvaluation?.cut || '',
 
       // Visual Inspection
-      clarity: '',
-      colour: '',
+      clarity: props.existingEvaluation?.clarity || '',
+      colour: props.existingEvaluation?.colour || '',
 
       // Fluorescence
-      fluorescence_strength: '',
-      fluorescence_colour: '',
-
-
+      fluorescence_strength: props.existingEvaluation?.fluorescence_strength || '',
+      fluorescence_colour: props.existingEvaluation?.fluorescence_colour || '',
 
       // Result
-      result: '',
-      stone_type: '',
+      result: props.existingEvaluation?.result || '',
+      stone_type: props.existingEvaluation?.stone_type || '',
 
       // Comments
-      comments: '',
+      comments: props.existingEvaluation?.comments || '',
 
       // Grader
-      grader_name: '',
-      grader_date: today,
-      grader_signature: '',
+      grader_name: props.existingEvaluation?.grader_name || '',
+      grader_date: formatDate(props.existingEvaluation?.grader_date),
+      grader_signature: props.existingEvaluation?.grader_signature || '',
 
       // Analytical Equipment
-      analytical_name: '',
-      analytical_date: today,
-      analytical_signature: '',
+      analytical_name: props.existingEvaluation?.analytical_name || '',
+      analytical_date: formatDate(props.existingEvaluation?.analytical_date),
+      analytical_signature: props.existingEvaluation?.analytical_signature || '',
 
       // Retaining Information
-      retaining_place: '',
-      retaining_by: '',
-      retaining_date: today,
-      retaining_signature: '',
+      retaining_place: props.existingEvaluation?.retaining_place || '',
+      retaining_by: props.existingEvaluation?.retaining_by || '',
+      retaining_date: formatDate(props.existingEvaluation?.retaining_date),
+      retaining_signature: props.existingEvaluation?.retaining_signature || '',
 
       // Reporting Information
-      report_done: '',
-      label_done: '',
-      report_done_by: '',
-      report_date: today,
-      checked_by: '',
-      report_number: '',
+      report_done: props.existingEvaluation?.report_done || '',
+      label_done: props.existingEvaluation?.label_done || '',
+      report_done_by: props.existingEvaluation?.report_done_by || '',
+      report_date: formatDate(props.existingEvaluation?.report_date),
+      checked_by: props.existingEvaluation?.checked_by || '',
+      report_number: props.existingEvaluation?.report_number || '',
       
       // Status
-      status: 'draft',
+      status: props.existingEvaluation?.status || 'draft',
     })
+
+    // Watch for changes in existingEvaluation and update form
+    watch(() => props.existingEvaluation, (newEvaluation) => {
+      if (newEvaluation) {
+        console.log('Updating form with new evaluation data:', newEvaluation);
+        form.test_date = formatDate(newEvaluation.test_date);
+        form.grader_date = formatDate(newEvaluation.grader_date);
+        form.analytical_date = formatDate(newEvaluation.analytical_date);
+        form.retaining_date = formatDate(newEvaluation.retaining_date);
+        form.report_date = formatDate(newEvaluation.report_date);
+        // Update other fields as needed
+      }
+    }, { immediate: true, deep: true });
+
+    // Debug form values after initialization
+    onMounted(() => {
+      console.log('Form initialized with values:', {
+        test_date: form.test_date,
+        grader_date: form.grader_date,
+        analytical_date: form.analytical_date,
+        retaining_date: form.retaining_date,
+        report_date: form.report_date,
+      });
+    });
 
     const gradeOptions = ['Excellent', 'Very Good', 'Good', 'Fair', 'Poor']
     const fluorescenceStrengths = ['V. Str.', 'Str.', 'Med.', 'Faint', 'None']
@@ -606,24 +676,41 @@ export default {
       // إضافة حقل status للتقييم المكتمل
       form.status = 'completed'
       
-      form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
-        onSuccess: (page) => {
-          loading.value = false
-          // إظهار رسالة نجاح
-          alert('تم حفظ التقييم بنجاح!')
-          // سيتم التوجيه تلقائياً بواسطة الـ controller
-        },
-        onError: (errors) => {
-          loading.value = false
-          console.error('Evaluation submission errors:', errors)
-          // عرض الأخطاء للمستخدم
-          if (errors.error) {
-            alert(errors.error)
-          } else {
-            alert('حدث خطأ أثناء حفظ التقييم. يرجى المحاولة مرة أخرى.')
+      if (props.isEditing && props.existingEvaluation) {
+        // Update existing evaluation
+        form.put(`/diamond-evaluations/${props.existingEvaluation.id}`, {
+          onSuccess: (page) => {
+            loading.value = false
+            alert('تم تحديث التقييم بنجاح!')
+          },
+          onError: (errors) => {
+            loading.value = false
+            console.error('Evaluation update errors:', errors)
+            if (errors.error) {
+              alert(errors.error)
+            } else {
+              alert('حدث خطأ أثناء تحديث التقييم. يرجى المحاولة مرة أخرى.')
+            }
           }
-        }
-      })
+        })
+      } else {
+        // Create new evaluation
+        form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
+          onSuccess: (page) => {
+            loading.value = false
+            alert('تم حفظ التقييم بنجاح!')
+          },
+          onError: (errors) => {
+            loading.value = false
+            console.error('Evaluation submission errors:', errors)
+            if (errors.error) {
+              alert(errors.error)
+            } else {
+              alert('حدث خطأ أثناء حفظ التقييم. يرجى المحاولة مرة أخرى.')
+            }
+          }
+        })
+      }
     }
 
     const saveDraft = () => {

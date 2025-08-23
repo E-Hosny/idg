@@ -1,9 +1,11 @@
 <template>
-  <DashboardLayout :page-title="'Jewellery Evaluation'">
+  <DashboardLayout :page-title="isEditing ? 'Edit Jewellery Evaluation' : 'Jewellery Evaluation'">
     <div class="bg-white rounded-lg shadow-lg p-8 max-w-6xl mx-auto mt-8 border border-green-700">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-green-800 mb-2">Jewellery Worksheet</h1>
+        <h1 class="text-3xl font-bold text-green-800 mb-2">
+          {{ isEditing ? 'Edit Jewellery Evaluation' : 'Jewellery Worksheet' }}
+        </h1>
       </div>
 
       <form @submit.prevent="submitEvaluation" class="space-y-8">
@@ -540,8 +542,8 @@
             :disabled="loading"
             class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
           >
-            <span v-if="loading">Saving...</span>
-            <span v-else>Save Evaluation</span>
+            <span v-if="loading">{{ isEditing ? 'Updating...' : 'Saving...' }}</span>
+            <span v-else>{{ isEditing ? 'Update Evaluation' : 'Save Evaluation' }}</span>
           </button>
         </div>
       </form>
@@ -552,12 +554,17 @@
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 export default {
   components: { DashboardLayout, Link },
   props: {
-    artifact: Object
+    artifact: Object,
+    existingEvaluation: Object,
+    isEditing: {
+      type: Boolean,
+      default: false
+    }
   },
   setup(props) {
     const loading = ref(false)
@@ -566,36 +573,78 @@ export default {
 
     // Safely access artifact data
     const artifact = computed(() => props.artifact || {})
+    
+    // Debug logging
+    console.log('EvaluateJewellery props:', {
+      existingEvaluation: props.existingEvaluation,
+      test_date: props.existingEvaluation?.test_date,
+      test_date_type: typeof props.existingEvaluation?.test_date,
+      grader_date: props.existingEvaluation?.grader_date,
+      grader_date_type: typeof props.existingEvaluation?.grader_date,
+    })
+    
+    // Helper function to format date
+    const formatDate = (date) => {
+      if (!date) return today
+      
+      console.log('formatDate input:', date, typeof date)
+      
+      // Handle Carbon date objects from Laravel
+      if (date && typeof date === 'object') {
+        // If it's a Carbon object with date property
+        if (date.date) {
+          return date.date.split(' ')[0]
+        }
+        // If it's a Carbon object with toISOString method
+        if (date.toISOString) {
+          return date.toISOString().split('T')[0]
+        }
+        // If it's a Date object
+        if (date instanceof Date) {
+          return date.toISOString().split('T')[0]
+        }
+      }
+      
+      if (typeof date === 'string') {
+        // If it's a datetime string, take only the date part
+        const formatted = date.includes(' ') ? date.split(' ')[0] : date
+        console.log('formatDate output:', formatted)
+        return formatted
+      }
+      
+      console.log('formatDate fallback:', date)
+      return date
+    }
 
     const form = useForm({
       // Job Information
-      test_date: today,
-      test_location: '',
-      item_product_id: artifact.value?.artifact_code || '',
-      receiving_record: '',
-      prepared_by: auth?.user?.name || '',
-      approved_by: '',
+      test_date: formatDate(props.existingEvaluation?.test_date),
+      test_location: props.existingEvaluation?.test_location || '',
+      item_product_id: props.existingEvaluation?.item_product_id || artifact.value?.artifact_code || '',
+      receiving_record: props.existingEvaluation?.receiving_record || '',
+      prepared_by: props.existingEvaluation?.prepared_by || auth?.user?.name || '',
+      approved_by: props.existingEvaluation?.approved_by || '',
 
       // Product Information
-      product_number: '',
-      style_number: '',
-      ref_number: '',
-      gross_weight: '',
-      net_weight: '',
-      product_types: [],
-      metal_types: [],
-      stamps: [],
+      product_number: props.existingEvaluation?.product_number || '',
+      style_number: props.existingEvaluation?.style_number || '',
+      ref_number: props.existingEvaluation?.ref_number || '',
+      gross_weight: props.existingEvaluation?.gross_weight || '',
+      net_weight: props.existingEvaluation?.net_weight || '',
+      product_types: props.existingEvaluation?.product_types || [],
+      metal_types: props.existingEvaluation?.metal_types || [],
+      stamps: props.existingEvaluation?.stamps || [],
 
       // Lab-Grown Diamond Screen
-      hpht_screen: '',
-      hpht_diamond_pcs: '',
-      cvd_check: '',
-      cvd_diamond_pcs: '',
-      need_unmount: '',
-      unmount_reason: '',
+      hpht_screen: props.existingEvaluation?.hpht_screen || '',
+      hpht_diamond_pcs: props.existingEvaluation?.hpht_diamond_pcs || '',
+      cvd_check: props.existingEvaluation?.cvd_check || '',
+      cvd_diamond_pcs: props.existingEvaluation?.cvd_diamond_pcs || '',
+      need_unmount: props.existingEvaluation?.need_unmount || '',
+      unmount_reason: props.existingEvaluation?.unmount_reason || '',
 
       // XRF Data
-      xrf_data: Array.from({ length: 5 }, () => ({
+      xrf_data: props.existingEvaluation?.xrf_data || Array.from({ length: 5 }, () => ({
         au_percent: '',
         au_ppm: '',
         ag_percent: '',
@@ -607,63 +656,99 @@ export default {
       })),
 
       // Diamond/s
-      side_stones_weight_type: '',
-      side_stones_weight: '',
-      side_stones_pieces: '',
-      side_stones_shapes: [],
-      side_stones_colours: [],
-      side_stones_clarities: [],
-      centre_stone_weight: '',
-      centre_stone_shape: '',
-      centre_stone_colour: '',
-      centre_stone_clarity: '',
+      side_stones_weight_type: props.existingEvaluation?.side_stones_weight_type || '',
+      side_stones_weight: props.existingEvaluation?.side_stones_weight || '',
+      side_stones_pieces: props.existingEvaluation?.side_stones_pieces || '',
+      side_stones_shapes: props.existingEvaluation?.side_stones_shapes || [],
+      side_stones_colours: props.existingEvaluation?.side_stones_colours || [],
+      side_stones_clarities: props.existingEvaluation?.side_stones_clarities || [],
+      centre_stone_weight: props.existingEvaluation?.centre_stone_weight || '',
+      centre_stone_shape: props.existingEvaluation?.centre_stone_shape || '',
+      centre_stone_colour: props.existingEvaluation?.centre_stone_colour || '',
+      centre_stone_clarity: props.existingEvaluation?.centre_stone_clarity || '',
 
       // Coloured Gemstones
-      coloured_stones_weight: '',
-      coloured_stones_shape: '',
-      coloured_stones_count: '',
-      coloured_stones_group: '',
-      coloured_stones_species: '',
-      coloured_stones_conclusion: '',
-      coloured_stones_note: '',
+      coloured_stones_weight: props.existingEvaluation?.coloured_stones_weight || '',
+      coloured_stones_shape: props.existingEvaluation?.coloured_stones_shape || '',
+      coloured_stones_count: props.existingEvaluation?.coloured_stones_count || '',
+      coloured_stones_group: props.existingEvaluation?.coloured_stones_group || '',
+      coloured_stones_species: props.existingEvaluation?.coloured_stones_species || '',
+      coloured_stones_conclusion: props.existingEvaluation?.coloured_stones_conclusion || '',
+      coloured_stones_note: props.existingEvaluation?.coloured_stones_note || '',
 
       // Result
-      result: '',
+      result: props.existingEvaluation?.result || '',
 
       // Comments
-      comments: '',
+      comments: props.existingEvaluation?.comments || '',
 
       // Grader
-      grader_name: '',
-      grader_date: today,
-      grader_signature: '',
+      grader_name: props.existingEvaluation?.grader_name || '',
+      grader_date: formatDate(props.existingEvaluation?.grader_date),
+      grader_signature: props.existingEvaluation?.grader_signature || '',
 
       // Analytical Equipment
-      analytical_name: '',
-      analytical_date: today,
-      analytical_signature: '',
+      analytical_name: props.existingEvaluation?.analytical_name || '',
+      analytical_date: formatDate(props.existingEvaluation?.analytical_date),
+      analytical_signature: props.existingEvaluation?.analytical_signature || '',
 
       // Product Photography
-      image1_taken_by: '',
-      image1_date: today,
-      image1_signature: '',
-      image2_taken_by: '',
-      image2_date: today,
-      image2_signature: '',
+      image1_taken_by: props.existingEvaluation?.image1_taken_by || '',
+      image1_date: formatDate(props.existingEvaluation?.image1_date),
+      image1_signature: props.existingEvaluation?.image1_signature || '',
+      image2_taken_by: props.existingEvaluation?.image2_taken_by || '',
+      image2_date: formatDate(props.existingEvaluation?.image2_date),
+      image2_signature: props.existingEvaluation?.image2_signature || '',
 
       // Retaining Information
-      retaining_place: '',
-      retaining_by: '',
-      retaining_date: today,
-      retaining_signature: '',
+      retaining_place: props.existingEvaluation?.retaining_place || '',
+      retaining_by: props.existingEvaluation?.retaining_by || '',
+      retaining_date: formatDate(props.existingEvaluation?.retaining_date),
+      retaining_signature: props.existingEvaluation?.retaining_signature || '',
 
       // Reporting Information
-      report_done: '',
-      label_done: '',
-      report_done_by: '',
-      checked_by: '',
-      report_number: '',
+      report_done: props.existingEvaluation?.report_done || '',
+      label_done: props.existingEvaluation?.label_done || '',
+      report_done_by: props.existingEvaluation?.report_done_by || '',
+      checked_by: props.existingEvaluation?.checked_by || '',
+      report_number: props.existingEvaluation?.report_number || '',
+
+      // Metal Analysis
+      metal_analysis: props.existingEvaluation?.metal_analysis || {
+        au_percent: '',
+        au_ppm: '',
+        ag_percent: '',
+        ag_ppm: '',
+        pt_percent: '',
+        pt_ppm: ''
+      },
     })
+
+    // Watch for changes in existingEvaluation and update form
+    watch(() => props.existingEvaluation, (newEvaluation) => {
+      if (newEvaluation) {
+        console.log('Updating form with new evaluation data:', newEvaluation);
+        form.test_date = formatDate(newEvaluation.test_date);
+        form.grader_date = formatDate(newEvaluation.grader_date);
+        form.analytical_date = formatDate(newEvaluation.analytical_date);
+        form.image1_date = formatDate(newEvaluation.image1_date);
+        form.image2_date = formatDate(newEvaluation.image2_date);
+        form.retaining_date = formatDate(newEvaluation.retaining_date);
+        // Update other fields as needed
+      }
+    }, { immediate: true, deep: true });
+
+    // Debug form values after initialization
+    onMounted(() => {
+      console.log('Form initialized with values:', {
+        test_date: form.test_date,
+        grader_date: form.grader_date,
+        analytical_date: form.analytical_date,
+        image1_date: form.image1_date,
+        image2_date: form.image2_date,
+        retaining_date: form.retaining_date,
+      });
+    });
 
     const productTypes = ['Ring', 'Necklace', 'Pendant', 'Bracelet', 'Pair of Earring']
     const metalTypes = [
@@ -686,14 +771,42 @@ export default {
       }
       
       loading.value = true
-      form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
-        onSuccess: () => {
-          loading.value = false
-        },
-        onError: () => {
-          loading.value = false
-        }
-      })
+      
+      if (props.isEditing && props.existingEvaluation) {
+        // Update existing evaluation
+        form.put(`/artifacts/${artifact.value.id}/update-evaluation`, {
+          onSuccess: () => {
+            loading.value = false
+            alert('تم تحديث التقييم بنجاح!')
+          },
+          onError: (errors) => {
+            loading.value = false
+            console.error('Evaluation update errors:', errors)
+            if (errors.error) {
+              alert(errors.error)
+            } else {
+              alert('حدث خطأ أثناء تحديث التقييم. يرجى المحاولة مرة أخرى.')
+            }
+          }
+        })
+      } else {
+        // Create new evaluation
+        form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
+          onSuccess: () => {
+            loading.value = false
+            alert('تم حفظ التقييم بنجاح!')
+          },
+          onError: (errors) => {
+            loading.value = false
+            console.error('Evaluation save errors:', errors)
+            if (errors.error) {
+              alert(errors.error)
+            } else {
+              alert('حدث خطأ أثناء حفظ التقييم. يرجى المحاولة مرة أخرى.')
+            }
+          }
+        })
+      }
     }
 
     return {

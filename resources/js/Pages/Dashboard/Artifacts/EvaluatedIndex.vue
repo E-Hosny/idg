@@ -103,6 +103,15 @@
                     >
                       👁️ {{ __('View Report') }}
                     </button>
+
+                    <!-- Edit Evaluation Button -->
+                    <button 
+                      @click="editEvaluation(artifact)" 
+                      class="px-2 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs font-medium whitespace-nowrap"
+                      :title="__('Edit Evaluation Report')"
+                    >
+                      🖊️ {{ __('Edit') }}
+                    </button>
                     
                     <!-- Print Button -->
                      <button 
@@ -425,6 +434,11 @@ export default {
     viewEvaluation(artifact) {
       // Navigate to evaluation view page
       this.$inertia.visit(`/dashboard/artifacts/${artifact.id}/evaluation`)
+    },
+
+    editEvaluation(artifact) {
+      // Navigate to evaluation edit page
+      this.$inertia.visit(`/artifacts/${artifact.id}/edit-evaluation`)
     },
 
     printEvaluation(artifact) {

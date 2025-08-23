@@ -681,6 +681,357 @@ class DashboardController extends Controller
     }
 
     /**
+     * Edit artifact evaluation
+     */
+    public function editEvaluation(Artifact $artifact)
+    {
+        // تحديد نوع التقييم المناسب بناءً على نوع القطعة
+        $evaluation = null;
+        $evaluationPage = 'Dashboard/Artifacts/Evaluate';
+
+        if ($artifact->type === 'Colorless Diamonds') {
+            $evaluation = $artifact->diamondEvaluations()
+                ->latest()
+                ->first();
+            $evaluationPage = 'Dashboard/Artifacts/EvaluateDiamond';
+        } else if (in_array($artifact->type, ['Colored Gemstones', 'Jewellery'])) {
+            $evaluation = $artifact->evaluations()
+                ->latest()
+                ->first();
+            $evaluationPage = $artifact->type === 'Jewellery' ? 
+                'Dashboard/Artifacts/EvaluateJewellery' : 
+                'Dashboard/Artifacts/Evaluate';
+        } else {
+            // للأنواع الأخرى
+            $evaluation = $artifact->evaluations()
+                ->latest()
+                ->first();
+        }
+
+        if (!$evaluation) {
+            return back()->withErrors(['error' => 'No evaluation found for this artifact to edit.']);
+        }
+
+        // Log the evaluation data for debugging
+        \Log::info('Edit evaluation data:', [
+            'artifact_id' => $artifact->id,
+            'artifact_type' => $artifact->type,
+            'evaluation_id' => $evaluation->id,
+            'test_date' => $evaluation->test_date,
+            'test_date_type' => gettype($evaluation->test_date),
+            'grader_date' => $evaluation->grader_date,
+            'grader_date_type' => gettype($evaluation->grader_date),
+        ]);
+
+        return Inertia::render($evaluationPage, [
+            'artifact' => $artifact->load('client'),
+            'existingEvaluation' => $evaluation,
+            'isEditing' => true,
+        ]);
+    }
+
+    /**
+     * Update artifact evaluation
+     */
+    public function updateEvaluation(Request $request, Artifact $artifact)
+    {
+        // Find the existing evaluation
+        $evaluation = $artifact->evaluations()->latest()->first();
+        
+        if (!$evaluation) {
+            return back()->withErrors(['error' => 'No evaluation found to update.']);
+        }
+
+        // Validate the request based on artifact type
+        if ($artifact->type === 'Jewellery') {
+            $validatedData = $this->validateJewelleryEvaluation($request);
+        } else {
+            $validatedData = $this->validateGeneralEvaluation($request);
+        }
+
+        // Update the evaluation
+        $evaluation->update($validatedData);
+
+        // Log the update
+        \Log::info('Evaluation updated successfully:', [
+            'artifact_code' => $artifact->artifact_code,
+            'evaluation_id' => $evaluation->id,
+            'updated_by' => auth()->id()
+        ]);
+
+        return redirect()->route('dashboard.artifacts.evaluation.show', $artifact)
+            ->with('success', 'Evaluation updated successfully!');
+    }
+
+    /**
+     * Edit diamond evaluation
+     */
+    public function editDiamondEvaluation(DiamondEvaluation $evaluation)
+    {
+        // Log the evaluation data for debugging
+        \Log::info('Edit diamond evaluation data:', [
+            'artifact_id' => $evaluation->artifact->id,
+            'artifact_type' => $evaluation->artifact->type,
+            'evaluation_id' => $evaluation->id,
+            'test_date' => $evaluation->test_date,
+            'test_date_type' => gettype($evaluation->test_date),
+            'grader_date' => $evaluation->grader_date,
+            'grader_date_type' => gettype($evaluation->grader_date),
+        ]);
+
+        return Inertia::render('Dashboard/Artifacts/EvaluateDiamond', [
+            'artifact' => $evaluation->artifact->load('client'),
+            'existingEvaluation' => $evaluation,
+            'isEditing' => true,
+        ]);
+    }
+
+    /**
+     * Update diamond evaluation
+     */
+    public function updateDiamondEvaluation(Request $request, DiamondEvaluation $evaluation)
+    {
+        $validatedData = $this->validateDiamondEvaluation($request);
+        
+        // Update the evaluation
+        $evaluation->update($validatedData);
+
+        // Log the update
+        \Log::info('Diamond evaluation updated successfully:', [
+            'artifact_code' => $evaluation->artifact->artifact_code,
+            'evaluation_id' => $evaluation->id,
+            'updated_by' => auth()->id()
+        ]);
+
+        return redirect()->route('dashboard.artifacts.evaluation.show', $evaluation->artifact)
+            ->with('success', 'Diamond evaluation updated successfully!');
+    }
+
+    /**
+     * Validate diamond evaluation request
+     */
+    private function validateDiamondEvaluation(Request $request)
+    {
+        return $request->validate([
+            // Job Information
+            'test_date' => 'required|date',
+            'test_location' => 'nullable|string|max:255',
+            'item_product_id' => 'nullable|string|max:255',
+            'receiving_record' => 'nullable|string|max:255',
+            'prepared_by' => 'nullable|string|max:255',
+            'approved_by' => 'nullable|string|max:255',
+            
+            // Stone Information
+            'weight' => 'nullable|numeric|min:0',
+            'shape' => 'nullable|string|max:255',
+            'laser_inscription' => 'nullable|string|max:255',
+            
+            // Lab-Grown Diamond Screen
+            'hpht_screen' => 'nullable|string|max:255',
+            'cvd_check' => 'nullable|string|max:255',
+            
+            // Proportion Grade
+            'diameter' => 'nullable|numeric|min:0',
+            'total_depth' => 'nullable|numeric|min:0',
+            'table' => 'nullable|numeric|min:0',
+            'star_facet' => 'nullable|numeric|min:0',
+            'crown_angle' => 'nullable|numeric|min:0',
+            'crown_height' => 'nullable|numeric|min:0',
+            'girdle_thickness_min' => 'nullable|numeric|min:0',
+            'girdle_thickness_max' => 'nullable|numeric|min:0',
+            'pavilion_depth' => 'nullable|numeric|min:0',
+            'pavilion_angle' => 'nullable|numeric|min:0',
+            'lower_girdle' => 'nullable|numeric|min:0',
+            'culet_size' => 'nullable|string|max:255',
+            'girdle_condition' => 'nullable|string|max:255',
+            'culet_condition' => 'nullable|string|max:255',
+            
+            // Grade Information
+            'polish' => 'nullable|string|max:255',
+            'symmetry' => 'nullable|string|max:255',
+            'cut' => 'nullable|string|max:255',
+            
+            // Visual Inspection
+            'clarity' => 'nullable|string|max:255',
+            'colour' => 'nullable|string|max:255',
+            
+            // Fluorescence
+            'fluorescence_strength' => 'nullable|string|max:255',
+            'fluorescence_colour' => 'nullable|string|max:255',
+            
+            // Result
+            'result' => 'nullable|string|max:255',
+            'stone_type' => 'nullable|string|max:255',
+            
+            // Comments
+            'comments' => 'nullable|string',
+            
+            // Grader
+            'grader_name' => 'nullable|string|max:255',
+            'grader_date' => 'nullable|date',
+            'grader_signature' => 'nullable|string|max:255',
+            
+            // Analytical Equipment
+            'analytical_name' => 'nullable|string|max:255',
+            'analytical_date' => 'nullable|date',
+            'analytical_signature' => 'nullable|string|max:255',
+            
+            // Retaining Information
+            'retaining_place' => 'nullable|string|max:255',
+            'retaining_by' => 'nullable|string|max:255',
+            'retaining_date' => 'nullable|date',
+            'retaining_signature' => 'nullable|string|max:255',
+            
+            // Reporting Information
+            'report_done' => 'nullable|string|max:255',
+            'label_done' => 'nullable|string|max:255',
+            'report_done_by' => 'nullable|string|max:255',
+            'report_date' => 'nullable|date',
+            'checked_by' => 'nullable|string|max:255',
+            'report_number' => 'nullable|string|max:255',
+            
+            // Status
+            'status' => 'nullable|string|max:255',
+        ]);
+    }
+
+    /**
+     * Validate general evaluation request
+     */
+    private function validateGeneralEvaluation(Request $request)
+    {
+        return $request->validate([
+            // Job Information
+            'test_date' => 'required|date',
+            'test_location' => 'nullable|string|max:255',
+            'item_id' => 'nullable|string|max:255',
+            
+            // Stone Information
+            'weight' => 'nullable|numeric|min:0',
+            'colour' => 'nullable|string|max:255',
+            'transparency' => 'nullable|string|max:255',
+            'lustre' => 'nullable|string|max:255',
+            'tone' => 'nullable|string|max:255',
+            'phenomena' => 'nullable|string|max:255',
+            'saturation' => 'nullable|string|max:255',
+            'measurements' => 'nullable|numeric|min:0',
+            'shape_cut' => 'nullable|string|max:255',
+            'pleochroism' => 'nullable|string|max:255',
+            'optic_character' => 'nullable|string|max:255',
+            'refractive_index' => 'nullable|array',
+            'ri_result' => 'nullable|string|max:255',
+            'inclusion' => 'nullable|string',
+            'weight_air' => 'nullable|numeric|min:0',
+            'weight_water' => 'nullable|numeric|min:0',
+            'sg_result' => 'nullable|string|max:255',
+            'fluorescence_long' => 'nullable|string|max:255',
+            'fluorescence_short' => 'nullable|string|max:255',
+            'result' => 'nullable|string|max:255',
+            'variety' => 'nullable|string|max:255',
+            'species_group' => 'nullable|string|max:255',
+            'comments' => 'nullable|string',
+            
+            // Grader
+            'grader_name' => 'nullable|string|max:255',
+            'grader_date' => 'nullable|date',
+            'analytical_interpretation' => 'nullable|string',
+            'image1' => 'nullable|string',
+            'image2' => 'nullable|string',
+            
+            // Retaining Information
+            'retaining_place' => 'nullable|string|max:255',
+            'retained_by' => 'nullable|string|max:255',
+            'retained_date' => 'nullable|date',
+            'report_done' => 'nullable|boolean',
+            'label_done' => 'nullable|boolean',
+            'checked_by' => 'nullable|string|max:255',
+            'checked_date' => 'nullable|date',
+        ]);
+    }
+
+    /**
+     * Validate jewellery evaluation request
+     */
+    private function validateJewelleryEvaluation(Request $request)
+    {
+        return $request->validate([
+            // Job Information
+            'test_date' => 'required|date',
+            'test_location' => 'nullable|string|max:255',
+            'item_product_id' => 'nullable|string|max:255',
+            'receiving_record' => 'nullable|string|max:255',
+            'prepared_by' => 'nullable|string|max:255',
+            'approved_by' => 'nullable|string|max:255',
+            
+            // Product Information
+            'product_number' => 'nullable|string|max:255',
+            'product_type' => 'nullable|string|max:255',
+            'metal_type' => 'nullable|string|max:255',
+            'stamp' => 'nullable|string|max:255',
+            'total_weight' => 'nullable|numeric|min:0',
+            
+            // Diamond/s
+            'side_stones_weight_type' => 'nullable|string|max:255',
+            'side_stones_weight' => 'nullable|numeric|min:0',
+            'side_stones_pieces' => 'nullable|integer|min:0',
+            'side_stones_shapes' => 'nullable|array',
+            'side_stones_colours' => 'nullable|array',
+            'side_stones_clarities' => 'nullable|array',
+            'centre_stone_weight' => 'nullable|numeric|min:0',
+            'centre_stone_shape' => 'nullable|string|max:255',
+            'centre_stone_colour' => 'nullable|string|max:255',
+            'centre_stone_clarity' => 'nullable|string|max:255',
+            
+            // Coloured Gemstones
+            'coloured_stones_weight' => 'nullable|numeric|min:0',
+            'coloured_stones_shape' => 'nullable|string|max:255',
+            'coloured_stones_count' => 'nullable|integer|min:0',
+            'coloured_stones_group' => 'nullable|string|max:255',
+            'coloured_stones_species' => 'nullable|string|max:255',
+            'coloured_stones_conclusion' => 'nullable|string|max:255',
+            'coloured_stones_note' => 'nullable|string',
+            
+            // Result
+            'result' => 'nullable|string|max:255',
+            'comments' => 'nullable|string',
+            
+            // Grader
+            'grader_name' => 'nullable|string|max:255',
+            'grader_date' => 'nullable|date',
+            'grader_signature' => 'nullable|string|max:255',
+            
+            // Analytical Equipment
+            'analytical_name' => 'nullable|string|max:255',
+            'analytical_date' => 'nullable|date',
+            'analytical_signature' => 'nullable|string|max:255',
+            
+            // Images
+            'image1_taken_by' => 'nullable|string|max:255',
+            'image1_date' => 'nullable|date',
+            'image1_signature' => 'nullable|string|max:255',
+            'image2_taken_by' => 'nullable|string|max:255',
+            'image2_date' => 'nullable|date',
+            'image2_signature' => 'nullable|string|max:255',
+            
+            // Retaining Information
+            'retaining_place' => 'nullable|string|max:255',
+            'retaining_by' => 'nullable|string|max:255',
+            'retaining_date' => 'nullable|date',
+            'retaining_signature' => 'nullable|string|max:255',
+            
+            // Reporting Information
+            'report_done' => 'nullable|string|max:255',
+            'label_done' => 'nullable|string|max:255',
+            'report_done_by' => 'nullable|string|max:255',
+            'checked_by' => 'nullable|string|max:255',
+            'report_number' => 'nullable|string|max:255',
+            
+            // Metal Analysis
+            'metal_analysis' => 'nullable|array',
+        ]);
+    }
+
+    /**
      * Test endpoint for debugging evaluation issues on server
      */
     public function testEvaluation(Request $request)

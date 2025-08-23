@@ -1,7 +1,9 @@
 <template>
-  <DashboardLayout :page-title="artifactType + ' Evaluation'">
+  <DashboardLayout :page-title="(isEditing ? 'Edit ' : '') + artifactType + ' Evaluation'">
     <div class="bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto mt-8 border border-green-700">
-      <h1 class="text-2xl font-bold text-green-800 mb-6 text-center">{{ artifactType }} Evaluation</h1>
+      <h1 class="text-2xl font-bold text-green-800 mb-6 text-center">
+        {{ isEditing ? 'Edit ' : '' }}{{ artifactType }} Evaluation
+      </h1>
       <form @submit.prevent="submitEvaluation" class="space-y-8">
         <!-- رقم القطعة -->
         <div class="mb-6">
@@ -285,11 +287,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { usePage, useForm } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
-const props = defineProps({ artifact: Object });
+const props = defineProps({ 
+  artifact: Object,
+  existingEvaluation: Object,
+  isEditing: {
+    type: Boolean,
+    default: false
+  }
+});
 const { locale } = usePage().props;
 
 // Safely access artifact data
@@ -299,45 +308,109 @@ const artifactType = computed(() => artifact.value?.type || (locale === 'ar' ? '
 const today = new Date().toISOString().split('T')[0];
 const user = usePage().props.auth?.user || { name: 'Current User' };
 
+// Debug logging
+console.log('Evaluate props:', {
+  existingEvaluation: props.existingEvaluation,
+  test_date: props.existingEvaluation?.test_date,
+  test_date_type: typeof props.existingEvaluation?.test_date,
+  grader_date: props.existingEvaluation?.grader_date,
+  grader_date_type: typeof props.existingEvaluation?.grader_date,
+})
+
+// Helper function to format date
+const formatDate = (date) => {
+  if (!date) return today
+  
+  console.log('formatDate input:', date, typeof date)
+  
+  // Handle Carbon date objects from Laravel
+  if (date && typeof date === 'object') {
+    // If it's a Carbon object with date property
+    if (date.date) {
+      return date.date.split(' ')[0]
+    }
+    // If it's a Carbon object with toISOString method
+    if (date.toISOString) {
+      return date.toISOString().split('T')[0]
+    }
+    // If it's a Date object
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0]
+    }
+  }
+  
+  if (typeof date === 'string') {
+    // If it's a datetime string, take only the date part
+    const formatted = date.includes(' ') ? date.split(' ')[0] : date
+    console.log('formatDate output:', formatted)
+    return formatted
+  }
+  
+  console.log('formatDate fallback:', date)
+  return date
+}
+
 const form = useForm({
-  test_date: today,
-  test_location: '',
-  item_id: '',
-  weight: '',
-  colour: '',
-  transparency: '',
-  lustre: '',
-  tone: '',
-  phenomena: '',
-  saturation: '',
-  measurements: '',
-  shape_cut: '',
-  pleochroism: '',
-  optic_character: '',
-  refractive_index: ['', '', '', '', ''],
-  ri_result: '',
-  inclusion: '',
-  weight_air: '',
-  weight_water: '',
-  sg_result: '',
-  fluorescence_long: '',
-  fluorescence_short: '',
-  result: '',
-  variety: '',
-  species_group: '',
-  comments: '',
-  grader_name: user.name,
-  grader_date: today,
-  analytical_interpretation: '',
-  image1: null,
-  image2: null,
-  retaining_place: '',
-  retained_by: '',
-  retained_date: '',
-  report_done: false,
-  label_done: false,
-  checked_by: user.name,
-  checked_date: today,
+  test_date: formatDate(props.existingEvaluation?.test_date),
+  test_location: props.existingEvaluation?.test_location || '',
+  item_id: props.existingEvaluation?.item_id || '',
+  weight: props.existingEvaluation?.weight || '',
+  colour: props.existingEvaluation?.colour || '',
+  transparency: props.existingEvaluation?.transparency || '',
+  lustre: props.existingEvaluation?.lustre || '',
+  tone: props.existingEvaluation?.tone || '',
+  phenomena: props.existingEvaluation?.phenomena || '',
+  saturation: props.existingEvaluation?.saturation || '',
+  measurements: props.existingEvaluation?.measurements || '',
+  shape_cut: props.existingEvaluation?.shape_cut || '',
+  pleochroism: props.existingEvaluation?.pleochroism || '',
+  optic_character: props.existingEvaluation?.optic_character || '',
+  refractive_index: props.existingEvaluation?.refractive_index || ['', '', '', '', ''],
+  ri_result: props.existingEvaluation?.ri_result || '',
+  inclusion: props.existingEvaluation?.inclusion || '',
+  weight_air: props.existingEvaluation?.weight_air || '',
+  weight_water: props.existingEvaluation?.weight_water || '',
+  sg_result: props.existingEvaluation?.sg_result || '',
+  fluorescence_long: props.existingEvaluation?.fluorescence_long || '',
+  fluorescence_short: props.existingEvaluation?.fluorescence_short || '',
+  result: props.existingEvaluation?.result || '',
+  variety: props.existingEvaluation?.variety || '',
+  species_group: props.existingEvaluation?.species_group || '',
+  comments: props.existingEvaluation?.comments || '',
+  grader_name: props.existingEvaluation?.grader_name || user.name,
+  grader_date: formatDate(props.existingEvaluation?.grader_date),
+  analytical_interpretation: props.existingEvaluation?.analytical_interpretation || '',
+  image1: props.existingEvaluation?.image1 || null,
+  image2: props.existingEvaluation?.image2 || null,
+  retaining_place: props.existingEvaluation?.retaining_place || '',
+  retained_by: props.existingEvaluation?.retained_by || '',
+  retained_date: formatDate(props.existingEvaluation?.retained_date),
+  report_done: props.existingEvaluation?.report_done || false,
+  label_done: props.existingEvaluation?.label_done || false,
+  checked_by: props.existingEvaluation?.checked_by || user.name,
+  checked_date: formatDate(props.existingEvaluation?.checked_date),
+});
+
+// Watch for changes in existingEvaluation and update form
+watch(() => props.existingEvaluation, (newEvaluation) => {
+  if (newEvaluation) {
+    console.log('Updating form with new evaluation data:', newEvaluation);
+    form.test_date = formatDate(newEvaluation.test_date);
+    form.grader_date = formatDate(newEvaluation.grader_date);
+    form.retained_date = formatDate(newEvaluation.retained_date);
+    form.checked_date = formatDate(newEvaluation.checked_date);
+    // Update other fields as needed
+  }
+}, { immediate: true, deep: true });
+
+// Debug form values after initialization
+onMounted(() => {
+  console.log('Form initialized with values:', {
+    test_date: form.test_date,
+    grader_date: form.grader_date,
+    retained_date: form.retained_date,
+    checked_date: form.checked_date,
+  });
 });
 
 const transparencyOptions = [
@@ -424,28 +497,51 @@ function submitEvaluation() {
   
   console.log('Submitting evaluation data:', form.data());
   
-  // إرسال البيانات إلى الخادم
-  form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
-    onSuccess: () => {
-      alert('Evaluation saved successfully!');
-    },
-    onError: (errors) => {
-      console.error('Evaluation save errors:', errors);
-      
-      // عرض رسالة خطأ أكثر تفصيلاً
-      let errorMessage = 'Error saving evaluation.';
-      if (errors.error) {
-        errorMessage += ' ' + errors.error;
-      } else if (typeof errors === 'object') {
-        const errorKeys = Object.keys(errors);
-        if (errorKeys.length > 0) {
-          errorMessage += ' Please check the following fields: ' + errorKeys.join(', ');
+  if (props.isEditing && props.existingEvaluation) {
+    // Update existing evaluation
+    form.put(`/artifacts/${artifact.value.id}/update-evaluation`, {
+      onSuccess: () => {
+        alert('Evaluation updated successfully!');
+      },
+      onError: (errors) => {
+        console.error('Evaluation update errors:', errors);
+        
+        let errorMessage = 'Error updating evaluation.';
+        if (errors.error) {
+          errorMessage += ' ' + errors.error;
+        } else if (typeof errors === 'object') {
+          const errorKeys = Object.keys(errors);
+          if (errorKeys.length > 0) {
+            errorMessage += ' Please check the following fields: ' + errorKeys.join(', ');
+          }
         }
+        
+        alert(errorMessage);
       }
-      
-      alert(errorMessage);
-    }
-  });
+    });
+  } else {
+    // Create new evaluation
+    form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
+      onSuccess: () => {
+        alert('Evaluation saved successfully!');
+      },
+      onError: (errors) => {
+        console.error('Evaluation save errors:', errors);
+        
+        let errorMessage = 'Error saving evaluation.';
+        if (errors.error) {
+          errorMessage += ' ' + errors.error;
+        } else if (typeof errors === 'object') {
+          const errorKeys = Object.keys(errors);
+          if (errorKeys.length > 0) {
+            errorMessage += ' Please check the following fields: ' + errorKeys.join(', ');
+          }
+        }
+        
+        alert(errorMessage);
+      }
+    });
+  }
 }
 </script>
 

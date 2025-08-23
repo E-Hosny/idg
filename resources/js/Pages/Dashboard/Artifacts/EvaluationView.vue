@@ -107,6 +107,12 @@
         </Link>
         
         <div class="flex space-x-4">
+          <Link 
+            :href="`/artifacts/${artifact.id}/edit-evaluation`"
+            class="px-6 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+          >
+            🖊️ {{ __('Edit Evaluation') }}
+          </Link>
           <button 
             @click="printReport"
             class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"

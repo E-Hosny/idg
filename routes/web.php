@@ -56,6 +56,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/artifacts/{artifact}/upload-certificate', [\App\Http\Controllers\CertificateController::class, 'uploadCertificate'])->name('artifacts.upload-certificate');
     Route::delete('/artifacts/{artifact}/delete-certificate', [\App\Http\Controllers\CertificateController::class, 'deleteCertificate'])->name('artifacts.delete-certificate');
     
+    // Evaluation editing routes
+    Route::get('/artifacts/{artifact}/edit-evaluation', [\App\Http\Controllers\DashboardController::class, 'editEvaluation'])->name('artifacts.edit-evaluation');
+    Route::put('/artifacts/{artifact}/update-evaluation', [\App\Http\Controllers\DashboardController::class, 'updateEvaluation'])->name('artifacts.update-evaluation');
+    Route::get('/diamond-evaluations/{evaluation}/edit', [\App\Http\Controllers\DashboardController::class, 'editDiamondEvaluation'])->name('diamond-evaluations.edit');
+    Route::put('/diamond-evaluations/{evaluation}', [\App\Http\Controllers\DashboardController::class, 'updateDiamondEvaluation'])->name('diamond-evaluations.update');
+    
     // Public certificate route (no auth required)
     Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 });
