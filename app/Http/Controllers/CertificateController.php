@@ -361,14 +361,22 @@ class CertificateController extends Controller
                 $artifact->refresh(); // Reload the artifact with the new token
             }
 
+            // Find existing certificate record (get the latest one)
+            $certificate = Certificate::where('artifact_id', $artifact->id)->latest()->first();
+            
+            // If replacing an existing uploaded certificate, delete the old file first
+            if ($certificate && $certificate->status === 'uploaded' && $certificate->uploaded_certificate_path) {
+                $oldFilePath = public_path('storage/' . $certificate->uploaded_certificate_path);
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
+            }
+
             // Store the uploaded file
             $certificateFile = $request->file('certificate_file');
             $fileName = 'certificate-' . $artifact->artifact_code . '-' . time() . '.pdf';
             $filePath = $certificateFile->storeAs('certificates', $fileName, 'public');
 
-            // Find or create certificate record (get the latest one)
-            $certificate = Certificate::where('artifact_id', $artifact->id)->latest()->first();
-            
             if (!$certificate) {
                 // Create a basic certificate record
                 $certificate = Certificate::create([
@@ -394,27 +402,30 @@ class CertificateController extends Controller
                 $certificate->save();
             }
 
-                    // Update certificate with uploaded file
-        $certificate->update([
-            'uploaded_certificate_path' => $filePath,
-            'uploaded_at' => now(),
-            'status' => 'uploaded',
-        ]);
+            // Update certificate with uploaded file
+            $certificate->update([
+                'uploaded_certificate_path' => $filePath,
+                'uploaded_at' => now(),
+                'status' => 'uploaded',
+            ]);
 
-        // Update artifact status to certified if not already (without updating timestamps)
-        if ($artifact->status !== 'certified') {
-            $artifact->timestamps = false;
-            $artifact->update(['status' => 'certified']);
-            $artifact->timestamps = true;
-        }
+            // Update artifact status to certified if not already (without updating timestamps)
+            if ($artifact->status !== 'certified') {
+                $artifact->timestamps = false;
+                $artifact->update(['status' => 'certified']);
+                $artifact->timestamps = true;
+            }
 
-        \Log::info('Certificate uploaded successfully', [
-            'artifact_code' => $artifact->artifact_code,
-            'certificate_id' => $certificate->id,
-            'file_path' => $filePath
-        ]);
+            $message = $certificate->wasRecentlyCreated ? 'Certificate uploaded successfully!' : 'Certificate replaced successfully!';
+            
+            \Log::info('Certificate uploaded successfully', [
+                'artifact_code' => $artifact->artifact_code,
+                'certificate_id' => $certificate->id,
+                'file_path' => $filePath,
+                'was_replacement' => !$certificate->wasRecentlyCreated
+            ]);
 
-        return redirect()->back()->with('success', 'Certificate uploaded successfully!');
+            return redirect()->back()->with('success', $message);
             
         } catch (\Illuminate\Http\Exceptions\PostTooLargeException $e) {
             return back()->withErrors(['error' => 'File is too large. Maximum allowed size is 100MB.']);
@@ -424,6 +435,61 @@ class CertificateController extends Controller
         }
     }
 
+    /**
+     * Delete uploaded certificate
+     */
+    public function deleteCertificate(Artifact $artifact)
+    {
+        try {
+            // Find the uploaded certificate for this artifact
+            $certificate = Certificate::where('artifact_id', $artifact->id)
+                ->where('status', 'uploaded')
+                ->whereNotNull('uploaded_certificate_path')
+                ->latest()
+                ->first();
+
+            if (!$certificate) {
+                return back()->withErrors(['error' => 'No uploaded certificate found for this artifact.']);
+            }
+
+            // Delete the physical file
+            if ($certificate->uploaded_certificate_path) {
+                $filePath = public_path('storage/' . $certificate->uploaded_certificate_path);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            // Update certificate status to draft and remove uploaded file info
+            $certificate->update([
+                'uploaded_certificate_path' => null,
+                'uploaded_at' => null,
+                'status' => 'draft',
+            ]);
+
+            // Update artifact status back to evaluated if no other certificates exist
+            $hasOtherCertificates = Certificate::where('artifact_id', $artifact->id)
+                ->where('status', '!=', 'draft')
+                ->exists();
+
+            if (!$hasOtherCertificates) {
+                $artifact->timestamps = false;
+                $artifact->update(['status' => 'evaluated']);
+                $artifact->timestamps = true;
+            }
+
+            \Log::info('Certificate deleted successfully', [
+                'artifact_code' => $artifact->artifact_code,
+                'certificate_id' => $certificate->id
+            ]);
+
+            return redirect()->back()->with('success', 'Certificate deleted successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Certificate deletion error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to delete certificate: ' . $e->getMessage()]);
+        }
+    }
 
 
     /**

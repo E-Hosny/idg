@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
     // New QR and Certificate Upload routes
     Route::get('/artifacts/{artifact}/download-qr', [\App\Http\Controllers\CertificateController::class, 'downloadQR'])->name('artifacts.download-qr');
     Route::post('/artifacts/{artifact}/upload-certificate', [\App\Http\Controllers\CertificateController::class, 'uploadCertificate'])->name('artifacts.upload-certificate');
+    Route::delete('/artifacts/{artifact}/delete-certificate', [\App\Http\Controllers\CertificateController::class, 'deleteCertificate'])->name('artifacts.delete-certificate');
     
     // Public certificate route (no auth required)
     Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');

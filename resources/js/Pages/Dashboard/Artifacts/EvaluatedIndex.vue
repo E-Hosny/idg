@@ -133,14 +133,35 @@
 
                                          <!-- Upload Certificate Button -->
                     <template v-if="hasUploadedCertificate(artifact)">
-                      <!-- Certificate Already Uploaded -->
-                      <button 
-                        @click="viewUploadedCertificate(artifact)" 
-                        class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium whitespace-nowrap"
-                        :title="__('View Uploaded Certificate')"
-                      >
-                        ✅ {{ __('Uploaded') }}
-                      </button>
+                      <!-- Certificate Already Uploaded - Show options -->
+                      <div class="flex flex-col space-y-1">
+                        <!-- View Certificate Button -->
+                        <button 
+                          @click="viewUploadedCertificate(artifact)" 
+                          class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs font-medium whitespace-nowrap"
+                          :title="__('View Uploaded Certificate')"
+                        >
+                          ✅ {{ __('Uploaded') }}
+                        </button>
+                        
+                        <!-- Delete Certificate Button -->
+                        <button 
+                          @click="confirmDeleteCertificate(artifact)" 
+                          class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium whitespace-nowrap"
+                          :title="__('Delete Certificate')"
+                        >
+                          🗑️ {{ __('Delete') }}
+                        </button>
+                        
+                        <!-- Replace Certificate Button -->
+                        <button 
+                          @click="showUploadModal(artifact)" 
+                          class="px-2 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs font-medium whitespace-nowrap"
+                          :title="__('Replace Certificate')"
+                        >
+                          🔄 {{ __('Replace') }}
+                        </button>
+                      </div>
                     </template>
                     <template v-else>
                       <!-- Upload Certificate Button -->
@@ -190,7 +211,9 @@
       <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">{{ __('Upload Certificate') }}</h3>
+            <h3 class="text-lg font-semibold">
+              {{ hasUploadedCertificate(selectedArtifact) ? __('Replace Certificate') : __('Upload Certificate') }}
+            </h3>
             <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -200,8 +223,14 @@
           
           <div class="mb-4">
             <p class="text-sm text-gray-600 mb-2">
-              {{ __('Upload certificate for artifact') }}: <strong>{{ selectedArtifact?.artifact_code }}</strong>
+              {{ hasUploadedCertificate(selectedArtifact) ? __('Replace certificate for artifact') : __('Upload certificate for artifact') }}: <strong>{{ selectedArtifact?.artifact_code }}</strong>
             </p>
+            
+            <!-- Warning for replacement -->
+            <div v-if="hasUploadedCertificate(selectedArtifact)" class="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded text-sm">
+              ⚠️ {{ __('Warning: This will replace the existing certificate. The old certificate will be permanently deleted.') }}
+            </div>
+            
             <p class="text-xs text-yellow-600 mb-4">
               {{ __('Please ensure the QR code has been generated and added to the certificate before uploading.') }}
             </p>
@@ -240,7 +269,7 @@
                 :disabled="uploading || !selectedFile"
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
-                {{ uploading ? __('Uploading...') : __('Upload') }}
+                {{ uploading ? (hasUploadedCertificate(selectedArtifact) ? __('Replacing...') : __('Uploading...')) : (hasUploadedCertificate(selectedArtifact) ? __('Replace') : __('Upload')) }}
               </button>
             </div>
           </form>
@@ -486,9 +515,35 @@ export default {
       }
     },
 
+    confirmDeleteCertificate(artifact) {
+      if (confirm(this.__('Are you sure you want to delete this certificate? This action cannot be undone.'))) {
+        this.$inertia.delete(`/artifacts/${artifact.id}/delete-certificate`, {
+          onSuccess: () => {
+            alert('تم حذف الشهادة بنجاح!')
+            this.$inertia.reload()
+          },
+          onError: (errors) => {
+            console.error('Delete certificate errors:', errors)
+            if (errors.error) {
+              alert(errors.error)
+            } else {
+              alert('حدث خطأ أثناء حذف الشهادة. يرجى المحاولة مرة أخرى.')
+            }
+          }
+        })
+      }
+    },
+
     uploadCertificate() {
       if (!this.selectedFile || !this.selectedArtifact) {
         return
+      }
+
+      // Show confirmation for replacement
+      if (this.hasUploadedCertificate(this.selectedArtifact)) {
+        if (!confirm(this.__('Are you sure you want to replace the existing certificate? The old certificate will be permanently deleted.'))) {
+          return
+        }
       }
 
       this.uploading = true
@@ -514,7 +569,9 @@ export default {
       this.$inertia.post(`/artifacts/${this.selectedArtifact.id}/upload-certificate`, formData, {
         forceFormData: true,
         onSuccess: () => {
-          alert('تم رفع الشهادة بنجاح!')
+          const successMessage = this.hasUploadedCertificate(this.selectedArtifact) ? 
+            'تم استبدال الشهادة بنجاح!' : 'تم رفع الشهادة بنجاح!'
+          alert(successMessage)
           this.closeModal()
           // Refresh the page to show updated data
           this.$inertia.reload()
