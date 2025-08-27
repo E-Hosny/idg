@@ -57,7 +57,6 @@
                 <th class="px-4 py-2 text-left font-bold w-32">{{ __('Service') }}</th>
                 <th class="px-4 py-2 text-left font-bold w-20">{{ __('Weight') }}</th>
                 <th class="px-4 py-2 text-left font-bold w-24">{{ __('Status') }}</th>
-                <th class="px-4 py-2 text-left font-bold w-32">{{ __('Client') }}</th>
                 <th class="px-4 py-2 text-left font-bold w-28">{{ __('Evaluated At') }}</th>
                 <th class="px-6 py-2 text-left font-bold w-72">{{ __('Actions') }}</th>
               </tr>
@@ -91,7 +90,6 @@
                     {{ __(artifact.status) }}
                   </span>
                 </td>
-                <td class="px-4 py-2">{{ artifact.client ? artifact.client.full_name : '-' }}</td>
                 <td class="px-4 py-2">{{ formatDate(artifact.updated_at) }}</td>
                 <td class="px-6 py-3 w-72">
                   <div class="flex flex-wrap gap-1.5 items-center justify-start">

@@ -40,7 +40,6 @@
               <th class="px-4 py-2 text-left font-bold">{{ __('Service') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
-              <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Created At') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Actions') }}</th>
             </tr>
@@ -70,7 +69,6 @@
                   {{ __(artifact.status) }}
                 </span>
               </td>
-              <td class="px-4 py-2">{{ artifact.client ? artifact.client.full_name : '-' }}</td>
               <td class="px-4 py-2">{{ formatDate(artifact.created_at) }}</td>
               <td class="px-4 py-2">
                 <div class="flex space-x-2">
@@ -115,7 +113,7 @@
               </td>
             </tr>
             <tr v-if="!artifacts.data.length">
-              <td colspan="9" class="text-center text-gray-400 py-4">{{ getNoDataMessage() }}</td>
+              <td colspan="8" class="text-center text-gray-400 py-4">{{ getNoDataMessage() }}</td>
             </tr>
           </tbody>
         </table>

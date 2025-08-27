@@ -39,7 +39,6 @@
                 <th class="px-4 py-2 text-left font-bold">#</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Item Code') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Evaluator') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Date') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Status') }}</th>
@@ -61,7 +60,6 @@
                     </span>
                   </div>
                 </td>
-                <td class="px-4 py-2">{{ evaluation.artifact?.client?.full_name || '-' }}</td>
                 <td class="px-4 py-2">{{ evaluation.evaluator?.name || '-' }}</td>
                 <td class="px-4 py-2">{{ formatDate(evaluation.evaluation_date) }}</td>
                 <td class="px-4 py-2">
@@ -85,7 +83,7 @@
                 </td>
               </tr>
               <tr v-if="!evaluations.data?.length">
-                <td colspan="9" class="text-center text-gray-400 py-8">{{ __('No evaluations found.') }}</td>
+                <td colspan="8" class="text-center text-gray-400 py-8">{{ __('No evaluations found.') }}</td>
               </tr>
             </tbody>
           </table>
