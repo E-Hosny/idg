@@ -277,4 +277,124 @@ class ReceptionController extends Controller
             'sample_records' => $allPricing->take(5)->toArray()
         ]);
     }
+
+    /**
+     * حذف العميل وجميع العناصر المرتبطة به
+     */
+    public function deleteClient(Client $client)
+    {
+        try {
+            \DB::beginTransaction();
+
+            // حذف جميع العناصر المرتبطة بالعميل أولاً
+            $client->artifacts()->delete();
+
+            // حذف العميل
+            $client->delete();
+
+            \DB::commit();
+
+            return redirect()->route('reception.index')->with('success', 'Client and all associated items have been deleted successfully.');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error deleting client: ' . $e->getMessage());
+            
+            return back()->withErrors(['error' => 'Error deleting client. Please try again.']);
+        }
+    }
+
+    /**
+     * عرض صفحة تعديل العميل
+     */
+    public function editClient(Client $client)
+    {
+        return Inertia::render('Reception/EditClient', [
+            'client' => $client,
+        ]);
+    }
+
+    /**
+     * تحديث بيانات العميل
+     */
+    public function updateClient(Request $request, Client $client)
+    {
+        $data = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'company_name' => 'nullable|string|max:255',
+            'mobile' => 'required|string|max:30',
+            'email' => 'nullable|email|max:255',
+            'city' => 'nullable|string|max:100',
+            'delivery_date' => 'nullable|date',
+        ]);
+
+        try {
+            $client->update([
+                'full_name' => $data['full_name'],
+                'company_name' => $data['company_name'] ?? null,
+                'phone' => $data['mobile'],
+                'email' => $data['email'] ?? null,
+                'address' => $data['city'] ?? null,
+                'delivery_date' => $data['delivery_date'] ?? null,
+            ]);
+
+            return redirect()->route('reception.show-client', $client->id)->with('success', 'Client information updated successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error updating client: ' . $e->getMessage());
+            
+            return back()->withErrors(['error' => 'Error updating client. Please try again.']);
+        }
+    }
+
+    /**
+     * عرض صفحة تعديل العنصر
+     */
+    public function editArtifact(Artifact $artifact)
+    {
+        return Inertia::render('Reception/EditArtifact', [
+            'artifact' => $artifact,
+        ]);
+    }
+
+    /**
+     * تحديث بيانات العنصر
+     */
+    public function updateArtifact(Request $request, Artifact $artifact)
+    {
+        $data = $request->validate([
+            'type' => 'required|string|max:100',
+            'service' => 'nullable|string|max:100',
+            'weight' => 'nullable|string|max:50',
+            'weight_unit' => 'nullable|in:ct,gm',
+            'price' => 'nullable|string|max:50',
+            'delivery_type' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $artifact->update($data);
+
+            return redirect()->route('reception.show-client', $artifact->client_id)->with('success', 'Item information updated successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error updating artifact: ' . $e->getMessage());
+            
+            return back()->withErrors(['error' => 'Error updating item. Please try again.']);
+        }
+    }
+
+    /**
+     * حذف العنصر
+     */
+    public function deleteArtifact(Artifact $artifact)
+    {
+        try {
+            $clientId = $artifact->client_id;
+            $artifact->delete();
+
+            return redirect()->route('reception.show-client', $clientId)->with('success', 'Item deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting artifact: ' . $e->getMessage());
+            
+            return back()->withErrors(['error' => 'Error deleting item. Please try again.']);
+        }
+    }
 } 

@@ -1,6 +1,6 @@
 <template>
   <DashboardLayout :pageTitle="__('New Client Registration')">
-    <div class="max-w-full mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-4">
       <!-- Header -->
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ __('New Client Registration') }}</h2>
@@ -15,7 +15,7 @@
             <i class="fas fa-user mr-2 text-blue-500"></i>
             {{ __('Client Information') }}
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Company Name') }}

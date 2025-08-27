@@ -43,6 +43,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reception/clients/{client}', [ReceptionController::class, 'showClient'])->name('reception.show-client');
     Route::get('/reception/clients/{client}/add-artifact', [ReceptionController::class, 'createArtifact'])->name('reception.artifact.create');
     Route::post('/reception/clients/{client}/store-artifact', [ReceptionController::class, 'storeArtifact'])->name('reception.artifact.store');
+    Route::get('/reception/clients/{client}/edit', [ReceptionController::class, 'editClient'])->name('reception.edit-client');
+    Route::put('/reception/clients/{client}', [ReceptionController::class, 'updateClient'])->name('reception.update-client');
+    Route::delete('/reception/clients/{client}', [ReceptionController::class, 'deleteClient'])->name('reception.delete-client');
+    Route::get('/reception/artifacts/{artifact}/edit', [ReceptionController::class, 'editArtifact'])->name('reception.edit-artifact');
+    Route::put('/reception/artifacts/{artifact}', [ReceptionController::class, 'updateArtifact'])->name('reception.update-artifact');
+    Route::delete('/reception/artifacts/{artifact}', [ReceptionController::class, 'deleteArtifact'])->name('reception.delete-artifact');
     Route::post('/reception/calculate-price', [ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
     Route::get('/reception/test-pricing', [ReceptionController::class, 'testPricing'])->name('reception.test-pricing');
     
