@@ -5,7 +5,7 @@
         {{ isEditing ? 'Edit ' : '' }}{{ artifactType }} Evaluation
       </h1>
       <form @submit.prevent="submitEvaluation" class="space-y-8">
-        <!-- رقم القطعة -->
+        <!-- رقم العنصر -->
         <div class="mb-6">
           <label class="block text-gray-700">Item/Product ID #</label>
           <input type="text" :value="artifact?.artifact_code || ''" class="input bg-gray-100" readonly />
@@ -303,7 +303,7 @@ const { locale } = usePage().props;
 
 // Safely access artifact data
 const artifact = computed(() => props.artifact || {});
-const artifactType = computed(() => artifact.value?.type || (locale === 'ar' ? 'قطعة' : 'Artifact'));
+const artifactType = computed(() => artifact.value?.type || (locale === 'ar' ? 'عنصر' : 'Item'));
 
 const today = new Date().toISOString().split('T')[0];
 const user = usePage().props.auth?.user || { name: 'Current User' };
@@ -491,7 +491,7 @@ function onFileChange(event, field) {
 
 function submitEvaluation() {
   if (!artifact.value?.id) {
-    alert('Error: Artifact data not available');
+    alert('Error: Item data not available');
     return;
   }
   

@@ -6,7 +6,7 @@
         <h1 class="text-3xl font-bold text-green-800 mb-2">{{ __('Evaluation Report') }}</h1>
         <div class="flex justify-between items-center text-sm text-gray-600">
           <div>
-            <p><strong>{{ __('Artifact Code') }}:</strong> {{ artifact.artifact_code }}</p>
+            <p><strong>{{ __('Item Code') }}:</strong> {{ artifact.artifact_code }}</p>
             <p><strong>{{ __('Type') }}:</strong> {{ artifact.type }}</p>
             <p><strong>{{ __('Client') }}:</strong> {{ artifact.client?.full_name || '-' }}</p>
           </div>
@@ -25,9 +25,9 @@
       <!-- Evaluation Content -->
       <div class="space-y-8">
         
-        <!-- Artifact Information -->
+        <!-- Item Information -->
         <section class="border-b pb-6">
-          <h2 class="text-lg font-semibold text-green-700 mb-4">{{ __('Artifact Information') }}</h2>
+          <h2 class="text-lg font-semibold text-green-700 mb-4">{{ __('Item Information') }}</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label class="block text-gray-600 text-sm font-semibold">{{ __('Code') }}</label>

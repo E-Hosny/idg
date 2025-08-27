@@ -1,11 +1,11 @@
 <template>
-  <DashboardLayout :pageTitle="__('Evaluated Artifacts')">
+  <DashboardLayout :pageTitle="__('Evaluated Items')">
     <div class="max-w-full mx-auto px-2">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">{{ __('Evaluated Artifacts') }}</h2>
+        <h2 class="text-2xl font-bold text-gray-800">{{ __('Evaluated Items') }}</h2>
         <div class="text-sm text-gray-600">
-          {{ __('Total') }}: {{ artifacts.total || 0 }} {{ __('artifacts') }}
+          {{ __('Total') }}: {{ artifacts.total || 0 }} {{ __('items') }}
         </div>
       </div>
 
@@ -25,10 +25,10 @@
         </div>
       </div>
 
-      <!-- Artifacts Table -->
+      <!-- Items Table -->
       <div class="bg-white rounded-lg shadow-md p-4">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-lg font-semibold text-gray-800">{{ __('Evaluated Artifacts List') }}</h3>
+          <h3 class="text-lg font-semibold text-gray-800">{{ __('Evaluated Items List') }}</h3>
           <div class="flex space-x-4">
             <!-- Filter Options -->
             <select v-model="statusFilter" @change="filterArtifacts" class="px-3 py-2 border border-gray-300 rounded-md text-sm">
@@ -186,7 +186,7 @@
                 </td>
               </tr>
               <tr v-if="!filteredArtifacts.length">
-                <td colspan="9" class="text-center text-gray-400 py-8">{{ __('No evaluated artifacts found.') }}</td>
+                <td colspan="9" class="text-center text-gray-400 py-8">{{ __('No evaluated items found.') }}</td>
               </tr>
             </tbody>
           </table>
@@ -232,7 +232,7 @@
           
           <div class="mb-4">
             <p class="text-sm text-gray-600 mb-2">
-              {{ hasUploadedCertificate(selectedArtifact) ? __('Replace certificate for artifact') : __('Upload certificate for artifact') }}: <strong>{{ selectedArtifact?.artifact_code }}</strong>
+              {{ hasUploadedCertificate(selectedArtifact) ? __('Replace certificate for item') : __('Upload certificate for item') }}: <strong>{{ selectedArtifact?.artifact_code }}</strong>
             </p>
             
             <!-- Warning for replacement -->
@@ -347,13 +347,13 @@ export default {
   methods: {
     __(key) {
       const translations = {
-        'Evaluated Artifacts': 'القطع المقيمة',
+        'Evaluated Items': 'العناصر المقيمة',
         'Total': 'المجموع',
-        'artifacts': 'قطعة',
+        'items': 'عنصر',
         'Total Evaluated': 'إجمالي المقيم',
         'Certified': 'معتمد',
         'Diamond Evaluations': 'تقييمات الألماس',
-        'Evaluated Artifacts List': 'قائمة القطع المقيمة',
+        'Evaluated Items List': 'قائمة العناصر المقيمة',
         'All Status': 'جميع الحالات',
         'All Types': 'جميع الأنواع',
         'Code': 'الكود',
@@ -373,14 +373,14 @@ export default {
         'Generate QR': 'إنشاء رمز QR',
         'Upload Certificate': 'رفع شهادة',
         'Download QR Code PNG': 'تحميل رمز QR بصيغة PNG',
-        'Upload certificate for artifact': 'رفع شهادة للقطعة',
+        'Upload certificate for item': 'رفع شهادة للعنصر',
         'Please ensure the QR code has been generated and added to the certificate before uploading.': 'يرجى التأكد من إنشاء رمز QR وإضافته للشهادة قبل الرفع.',
         'Certificate File (PDF)': 'ملف الشهادة (PDF)',
         'Max file size: 100MB': 'الحد الأقصى لحجم الملف: 100 ميجابايت',
         'Cancel': 'إلغاء',
         'Upload': 'رفع',
         'Uploading...': 'جاري الرفع...',
-        'No evaluated artifacts found.': 'لا توجد قطع مقيمة.',
+        'No evaluated items found.': 'لا توجد عناصر مقيمة.',
         'Page': 'صفحة',
         'of': 'من',
         'Previous': 'السابق',

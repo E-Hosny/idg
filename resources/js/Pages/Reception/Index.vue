@@ -17,7 +17,7 @@
             <th class="px-4 py-2 text-left font-bold">{{ __('Name') }}</th>
             <th class="px-4 py-2 text-left font-bold">{{ __('Phone') }}</th>
             <th class="px-4 py-2 text-left font-bold">{{ __('Email') }}</th>
-            <th class="px-4 py-2 text-left font-bold">{{ __('Artifacts') }}</th>
+            <th class="px-4 py-2 text-left font-bold">{{ __('Items') }}</th>
             <th class="px-4 py-2 text-left font-bold">{{ __('Actions') }}</th>
           </tr>
         </thead>
@@ -31,7 +31,7 @@
             <td class="px-4 py-2">{{ client.artifacts.length }}</td>
             <td class="px-4 py-2 flex gap-2" @click.stop>
               <button @click="addArtifact(client.id)" class="inline-flex items-center px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs font-semibold">
-                <i class="fas fa-plus mr-1"></i> {{ __('Add Artifact') }}
+                <i class="fas fa-plus mr-1"></i> {{ __('Add Item') }}
               </button>
               <Link :href="$route('reception.show-client', client.id)" class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-xs font-semibold border border-blue-200">
                 <i class="fas fa-eye mr-1"></i> {{ __('Show Details') }}
@@ -63,9 +63,9 @@ export default {
         'Name': 'الاسم',
         'Phone': 'الهاتف',
         'Email': 'البريد الإلكتروني',
-        'Artifacts': 'القطع',
+        'Items': 'العناصر',
         'Actions': 'إجراءات',
-        'Add Artifact': 'إضافة قطعة'
+        'Add Item': 'إضافة عنصر'
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     },

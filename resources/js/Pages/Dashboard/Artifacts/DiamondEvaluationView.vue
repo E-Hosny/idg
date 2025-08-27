@@ -6,7 +6,7 @@
         <h1 class="text-3xl font-bold text-green-800 mb-2">{{ __('Diamond Evaluation Report') }}</h1>
         <div class="flex justify-between items-center text-sm text-gray-600">
           <div>
-            <p><strong>{{ __('Artifact Code') }}:</strong> {{ artifact.artifact_code }}</p>
+            <p><strong>{{ __('Item Code') }}:</strong> {{ artifact.artifact_code }}</p>
             <p><strong>{{ __('Client') }}:</strong> {{ artifact.client?.full_name || '-' }}</p>
           </div>
           <div>
@@ -270,7 +270,7 @@
           :href="$route('dashboard.artifacts')" 
           class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
         >
-          {{ __('Back to Artifacts') }}
+          {{ __('Back to Items') }}
         </Link>
         
         <div class="flex space-x-4">
@@ -403,7 +403,7 @@ export default {
       const translations = {
         // Main titles
         'Diamond Evaluation Report': 'تقرير تقييم الألماس',
-        'Artifact Code': 'كود القطعة',
+        'Item Code': 'كود العنصر',
         'Client': 'العميل',
         'Evaluation Date': 'تاريخ التقييم',
         'Evaluator': 'المقيم',
@@ -485,7 +485,7 @@ export default {
         'Reject': 'مرفوض',
         
         // Actions
-        'Back to Artifacts': 'العودة للقطع',
+        'Back to Items': 'العودة للعناصر',
         'Print Report': 'طباعة التقرير',
         'Continue Editing': 'متابعة التحرير',
       }

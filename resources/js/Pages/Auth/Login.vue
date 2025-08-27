@@ -8,7 +8,7 @@
           {{ __('Welcome Back') }}
         </h2>
         <p class="mt-2 text-sm text-green-200">
-          {{ __('Sign in to IDG Artifacts Dashboard') }}
+          {{ __('Sign in to IDG Items Dashboard') }}
         </p>
       </div>
 
@@ -191,7 +191,7 @@ export default {
       const translations = {
         en: {
           'Welcome Back': 'Welcome Back',
-          'Sign in to IDG Artifacts Dashboard': 'Sign in to IDG Artifacts Dashboard',
+          'Sign in to IDG Items Dashboard': 'Sign in to IDG Items Dashboard',
           'Email Address': 'Email Address',
           'Enter your email': 'Enter your email',
           'Password': 'Password',
@@ -205,7 +205,7 @@ export default {
         },
         ar: {
           'Welcome Back': 'مرحباً بعودتك',
-          'Sign in to IDG Artifacts Dashboard': 'تسجيل الدخول إلى لوحة تحكم القطع الأثرية',
+          'Sign in to IDG Items Dashboard': 'تسجيل الدخول إلى لوحة تحكم العناصر',
           'Email Address': 'عنوان البريد الإلكتروني',
           'Enter your email': 'أدخل بريدك الإلكتروني',
           'Password': 'كلمة المرور',

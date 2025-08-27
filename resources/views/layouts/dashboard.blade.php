@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'IDG Artifacts Dashboard')</title>
+    <title>@yield('title', 'IDG Items Dashboard')</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -68,7 +68,7 @@
                         <img class="w-12 h-12" src="{{ asset('images/idg-logo.png') }}" alt="IDG">
                         <div class="ml-3">
                             <h1 class="text-xl font-bold text-white">IDG</h1>
-                            <p class="text-sm text-green-200">{{ __('Artifacts Dashboard') }}</p>
+                            <p class="text-sm text-green-200">{{ __('Items Dashboard') }}</p>
                         </div>
                     </div>
 
@@ -84,7 +84,7 @@
                             <a href="{{ route('dashboard.artifacts') }}" 
                                class="sidebar-link {{ request()->routeIs('dashboard.artifacts*') ? 'active' : '' }}">
                                 <i class="fas fa-gem w-5 h-5 ml-3"></i>
-                                <span class="ml-3">{{ __('Artifacts') }}</span>
+                                <span class="ml-3">{{ __('Items') }}</span>
                             </a>
 
                             <a href="{{ route('dashboard.evaluations') }}" 

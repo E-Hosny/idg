@@ -3,7 +3,7 @@
     <div class="space-y-6" :class="{ 'font-arabic': $page.props.locale === 'ar' }">
       <!-- Statistics Cards -->
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Total Artifacts -->
+        <!-- Total Items -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -13,7 +13,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 truncate">
-                    {{ __('Total Artifacts') }}
+                    {{ __('Total Items') }}
                   </dt>
                   <dd>
                     <div class="text-lg font-medium text-gray-900">
@@ -63,7 +63,7 @@
           </div>
         </div>
 
-        <!-- Evaluated Artifacts -->
+        <!-- Evaluated Items -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -93,7 +93,7 @@
           </div>
         </div>
 
-        <!-- Certified Artifacts -->
+        <!-- Certified Items -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -103,7 +103,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 truncate">
-                    {{ __('Certified Artifacts') }}
+                    {{ __('Certified Items') }}
                   </dt>
                   <dd>
                     <div class="text-lg font-medium text-gray-900">
@@ -132,10 +132,10 @@
           </div>
           <div class="ml-6">
             <h2 class="text-2xl font-bold">
-              {{ __('Welcome to IDG Artifacts Dashboard') }}
+              {{ __('Welcome to IDG Items Dashboard') }}
             </h2>
             <p class="text-green-100 mt-1">
-              {{ __('Manage and evaluate precious artifacts with our comprehensive system') }}
+              {{ __('Manage and evaluate precious items with our comprehensive system') }}
             </p>
           </div>
         </div>
@@ -150,11 +150,11 @@
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
               <i class="fas fa-plus mr-2 text-green-600"></i>
-              {{ __('Add New Artifact') }}
+              {{ __('Add New Item') }}
             </button>
             <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
               <i class="fas fa-search mr-2 text-blue-600"></i>
-              {{ __('Search Artifacts') }}
+              {{ __('Search Items') }}
             </button>
             <Link :href="$route('dashboard.categories')" class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
               <i class="fas fa-tags mr-2 text-purple-600"></i>
@@ -247,37 +247,37 @@ export default {
       const translations = {
         en: {
           'Dashboard': 'Dashboard',
-          'Total Artifacts': 'Total Artifacts',
+          'Total Items': 'Total Items',
           'Pending Evaluations': 'Pending Evaluations',
           'Evaluated': 'Evaluated',
-          'Certified Artifacts': 'Certified Artifacts',
+          'Certified Items': 'Certified Items',
           'View all': 'View all',
           'Review pending': 'Review pending',
           'View evaluated': 'View evaluated',
           'View certified': 'View certified',
-          'Welcome to IDG Artifacts Dashboard': 'Welcome to IDG Artifacts Dashboard',
-          'Manage and evaluate precious artifacts with our comprehensive system': 'Manage and evaluate precious artifacts with our comprehensive system',
+          'Welcome to IDG Items Dashboard': 'Welcome to IDG Items Dashboard',
+          'Manage and evaluate precious items with our comprehensive system': 'Manage and evaluate precious items with our comprehensive system',
           'Quick Actions': 'Quick Actions',
-          'Add New Artifact': 'Add New Artifact',
-          'Search Artifacts': 'Search Artifacts',
+          'Add New Item': 'Add New Item',
+          'Search Items': 'Search Items',
           'Manage Categories': 'Manage Categories',
           'View Analytics': 'View Analytics'
         },
         ar: {
           'Dashboard': 'لوحة التحكم',
-          'Total Artifacts': 'إجمالي القطع الأثرية',
+          'Total Items': 'إجمالي العناصر',
           'Pending Evaluations': 'التقييمات المعلقة',
           'Evaluated': 'تم التقييم',
-          'Certified Artifacts': 'القطع المعتمدة',
+          'Certified Items': 'العناصر المعتمدة',
           'View all': 'عرض الكل',
           'Review pending': 'مراجعة المعلق',
           'View evaluated': 'عرض المقيم',
           'View certified': 'عرض المعتمد',
-          'Welcome to IDG Artifacts Dashboard': 'مرحباً بكم في لوحة تحكم القطع الأثرية',
-          'Manage and evaluate precious artifacts with our comprehensive system': 'إدارة وتقييم القطع الأثرية الثمينة من خلال نظامنا الشامل',
+          'Welcome to IDG Items Dashboard': 'مرحباً بكم في لوحة تحكم العناصر',
+          'Manage and evaluate precious items with our comprehensive system': 'إدارة وتقييم العناصر الثمينة من خلال نظامنا الشامل',
           'Quick Actions': 'إجراءات سريعة',
-          'Add New Artifact': 'إضافة قطعة أثرية جديدة',
-          'Search Artifacts': 'البحث في القطع الأثرية',
+          'Add New Item': 'إضافة عنصر جديد',
+          'Search Items': 'البحث في العناصر',
           'Manage Categories': 'إدارة الفئات',
           'View Analytics': 'عرض التحليلات'
         }

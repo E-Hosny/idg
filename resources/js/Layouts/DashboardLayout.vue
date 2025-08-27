@@ -12,7 +12,7 @@
             <img class="w-12 h-12 rounded-full" :src="'/images/idg_logo.jpg'" alt="IDG">
             <div class="ml-3">
               <h1 class="text-xl font-bold text-white">IDG</h1>
-              <p class="text-sm text-green-200">{{ __('Artifacts Dashboard') }}</p>
+              <p class="text-sm text-green-200">{{ __('Items Dashboard') }}</p>
             </div>
           </div>
 
@@ -34,7 +34,7 @@
                 :class="{ 'active': $page.component.startsWith('Dashboard/Artifacts') }"
               >
                 <i class="fas fa-gem w-5 h-5 ml-3"></i>
-                <span class="ml-3">{{ __('Artifacts') }}</span>
+                <span class="ml-3">{{ __('Items') }}</span>
               </Link>
 
               <Link 
@@ -254,9 +254,9 @@ export default {
       // Simple translation function
       const translations = {
         en: {
-          'Artifacts Dashboard': 'Artifacts Dashboard',
+          'Items Dashboard': 'Items Dashboard',
           'Dashboard': 'Dashboard',
-          'Artifacts': 'Artifacts',
+          'Items': 'Items',
           'Evaluations': 'Evaluations',
           'Categories': 'Categories',
           'Analytics': 'Analytics',
@@ -266,9 +266,9 @@ export default {
           'Logout': 'Logout'
         },
         ar: {
-          'Artifacts Dashboard': 'لوحة تحكم القطع الأثرية',
+          'Items Dashboard': 'لوحة تحكم العناصر',
           'Dashboard': 'لوحة التحكم',
-          'Artifacts': 'القطع الأثرية',
+          'Items': 'العناصر',
           'Evaluations': 'التقييمات',
           'Categories': 'الفئات',
           'Analytics': 'التحليلات',

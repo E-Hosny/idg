@@ -37,7 +37,7 @@
             <thead>
               <tr class="bg-gray-100 border-b">
                 <th class="px-4 py-2 text-left font-bold">#</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Artifact Code') }}</th>
+                <th class="px-4 py-2 text-left font-bold">{{ __('Item Code') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Evaluator') }}</th>
@@ -161,7 +161,7 @@ export default {
         'Showing': 'عرض',
         'of': 'من',
         'evaluations': 'تقييم',
-        'Artifact Code': 'كود القطعة',
+        'Item Code': 'كود العنصر',
         'Type': 'النوع',
         'Client': 'العميل',
         'Evaluator': 'المقيم',

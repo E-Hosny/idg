@@ -1,11 +1,11 @@
 <template>
-  <DashboardLayout :pageTitle="__('Certified Artifacts')">
+  <DashboardLayout :pageTitle="__('Certified Items')">
     <div class="max-w-6xl mx-auto">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">{{ __('Certified Artifacts') }}</h2>
+        <h2 class="text-2xl font-bold text-gray-800">{{ __('Certified Items') }}</h2>
         <div class="text-sm text-gray-600">
-          {{ __('Total') }}: {{ artifacts.total || 0 }} {{ __('certified artifacts') }}
+          {{ __('Total') }}: {{ artifacts.total || 0 }} {{ __('certified items') }}
         </div>
       </div>
 
@@ -25,10 +25,10 @@
         </div>
       </div>
 
-      <!-- Certified Artifacts Table -->
+      <!-- Certified Items Table -->
       <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-lg font-semibold text-gray-800">{{ __('Certified Artifacts List') }}</h3>
+                      <h3 class="text-lg font-semibold text-gray-800">{{ __('Certified Items List') }}</h3>
         </div>
 
         <div class="overflow-x-auto">
@@ -36,7 +36,7 @@
             <thead>
               <tr class="bg-gray-100 border-b">
                 <th class="px-4 py-2 text-left font-bold">#</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Artifact Code') }}</th>
+                <th class="px-4 py-2 text-left font-bold">{{ __('Item Code') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
@@ -130,7 +130,7 @@
                 </td>
               </tr>
               <tr v-if="!artifacts.data?.length">
-                <td colspan="7" class="text-center text-gray-400 py-8">{{ __('No certified artifacts found.') }}</td>
+                <td colspan="7" class="text-center text-gray-400 py-8">{{ __('No certified items found.') }}</td>
               </tr>
             </tbody>
           </table>
@@ -198,14 +198,14 @@ export default {
   methods: {
     __(key) {
       const translations = {
-        'Certified Artifacts': 'القطع المعتمدة',
+        'Certified Items': 'العناصر المعتمدة',
         'Total': 'المجموع',
-        'certified artifacts': 'قطعة معتمدة',
+        'certified items': 'عنصر معتمد',
         'Total Certified': 'إجمالي المعتمد',
         'This Month': 'هذا الشهر',
         'Diamond Certificates': 'شهادات الألماس',
-        'Certified Artifacts List': 'قائمة القطع المعتمدة',
-        'Artifact Code': 'كود القطعة',
+        'Certified Items List': 'قائمة العناصر المعتمدة',
+        'Item Code': 'كود العنصر',
         'Type': 'النوع',
         'Weight': 'الوزن',
         'Client': 'العميل',
@@ -217,7 +217,7 @@ export default {
         'View': 'عرض',
         'Print': 'طباعة',
         'PDF': 'PDF',
-        'No certified artifacts found.': 'لا توجد قطع معتمدة.',
+        'No certified items found.': 'لا توجد عناصر معتمدة.',
         'Page': 'صفحة',
         'of': 'من',
         'Previous': 'السابق',

@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ __('New Client Registration') }}</h2>
-        <p class="text-gray-600">{{ __('Register a new client and their artifact') }}</p>
+        <p class="text-gray-600">{{ __('Register a new client and their item') }}</p>
       </div>
 
       <!-- Form -->
@@ -61,11 +61,11 @@
           </div>
         </div>
 
-        <!-- Artifacts Table Section -->
+        <!-- Items Table Section -->
         <div class="mb-8">
           <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
             <i class="fas fa-gem mr-2 text-green-500"></i>
-            {{ __('Artifacts Information') }}
+                          {{ __('Items Information') }}
           </h3>
           <div class="overflow-x-auto">
             <table class="min-w-full bg-white rounded shadow mb-4">
@@ -132,7 +132,7 @@
           </table>
           </div>
           <button type="button" @click="addArtifact" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors font-medium shadow-sm">
-            <i class="fas fa-plus mr-2"></i> {{ __('Add Artifact') }}
+                          <i class="fas fa-plus mr-2"></i> {{ __('Add Item') }}
           </button>
         </div>
 
@@ -156,7 +156,7 @@
             </span>
             <span v-else class="flex items-center">
               <i class="fas fa-save mr-2"></i>
-              {{ __('Save Client & Artifact') }}
+              {{ __('Save Client & Item') }}
             </span>
           </button>
         </div>
@@ -275,9 +275,9 @@ export default {
     __(key) {
       const t = {
         'New Client Registration': 'تسجيل عميل جديد',
-        'Register a new client and their artifact': 'تسجيل عميل جديد وقطعته',
+        'Register a new client and their item': 'تسجيل عميل جديد وعنصره',
         'Client Information': 'معلومات العميل',
-        'Artifact Information': 'معلومات القطعة',
+        'Items Information': 'معلومات العنصر',
         'Full Name': 'الاسم الكامل',
         'Phone Number': 'رقم الهاتف',
         'National ID': 'رقم الهوية الوطنية',
@@ -285,8 +285,8 @@ export default {
         'Nationality': 'الجنسية',
         'Address': 'العنوان',
         'Client Notes': 'ملاحظات العميل',
-        'Artifact Name': 'اسم القطعة',
-        'Artifact Type': 'نوع القطعة',
+        'Item Name': 'اسم العنصر',
+        'Item Type': 'نوع العنصر',
         'Select Type': 'اختر النوع',
         'Antique': 'تحفة أثرية',
         'Jewelry': 'مجوهرات',
@@ -310,10 +310,10 @@ export default {
         'Good': 'جيدة',
         'Fair': 'مقبولة',
         'Poor': 'ضعيفة',
-        'Artifact Description': 'وصف القطعة',
-        'Artifact Notes': 'ملاحظات القطعة',
+        'Item Description': 'وصف العنصر',
+        'Item Notes': 'ملاحظات العنصر',
         'Cancel': 'إلغاء',
-        'Save Client & Artifact': 'حفظ العميل والقطعة',
+        'Save Client & Item': 'حفظ العميل والعنصر',
         'Saving...': 'جاري الحفظ...',
         'Nationality Placeholder': 'الجنسية (مثال: سعودي، مصري...)',
         'Address Placeholder': 'العنوان (مثال: الرياض، شارع الملك فهد...)',
@@ -324,8 +324,8 @@ export default {
         'Weight Placeholder': 'مثال: 50',
         'Unit': 'وحدة',
         'Dimensions Placeholder': 'مثال: 10×15×5 سم',
-        'Artifact Description Placeholder': 'وصف تفصيلي للقطعة...',
-        'Artifact Notes Placeholder': 'أي ملاحظات إضافية عن القطعة...',
+        'Item Description Placeholder': 'وصف تفصيلي للعنصر...',
+        'Item Notes Placeholder': 'أي ملاحظات إضافية عن العنصر...',
         'Nationality Placeholder': 'Nationality (e.g. Saudi, Egyptian...)',
         'Address Placeholder': 'Address (e.g. Riyadh, King Fahd St...)',
         'Client Notes Placeholder': 'Any additional notes about the client...',
@@ -334,8 +334,8 @@ export default {
         'Materials Placeholder': 'e.g. Gold, Silver, Wood, Bronze',
         'Weight Placeholder': 'e.g. 50 grams',
         'Dimensions Placeholder': 'e.g. 10×15×5 cm',
-        'Artifact Description Placeholder': 'Detailed description of the artifact...',
-        'Artifact Notes Placeholder': 'Any additional notes about the artifact...'
+        'Item Description Placeholder': 'Detailed description of the item...',
+        'Item Notes Placeholder': 'Any additional notes about the item...'
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     },

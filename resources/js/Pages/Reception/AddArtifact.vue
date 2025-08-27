@@ -1,9 +1,9 @@
 <template>
-  <DashboardLayout :pageTitle="__('Add Artifact')">
+  <DashboardLayout :pageTitle="__('Add Item')">
     <div class="max-w-xl mx-auto">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ __('Add Artifact') }}</h2>
-        <p class="text-gray-600">{{ __('Add a new artifact for this client.') }}</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ __('Add Item') }}</h2>
+<p class="text-gray-600">{{ __('Add a new item for this client.') }}</p>
       </div>
       <form @submit.prevent="submitForm" class="bg-white rounded-lg shadow-md p-6">
         <div class="mb-4">
@@ -56,7 +56,7 @@
         </div>
         <div class="flex justify-end space-x-4 pt-4">
           <Link :href="$route('reception.index')" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">{{ __('Cancel') }}</Link>
-          <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{{ __('Save Artifact') }}</button>
+          <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{{ __('Save Item') }}</button>
         </div>
       </form>
     </div>
@@ -229,8 +229,8 @@ export default {
   methods: {
     __(key) {
       const t = {
-        'Add Artifact': 'إضافة قطعة',
-        'Add a new artifact for this client.': 'إضافة قطعة جديدة لهذا العميل',
+        'Add Item': 'إضافة عنصر',
+        'Add a new item for this client.': 'إضافة عنصر جديد لهذا العميل',
         'Type': 'النوع',
         'Select Type': 'اختر النوع',
         'Service': 'الخدمة',
@@ -243,7 +243,7 @@ export default {
         'Select Delivery Type': 'اختر طريقة التسليم',
         'Notes': 'ملاحظات',
         'Cancel': 'إلغاء',
-        'Save Artifact': 'حفظ القطعة'
+        'Save Item': 'حفظ العنصر'
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     }

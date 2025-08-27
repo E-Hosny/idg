@@ -6,7 +6,7 @@
         <div class="flex justify-between items-center py-4">
           <div class="flex items-center">
             <img src="/images/idg-logo.svg" alt="IDG Logo" class="h-12 w-auto mr-4">
-            <h1 class="text-2xl font-bold text-gray-900">{{ __('Artifact Verification') }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{{ __('Item Verification') }}</h1>
           </div>
           <div class="text-sm text-gray-500">
             {{ __('International Diamond Group') }}
@@ -25,20 +25,20 @@
           </svg>
           <div>
             <h3 class="text-lg font-semibold text-green-800">{{ __('Verified Authentic') }}</h3>
-            <p class="text-green-700">{{ __('This artifact has been authenticated by IDG experts.') }}</p>
+            <p class="text-green-700">{{ __('This item has been authenticated by IDG experts.') }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Artifact Information -->
+      <!-- Item Information -->
       <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <div class="px-6 py-4 bg-gray-50 border-b">
-          <h2 class="text-xl font-semibold text-gray-900">{{ __('Artifact Information') }}</h2>
+          <h2 class="text-xl font-semibold text-gray-900">{{ __('Item Information') }}</h2>
         </div>
         <div class="px-6 py-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700">{{ __('Artifact Code') }}</label>
+              <label class="block text-sm font-medium text-gray-700">{{ __('Item Code') }}</label>
               <p class="mt-1 text-lg font-semibold text-blue-600">{{ artifact.artifact_code }}</p>
             </div>
             <div>
@@ -182,12 +182,12 @@ export default {
   methods: {
     __(key) {
       const translations = {
-        'Artifact Verification': 'التحقق من القطعة',
+        'Item Verification': 'التحقق من العنصر',
         'International Diamond Group': 'مجموعة الماس الدولية',
         'Verified Authentic': 'موثق ومعتمد',
-        'This artifact has been authenticated by IDG experts.': 'تم توثيق هذه القطعة من قبل خبراء IDG.',
-        'Artifact Information': 'معلومات القطعة',
-        'Artifact Code': 'رمز القطعة',
+        'This item has been authenticated by IDG experts.': 'تم توثيق هذا العنصر من قبل خبراء IDG.',
+        'Items Information': 'معلومات العنصر',
+        'Item Code': 'رمز العنصر',
         'Type': 'النوع',
         'Service': 'الخدمة',
         'Weight': 'الوزن',

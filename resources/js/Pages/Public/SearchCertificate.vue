@@ -33,7 +33,7 @@
         </div>
         <h2 class="text-4xl font-bold text-gray-900 mb-4">Certificate Verification</h2>
         <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-          Verify the authenticity of your IDG Laboratory certificate by entering the artifact code below
+          Verify the authenticity of your IDG Laboratory certificate by entering the item code below
         </p>
       </div>
 
@@ -42,7 +42,7 @@
         <form @submit.prevent="searchCertificate" class="space-y-6">
           <div>
             <label for="certificate_number" class="block text-lg font-semibold text-gray-700 mb-3">
-              Artifact Code
+              Item Code
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -54,7 +54,7 @@
                 id="certificate_number"
                 v-model="form.certificate_number"
                 type="text"
-                placeholder="Enter artifact code (e.g., DR7405603037)"
+                placeholder="Enter item code (e.g., DR7405603037)"
                 class="w-full pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-200"
                 :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-100': errors.certificate_number }"
                 required
@@ -134,7 +134,7 @@
           <div class="grid md:grid-cols-2 gap-6 mb-8">
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Artifact Code</label>
+                <label class="block text-sm font-medium text-gray-500 mb-1">Item Code</label>
                 <p class="text-lg font-semibold text-gray-900">{{ $page.props.certificate_data.artifact_code }}</p>
               </div>
               <div>
@@ -244,8 +244,8 @@
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span class="text-2xl font-bold text-green-600">1</span>
             </div>
-            <h4 class="text-lg font-semibold text-gray-800 mb-2">Enter Artifact Code</h4>
-            <p class="text-gray-600">Input your unique artifact code from your IDG Laboratory certificate</p>
+            <h4 class="text-lg font-semibold text-gray-800 mb-2">Enter Item Code</h4>
+            <p class="text-gray-600">Input your unique item code from your IDG Laboratory certificate</p>
           </div>
           <div class="text-center">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

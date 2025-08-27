@@ -1,11 +1,11 @@
 <template>
-  <DashboardLayout :pageTitle="__('Artifacts List')">
+  <DashboardLayout :pageTitle="__('Items List')">
     <div class="max-w-6xl mx-auto">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">{{ getPageTitle() }}</h2>
         <div class="text-sm text-gray-600">
-          {{ __('Total') }}: {{ artifacts.total || 0 }} {{ __('artifacts') }}
+          {{ __('Total') }}: {{ artifacts.total || 0 }} {{ __('items') }}
         </div>
       </div>
 
@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <!-- Artifacts Table -->
+      <!-- Items Table -->
       <div class="bg-white rounded-lg shadow-md p-6">
         <table class="min-w-full bg-white rounded shadow border">
           <thead>
@@ -155,8 +155,8 @@ export default {
   methods: {
     __(key) {
       const t = {
-        'Artifacts List': 'قائمة القطع',
-        'Pending Artifacts': 'القطع المعلقة',
+        'Items List': 'قائمة العناصر',
+        'Pending Items': 'العناصر المعلقة',
         'Code': 'الكود',
         'Type': 'النوع',
         'Service': 'الخدمة',
@@ -166,7 +166,7 @@ export default {
         'Status': 'الحالة',
         'Client': 'العميل',
         'Created At': 'تاريخ الإنشاء',
-        'No artifacts found.': 'لا توجد قطع',
+        'No items found.': 'لا توجد عناصر',
         'pending': 'قيد الاستلام',
         'under_evaluation': 'قيد التقييم',
         'evaluated': 'تم التقييم',
@@ -178,12 +178,12 @@ export default {
         'View Report': 'عرض التقرير',
         'Print Report': 'طباعة التقرير',
         'Generate Certificate': 'إنشاء شهادة',
-        'All Artifacts': 'جميع القطع',
+        'All Items': 'جميع العناصر',
         'Total': 'المجموع',
-        'artifacts': 'قطعة',
+        'items': 'عنصر',
         'Pending': 'معلق',
         'Under Evaluation': 'قيد التقييم',
-        'No pending artifacts found.': 'لا توجد قطع معلقة.',
+        'No pending items found.': 'لا توجد عناصر معلقة.',
         'Actions': 'الإجراءات',
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
@@ -216,16 +216,16 @@ export default {
 
     getPageTitle() {
       if (this.viewType === 'pending') {
-        return this.__('Pending Artifacts')
+        return this.__('Pending Items')
       }
-      return this.__('Artifacts List')
+      return this.__('Items List')
     },
 
     getNoDataMessage() {
       if (this.viewType === 'pending') {
-        return this.__('No pending artifacts found.')
+        return this.__('No pending items found.')
       }
-      return this.__('No artifacts found.')
+      return this.__('No items found.')
     },
 
     generateCertificate(artifact) {

@@ -8,7 +8,7 @@
           {{ __('Create Account') }}
         </h2>
         <p class="mt-2 text-sm text-green-200">
-          {{ __('Join IDG Artifacts Dashboard') }}
+          {{ __('Join IDG Items Dashboard') }}
         </p>
       </div>
 
@@ -225,7 +225,7 @@ export default {
       const translations = {
         en: {
           'Create Account': 'Create Account',
-          'Join IDG Artifacts Dashboard': 'Join IDG Artifacts Dashboard',
+          'Join IDG Items Dashboard': 'Join IDG Items Dashboard',
           'Full Name': 'Full Name',
           'Enter your full name': 'Enter your full name',
           'Email Address': 'Email Address',
@@ -241,7 +241,7 @@ export default {
         },
         ar: {
           'Create Account': 'إنشاء حساب',
-          'Join IDG Artifacts Dashboard': 'انضم إلى لوحة تحكم القطع الأثرية',
+          'Join IDG Items Dashboard': 'انضم إلى لوحة تحكم العناصر',
           'Full Name': 'الاسم الكامل',
           'Enter your full name': 'أدخل اسمك الكامل',
           'Email Address': 'عنوان البريد الإلكتروني',

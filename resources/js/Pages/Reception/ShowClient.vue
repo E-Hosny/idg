@@ -3,7 +3,7 @@
     <div class="max-w-4xl mx-auto">
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ __('Client Details') }}</h2>
-        <p class="text-gray-600">{{ __('View all information about the client and their artifacts.') }}</p>
+        <p class="text-gray-600">{{ __('View all information about the client and their items.') }}</p>
       </div>
 
       <!-- Client Info -->
@@ -26,11 +26,11 @@
         </div>
       </div>
 
-      <!-- Artifacts Table -->
+      <!-- Items Table -->
       <div class="bg-white rounded-lg shadow-md p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
           <i class="fas fa-gem mr-2 text-green-500"></i>
-          {{ __('Artifacts') }}
+          {{ __('Items') }}
         </h3>
         <table class="min-w-full bg-white rounded shadow mb-4 border">
           <thead>
@@ -81,7 +81,7 @@
               </td>
             </tr>
             <tr v-if="!client.artifacts.length">
-              <td colspan="8" class="text-center text-gray-400 py-4">{{ __('No artifacts found.') }}</td>
+              <td colspan="8" class="text-center text-gray-400 py-4">{{ __('No items found.') }}</td>
             </tr>
           </tbody>
         </table>
@@ -110,7 +110,7 @@ export default {
     __(key) {
       const t = {
         'Client Details': 'تفاصيل العميل',
-        'View all information about the client and their artifacts.': 'عرض جميع بيانات العميل وقطعه المسجلة',
+        'View all information about the client and their items.': 'عرض جميع بيانات العميل وعناصره المسجلة',
         'Client Information': 'معلومات العميل',
         'Full Name': 'الاسم الكامل',
         'Company Name': 'اسم الشركة',
@@ -120,7 +120,7 @@ export default {
         'City/Address': 'المدينة/العنوان',
         'Received Date': 'تاريخ الاستلام',
         'Delivery Date': 'تاريخ التسليم المتوقع',
-        'Artifacts': 'القطع',
+        'Items': 'العناصر',
         'Type': 'النوع',
         'Service': 'الخدمة',
         'Weight': 'الوزن',
@@ -129,7 +129,7 @@ export default {
         'gm': 'جرام',
         'Notes': 'ملاحظات',
         'Status': 'الحالة',
-        'No artifacts found.': 'لا توجد قطع مسجلة',
+        'No items found.': 'لا توجد عناصر مسجلة',
         'Back to Clients': 'العودة لقائمة العملاء',
         'pending': 'قيد الاستلام',
         'under_evaluation': 'قيد التقييم',
