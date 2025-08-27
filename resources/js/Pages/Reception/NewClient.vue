@@ -18,17 +18,17 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Full Name') }} <span class="text-red-500">*</span>
-              </label>
-              <input v-model="form.full_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.full_name }" required />
-              <p v-if="errors.full_name" class="text-red-500 text-sm mt-1">{{ errors.full_name }}</p>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Company Name') }}
               </label>
               <input v-model="form.company_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.company_name }" />
               <p v-if="errors.company_name" class="text-red-500 text-sm mt-1">{{ errors.company_name }}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ __('Customer Name') }} <span class="text-red-500">*</span>
+              </label>
+              <input v-model="form.full_name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.full_name }" required />
+              <p v-if="errors.full_name" class="text-red-500 text-sm mt-1">{{ errors.full_name }}</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -278,7 +278,7 @@ export default {
         'Register a new client and their item': 'تسجيل عميل جديد وعنصره',
         'Client Information': 'معلومات العميل',
         'Items Information': 'معلومات العنصر',
-        'Full Name': 'الاسم الكامل',
+        'Customer Name': 'اسم العميل',
         'Phone Number': 'رقم الهاتف',
         'National ID': 'رقم الهوية الوطنية',
         'Email': 'البريد الإلكتروني',
