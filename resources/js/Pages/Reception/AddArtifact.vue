@@ -66,7 +66,7 @@
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 export default {
   components: { DashboardLayout, Link },
@@ -75,6 +75,13 @@ export default {
   },
   setup(props) {
     const { locale } = usePage().props;
+    
+    // مراقب تغيير نوع القطعة لتحديث وحدة الوزن
+    watch(() => form.type, (newType) => {
+      if (newType) {
+        updateWeightUnit(newType);
+      }
+    });
     // Type options
     const typeOptions = [
       { value: 'Colored Gemstones', label: locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
@@ -145,7 +152,7 @@ export default {
       type: '',
       service: '',
       weight: '',
-      weight_unit: '',
+      weight_unit: 'ct', // افتراضي: قيراط
       delivery_type: '',
       notes: '',
       client_id: props.client_id
@@ -233,6 +240,15 @@ export default {
       }
     }
 
+    // تحديث وحدة الوزن تلقائياً عند تغيير نوع القطعة
+    const updateWeightUnit = (newType) => {
+      if (newType === 'Jewellery') {
+        form.weight_unit = 'gm'; // مجوهرات: جرام
+      } else {
+        form.weight_unit = 'ct'; // باقي الأنواع: قيراط
+      }
+    };
+
     // إعادة تعيين الخدمة عند تغيير نوع القطعة
     const resetServiceWhenTypeChanges = () => {
       const availableServices = getServiceOptions(form.type);
@@ -253,6 +269,7 @@ export default {
       calculatedPrice,
       priceInfo,
       calculatePrice,
+      updateWeightUnit,
       resetServiceWhenTypeChanges
     }
   },

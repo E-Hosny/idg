@@ -118,6 +118,7 @@
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm } from '@inertiajs/vue3'
+import { watch } from 'vue'
 
 export default {
   components: { DashboardLayout, Link },
@@ -129,11 +130,22 @@ export default {
       type: props.artifact.type,
       service: props.artifact.service || '',
       weight: props.artifact.weight || '',
-      weight_unit: props.artifact.weight_unit || '',
+      weight_unit: props.artifact.weight_unit || (props.artifact.type === 'Jewellery' ? 'gm' : 'ct'),
       price: props.artifact.price || '',
       delivery_type: props.artifact.delivery_type || '',
       notes: props.artifact.notes || ''
     })
+
+    // مراقب تغيير نوع القطعة لتحديث وحدة الوزن
+    watch(() => form.type, (newType) => {
+      if (newType) {
+        if (newType === 'Jewellery') {
+          form.weight_unit = 'gm'; // مجوهرات: جرام
+        } else {
+          form.weight_unit = 'ct'; // باقي الأنواع: قيراط
+        }
+      }
+    });
 
     return { form }
   },

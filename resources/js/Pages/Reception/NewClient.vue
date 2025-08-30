@@ -168,6 +168,7 @@
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm } from '@inertiajs/vue3'
+import { watch } from 'vue'
 
 export default {
   components: { DashboardLayout, Link },
@@ -183,6 +184,15 @@ export default {
       // Artifact data
       artifacts: []
     })
+
+    // مراقب تغيير نوع القطعة لتحديث وحدة الوزن
+    watch(() => form.artifacts, (newArtifacts) => {
+      newArtifacts.forEach((artifact, index) => {
+        if (artifact.type) {
+          updateWeightUnit(index, artifact.type);
+        }
+      });
+    }, { deep: true });
     const locale = window?.Inertia?.page?.props?.locale || 'en';
     // Type options
     const typeOptions = [
@@ -248,6 +258,16 @@ export default {
       { value: '48 hours', label: locale === 'ar' ? '48 ساعة' : '48 hours' },
       { value: '72 hours', label: locale === 'ar' ? '72 ساعة' : '72 hours' },
     ];
+    // تحديث وحدة الوزن تلقائياً عند تغيير نوع القطعة
+    const updateWeightUnit = (artifactIndex, newType) => {
+      const artifact = form.artifacts[artifactIndex];
+      if (newType === 'Jewellery') {
+        artifact.weight_unit = 'gm'; // مجوهرات: جرام
+      } else {
+        artifact.weight_unit = 'ct'; // باقي الأنواع: قيراط
+      }
+    };
+
     // إعادة تعيين الخدمة عند تغيير نوع القطعة
     const resetServiceWhenTypeChanges = (artifactIndex) => {
       const artifact = form.artifacts[artifactIndex];
@@ -259,7 +279,7 @@ export default {
       }
     };
 
-    return { form, typeOptions, getServiceOptions, weightUnitOptions, deliveryOptions, resetServiceWhenTypeChanges }
+    return { form, typeOptions, getServiceOptions, weightUnitOptions, deliveryOptions, updateWeightUnit, resetServiceWhenTypeChanges }
   },
   data() {
     return {
@@ -393,7 +413,7 @@ export default {
         type: '',
         service: '',
         weight: '',
-        weight_unit: '',
+        weight_unit: 'ct', // افتراضي: قيراط
         price: '',
         notes: '',
         delivery_type: ''
