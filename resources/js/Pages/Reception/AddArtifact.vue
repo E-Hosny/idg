@@ -21,6 +21,13 @@
           </select>
         </div>
         <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ __("Delivery Type") }}</label>
+          <select v-model="form.delivery_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            <option value="" disabled selected>{{ __("Select Delivery Type") }}</option>
+            <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+        <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ __("Weight") }}</label>
           <div class="flex space-x-2">
             <input v-model="form.weight" type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -42,13 +49,6 @@
             </button>
           </div>
           <p v-if="priceInfo" class="text-sm text-gray-600 mt-1">{{ priceInfo }}</p>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{ __("Delivery Type") }}</label>
-          <select v-model="form.delivery_type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-            <option value="" disabled selected>{{ __("Select Delivery Type") }}</option>
-            <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-          </select>
         </div>
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">{{ __("Notes") }}</label>

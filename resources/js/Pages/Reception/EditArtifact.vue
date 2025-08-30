@@ -41,41 +41,41 @@
               </select>
               <p v-if="errors.service" class="text-red-500 text-sm mt-1">{{ errors.service }}</p>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Weight') }}
-              </label>
-              <div class="flex space-x-2">
-                <input v-model="form.weight" type="text" class="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.weight }" placeholder="0.00" />
-                <select v-model="form.weight_unit" class="w-24 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.weight_unit }">
-                  <option value="" disabled>{{ __("Unit") }}</option>
-                  <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                </select>
-              </div>
-              <p v-if="errors.weight" class="text-red-500 text-sm mt-1">{{ errors.weight }}</p>
-              <p v-if="errors.weight_unit" class="text-red-500 text-sm mt-1">{{ errors.weight_unit }}</p>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Price') }}
-              </label>
-              <div class="flex items-center space-x-2">
-                <input v-model="form.price" type="text" readonly class="flex-1 px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base" placeholder="0.00" />
-                <button v-if="form.type && form.service && form.weight" @click="calculatePrice" type="button" class="px-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                  {{ __("Calc") }}
-                </button>
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                {{ __('Delivery Type') }}
-              </label>
-              <select v-model="form.delivery_type" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.delivery_type }">
-                <option value="" disabled>{{ __("Select Delivery Type") }}</option>
-                <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
-              <p v-if="errors.delivery_type" class="text-red-500 text-sm mt-1">{{ errors.delivery_type }}</p>
-            </div>
+             <div>
+               <label class="block text-sm font-medium text-gray-700 mb-1">
+                 {{ __('Delivery Type') }}
+               </label>
+               <select v-model="form.delivery_type" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.delivery_type }">
+                 <option value="" disabled>{{ __("Select Delivery Type") }}</option>
+                 <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+               </select>
+               <p v-if="errors.delivery_type" class="text-red-500 text-sm mt-1">{{ errors.delivery_type }}</p>
+             </div>
+             <div>
+               <label class="block text-sm font-medium text-gray-700 mb-1">
+                 {{ __('Weight') }}
+               </label>
+               <div class="flex space-x-2">
+                 <input v-model="form.weight" type="text" class="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.weight }" placeholder="0.00" />
+                 <select v-model="form.weight_unit" class="w-24 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.weight_unit }">
+                   <option value="" disabled>{{ __("Unit") }}</option>
+                   <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                 </select>
+               </div>
+               <p v-if="errors.weight" class="text-red-500 text-sm mt-1">{{ errors.weight }}</p>
+               <p v-if="errors.weight_unit" class="text-red-500 text-sm mt-1">{{ errors.weight_unit }}</p>
+             </div>
+             <div>
+               <label class="block text-sm font-medium text-gray-700 mb-1">
+                 {{ __('Price') }}
+               </label>
+               <div class="flex items-center space-x-2">
+                 <input v-model="form.price" type="text" readonly class="flex-1 px-4 py-3 border border-gray-300 rounded-md bg-gray-50 text-base" placeholder="0.00" />
+                 <button v-if="form.type && form.service && form.weight" @click="calculatePrice" type="button" class="px-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                   {{ __("Calc") }}
+                 </button>
+               </div>
+             </div>
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 {{ __('Notes') }}

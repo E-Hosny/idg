@@ -74,9 +74,9 @@
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50">#</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[130px]">{{ __('Type') }}</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[160px]">{{ __('Service') }}</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[120px]">{{ __('Delivery Type') }}</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[100px]">{{ __('Weight') }}</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[80px]">{{ __('Price') }}</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[120px]">{{ __('Delivery Type') }}</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 min-w-[150px]">{{ __('Notes') }}</th>
                 <th class="px-4 py-3 text-left font-semibold text-gray-700 bg-gray-50 w-[60px]"></th>
               </tr>
@@ -97,6 +97,12 @@
                   </select>
                 </td>
                 <td class="px-4 py-3">
+                  <select v-model="artifact.delivery_type" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="" disabled selected>{{ __("Select Delivery Type") }}</option>
+                    <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                  </select>
+                </td>
+                <td class="px-4 py-3">
                   <div class="flex space-x-1">
                     <input v-model="artifact.weight" type="text" class="w-16 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00" />
                     <select v-model="artifact.weight_unit" class="w-16 px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -112,12 +118,6 @@
                       {{ __("Calc") }}
                     </button>
                   </div>
-                </td>
-                <td class="px-4 py-3">
-                  <select v-model="artifact.delivery_type" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="" disabled selected>{{ __("Select Delivery Type") }}</option>
-                    <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                  </select>
                 </td>
                 <td class="px-4 py-3">
                   <input v-model="artifact.notes" type="text" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ملاحظات..." />
