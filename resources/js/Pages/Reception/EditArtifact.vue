@@ -169,7 +169,7 @@ export default {
         { value: 'Express Service', label: this.locale === 'ar' ? 'خدمة سريعة' : 'Express Service' },
         { value: 'Same Day', label: this.locale === 'ar' ? 'نفس اليوم' : 'Same Day' },
         { value: '24 hours', label: this.locale === 'ar' ? '24 ساعة' : '24 hours' },
-        { value: '18 hours', label: this.locale === 'ar' ? '18 ساعة' : '18 hours' },
+        { value: '48 hours', label: this.locale === 'ar' ? '48 ساعة' : '48 hours' },
         { value: '72 hours', label: this.locale === 'ar' ? '72 ساعة' : '72 hours' },
       ]
     }
@@ -231,43 +231,74 @@ export default {
           return []
       }
     },
-    async calculatePrice() {
-      if (!this.form.type || !this.form.service || !this.form.weight) {
-        return
-      }
+         async calculatePrice() {
+       if (!this.form.type || !this.form.service || !this.form.weight) {
+         return
+       }
 
-      try {
-        const csrfToken = this.$page.props.csrf_token || 
-                         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
-                         document.querySelector('input[name="_token"]')?.value
+       try {
+         const csrfToken = this.$page.props.csrf_token || 
+                          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                          document.querySelector('input[name="_token"]')?.value
 
-        const response = await fetch('/reception/calculate-price', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            type: this.form.type,
-            service: this.form.service,
-            weight: parseFloat(this.form.weight)
-          })
-        })
+         const response = await fetch('/reception/calculate-price', {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json',
+             'X-CSRF-TOKEN': csrfToken,
+             'Accept': 'application/json'
+           },
+           body: JSON.stringify({
+             type: this.form.type,
+             service: this.form.service,
+             weight: parseFloat(this.form.weight)
+           })
+         })
 
-        const data = await response.json()
-        
-        if (data.price) {
-          this.form.price = data.price
-        } else {
-          this.form.price = 'N/A'
-        }
-      } catch (error) {
-        console.error('Error calculating price:', error)
-        this.form.price = 'Error'
-        alert(this.__('Error calculating price. Please try again.'))
-      }
-    },
+                   const data = await response.json()
+          
+          // تسجيل البيانات المستلمة للتشخيص
+          console.log('Response data:', data)
+          console.log('data.price type:', typeof data.price)
+          console.log('data.price value:', data.price)
+          console.log('data.price isNaN:', isNaN(data.price))
+          
+          // تحويل السعر إلى رقم إذا كان string
+          const priceValue = parseFloat(data.price)
+          console.log('Parsed price value:', priceValue)
+          console.log('Parsed price type:', typeof priceValue)
+          
+          if (data.price && priceValue && !isNaN(priceValue)) {
+            let finalPrice = priceValue
+            let priceMultiplier = 1
+            let multiplierText = ''
+
+            // حساب السعر بناءً على نوع التوصيل
+            if (this.form.delivery_type === 'Same Day') {
+              finalPrice = priceValue * 2 // 200% من السعر
+              priceMultiplier = 2
+              multiplierText = ' (Same Day: 200%)'
+            } else if (this.form.delivery_type === '48 hours') {
+              finalPrice = priceValue * 0.7 // 70% من السعر
+              priceMultiplier = 0.7
+              multiplierText = ' (48 hours: 70%)'
+            } else if (this.form.delivery_type === '72 hours') {
+              finalPrice = priceValue * 0.5 // 50% من السعر
+              priceMultiplier = 0.5
+              multiplierText = ' (72 hours: 50%)'
+            }
+
+            this.form.price = finalPrice.toFixed(2)
+            console.log(`Base Price: ${priceValue} | Final Price: ${finalPrice}${multiplierText}`)
+          } else {
+            this.form.price = 'N/A'
+          }
+       } catch (error) {
+         console.error('Error calculating price:', error)
+         this.form.price = 'Error'
+         alert(this.__('Error calculating price. Please try again.'))
+       }
+     },
     submitForm() {
       this.loading = true
       

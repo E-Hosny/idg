@@ -138,7 +138,7 @@ export default {
       { value: 'Express Service', label: locale === 'ar' ? 'خدمة سريعة' : 'Express Service' },
       { value: 'Same Day', label: locale === 'ar' ? 'نفس اليوم' : 'Same Day' },
       { value: '24 hours', label: locale === 'ar' ? '24 ساعة' : '24 hours' },
-      { value: '18 hours', label: locale === 'ar' ? '18 ساعة' : '18 hours' },
+      { value: '48 hours', label: locale === 'ar' ? '48 ساعة' : '48 hours' },
       { value: '72 hours', label: locale === 'ar' ? '72 ساعة' : '72 hours' },
     ];
     const form = useForm({
@@ -187,9 +187,39 @@ export default {
 
         const data = await response.json()
         
-        if (data.price) {
-          calculatedPrice.value = data.price
-          priceInfo.value = `Weight range: ${data.weight_range}`
+        // تسجيل البيانات المستلمة للتشخيص
+        console.log('Response data:', data)
+        console.log('data.price type:', typeof data.price)
+        console.log('data.price value:', data.price)
+        console.log('data.price isNaN:', isNaN(data.price))
+        
+        // تحويل السعر إلى رقم إذا كان string
+        const priceValue = parseFloat(data.price)
+        console.log('Parsed price value:', priceValue)
+        console.log('Parsed price type:', typeof priceValue)
+        
+        if (data.price && priceValue && !isNaN(priceValue)) {
+          let finalPrice = priceValue
+          let priceMultiplier = 1
+          let multiplierText = ''
+
+          // حساب السعر بناءً على نوع التوصيل
+          if (form.delivery_type === 'Same Day') {
+            finalPrice = priceValue * 2 // 200% من السعر
+            priceMultiplier = 2
+            multiplierText = ' (Same Day: 200%)'
+          } else if (form.delivery_type === '48 hours') {
+            finalPrice = priceValue * 0.7 // 70% من السعر
+            priceMultiplier = 0.7
+            multiplierText = ' (48 hours: 70%)'
+          } else if (form.delivery_type === '72 hours') {
+            finalPrice = priceValue * 0.5 // 50% من السعر
+            priceMultiplier = 0.5
+            multiplierText = ' (72 hours: 50%)'
+          }
+
+          calculatedPrice.value = finalPrice.toFixed(2)
+          priceInfo.value = `Base Price: ${priceValue} | Weight range: ${data.weight_range}${multiplierText}`
         } else {
           calculatedPrice.value = 'Price not available'
           priceInfo.value = 'No pricing found for this combination'
