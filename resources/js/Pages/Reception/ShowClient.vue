@@ -10,41 +10,41 @@
         
         <!-- Empty 5x5 Table -->
         <div class="border border-dotted border-black bg-gray-200">
-      <table class="w-full">
-  <tbody>
-    <tr class="border-b border-dotted border-black">
-      <!-- دمج 3 خانات على الشمال -->
-      <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 text-center align-middle" rowspan="3" colspan="3">
-        <span class="text-lg font-semibold">Test Request</span>
-      </td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-      <!-- دمج 3 خانات على اليمين -->
-      <td class="px-3 py-4 text-black w-1/5" rowspan="3"></td>
-    </tr>
-    <tr class="border-b border-dotted border-black">
-      <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-    </tr>
-    <tr class="border-b border-dotted border-black">
-      <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-    </tr>
-    <tr class="border-b border-dotted border-black">
-      <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-      <td class="px-3 py-4 text-black w-1/5"></td>
-    </tr>
-    <tr>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-      <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-      <td class="px-3 py-4 text-black"></td>
-    </tr>
-  </tbody>
-</table>
-
-
+          <table class="w-full">
+            <tbody>
+              <tr class="border-b border-dotted border-black">
+                <!-- دمج 3 خانات على الشمال -->
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 text-center align-middle" rowspan="3" colspan="3">
+                  <span class="text-lg font-semibold">Test Request</span>
+                </td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
+                <!-- دمج 3 خانات على اليمين -->
+                <td class="px-3 py-4 text-black w-1/5 text-center align-middle" rowspan="3">
+                  <img src="/images/idg_logo.jpg" alt="IDG Logo" class="w-16 h-16 rounded-full mx-auto" />
+                </td>
+              </tr>
+              <tr class="border-b border-dotted border-black">
+                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+              </tr>
+              <tr class="border-b border-dotted border-black">
+                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+              </tr>
+              <tr class="border-b border-dotted border-black">
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
+                <td class="px-3 py-4 text-black w-1/5"></td>
+              </tr>
+              <tr>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+                <td class="px-3 py-4 text-black"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
