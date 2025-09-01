@@ -17,31 +17,31 @@
                 <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 text-center align-middle" rowspan="3" colspan="3">
                   <span class="text-lg font-semibold">Test Request</span>
                 </td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 text-center align-middle"></td>
                 <!-- دمج 3 خانات على اليمين -->
                 <td class="px-3 py-4 text-black w-1/5 text-center align-middle" rowspan="3">
                   <img src="/images/idg_logo.jpg" alt="IDG Logo" class="w-16 h-16 rounded-full mx-auto" />
                 </td>
               </tr>
               <tr class="border-b border-dotted border-black">
-                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black text-center align-middle"></td>
               </tr>
               <tr class="border-b border-dotted border-black">
-                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black text-center align-middle"></td>
               </tr>
               <tr class="border-b border-dotted border-black">
-                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5"></td>
-                <td class="px-3 py-4 text-black w-1/5"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 font-semibold text-center align-middle">Document Number</td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 font-semibold text-center align-middle">Document Classification</td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 font-semibold text-center align-middle">Document Level</td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black w-1/5 font-semibold text-center align-middle">Issue No., Revision No</td>
+                <td class="px-3 py-4 text-black w-1/5 font-semibold text-center align-middle">Issue Date</td>
               </tr>
               <tr>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-                <td class="px-3 py-4 text-black border-r border-dotted border-black"></td>
-                <td class="px-3 py-4 text-black"></td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black text-center align-middle">HOT-F03</td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black text-center align-middle">Control</td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black text-center align-middle">Document</td>
+                <td class="px-3 py-4 text-black border-r border-dotted border-black text-center align-middle">002, 001</td>
+                <td class="px-3 py-4 text-black text-center align-middle">15/3/2025</td>
               </tr>
             </tbody>
           </table>
