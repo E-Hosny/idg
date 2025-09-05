@@ -2,14 +2,14 @@
   <div class="min-h-screen bg-gray-200 print:bg-white print:min-h-0">
     <!-- Fixed Header Section - Full Width - Optimized for print -->
     <div class="bg-gray-200 p-4 print:bg-white print:p-2">
-      <div class="w-full">
-        <!-- Title Section -->
-        <div class="text-center mb-4">
+      <div class="max-w-7xl mx-auto print:max-w-none">
+        <!-- Title Section - Hidden in print -->
+        <div class="text-center mb-4 print:hidden">
           <h1 class="text-xl font-bold text-black">TEST Request</h1>
         </div>
         
         <!-- Header Table - Optimized for A4 Landscape Print -->
-        <div class="border-2 border-black bg-white print:bg-white mb-4 print:mb-2">
+        <div class="border-2 border-black bg-white print:bg-white mb-6 print:mb-3 shadow-lg print:shadow-none">
           <table class="w-full border-collapse">
             <tbody>
               <tr class="border-b-2 border-black">
@@ -75,7 +75,7 @@
     </div>
 
     <!-- Main Content - Optimized for Landscape Print -->
-    <div class="p-6 print:p-2">
+    <div class="p-4 print:p-2">
       <div class="max-w-7xl mx-auto print:max-w-none">
         <!-- Classic Client Information Form -->
         <div class="bg-white border-2 border-black shadow-lg mb-6 print:shadow-none print:mb-3">
@@ -240,7 +240,7 @@
         </div>
 
         <!-- Items Table - Optimized for A4 Landscape printing -->
-        <div class="bg-white print:shadow-none border-2 border-black print:border-black p-4 print:p-2">
+        <div class="bg-white shadow-lg print:shadow-none border-2 border-black print:border-black p-6 print:p-3 mb-6 print:mb-3">
           <div class="flex justify-between items-center mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
             <h3 class="text-xl print:text-lg font-semibold text-black flex items-center">
               <i class="fas fa-gem mr-3 text-gray-600 text-xl print:hidden"></i>
@@ -258,10 +258,10 @@
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Code') }} | الكود</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Type') }} | النوع</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Service') }} | الخدمة</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Delivery Type') }} | نوع التسليم</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Weight') }} | الوزن</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Price') }} | السعر</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Notes') }} | ملاحظات</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Delivery Type') }} | نوع التسليم</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Status') }} | الحالة</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm font-bold text-black print:hidden">{{ __('Actions') }}</th>
                 </tr>
@@ -281,6 +281,9 @@
                     <div class="text-sm print:text-xs text-black">{{ artifact.service || '-' }}</div>
                   </td>
                   <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                    <div class="text-sm print:text-xs text-black">{{ artifact.delivery_type || '-' }}</div>
+                  </td>
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
                     <div v-if="artifact.weight" class="text-sm print:text-xs text-black">
                       {{ artifact.weight }} 
                       <span v-if="artifact.weight_unit" class="text-black text-xs print:text-[10px] ml-1">
@@ -297,9 +300,6 @@
                   </td>
                   <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
                     <div class="text-sm print:text-xs text-black">{{ artifact.notes || '-' }}</div>
-                  </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
-                    <div class="text-sm print:text-xs text-black">{{ artifact.delivery_type || '-' }}</div>
                   </td>
                   <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
                     <div class="text-sm print:text-xs font-medium text-black bg-gray-100 px-1 py-1 border border-gray-400 text-center">
@@ -331,8 +331,82 @@
           </div>
         </div>
 
-        <div class="mt-8 flex justify-end print:hidden">
-          <Link :href="$route('reception.index')" class="btn btn-secondary">{{ __('Back to Clients') }}</Link>
+        <!-- Delivery Documentation Section -->
+        <div class="bg-white shadow-lg print:shadow-none border-2 border-black print:border-black p-6 print:p-3 mb-6 print:mb-3">
+          <div class="mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
+            <h3 class="text-xl print:text-lg font-semibold text-black flex items-center">
+              <i class="fas fa-file-signature mr-3 text-gray-600 text-xl print:hidden"></i>
+              <span>Delivery Documentation | توثيق الاستلام</span>
+            </h3>
+          </div>
+          
+          <div class="overflow-x-auto print:overflow-visible">
+            <table class="w-full border-2 border-black print:border-black border-collapse">
+              <tbody>
+                <!-- Row 1: Delivered by and Received by -->
+                <tr class="border-b-2 border-black">
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                    <div class="text-base print:text-sm font-semibold text-black mb-2">
+                      Delivered by: سُلم بواسطة
+                    </div>
+                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center">
+                      {{ $page.props.auth?.user?.name || 'System User' }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
+                      Signature التوقيع:
+                    </div>
+                    <div class="bg-white p-3 print:p-2 border border-gray-300 min-h-[60px]">
+                      <!-- Empty signature space -->
+                    </div>
+                  </td>
+                  <td class="px-4 py-6 print:px-2 print:py-4 w-1/3 bg-gray-50 print:bg-gray-100">
+                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
+                      Date التاريخ:
+                    </div>
+                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center justify-center">
+                      {{ client.received_date || new Date().toLocaleDateString() }}
+                    </div>
+                  </td>
+                </tr>
+                <!-- Row 2: Received by -->
+                <tr>
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                    <div class="text-base print:text-sm font-semibold text-black mb-2">
+                      Received by: أُستلم بواسطة
+                    </div>
+                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center">
+                      {{ client.full_name || 'Client Name' }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
+                      Signature التوقيع:
+                    </div>
+                    <div class="bg-white p-3 print:p-2 border border-gray-300 min-h-[60px]">
+                      <!-- Empty signature space -->
+                    </div>
+                  </td>
+                  <td class="px-4 py-6 print:px-2 print:py-4 w-1/3 bg-gray-50 print:bg-gray-100">
+                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
+                      Date التاريخ:
+                    </div>
+                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center justify-center">
+                      {{ getCurrentDate() }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end print:hidden">
+          <Link :href="$route('reception.index')" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white text-base font-semibold hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200 shadow-md hover:shadow-lg border-2 border-gray-600">
+            <i class="fas fa-arrow-left mr-2"></i>
+            {{ __('Back to Clients') }}
+          </Link>
         </div>
       </div>
     </div>
@@ -393,6 +467,13 @@ export default {
         'Error deleting item. Please try again.': 'خطأ في حذف العنصر. يرجى المحاولة مرة أخرى.'
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
+    },
+    getCurrentDate() {
+      const today = new Date()
+      const day = String(today.getDate()).padStart(2, '0')
+      const month = String(today.getMonth() + 1).padStart(2, '0')
+      const year = today.getFullYear()
+      return `${day}/${month}/${year}`
     },
     editClient() {
       this.$inertia.visit(this.$route('reception.edit-client', this.client.id))
