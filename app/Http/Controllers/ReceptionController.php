@@ -39,6 +39,7 @@ class ReceptionController extends Controller
             'email' => 'nullable|email|max:255',
             'city' => 'nullable|string|max:100',
             'delivery_date' => 'nullable|date',
+            'received_in' => 'nullable|string|max:255',
             'artifacts' => 'required|array|min:1',
             'artifacts.*.type' => 'required|string|max:100',
             'artifacts.*.service' => 'nullable|string|max:100',
@@ -73,6 +74,7 @@ class ReceptionController extends Controller
                 'address' => $data['city'] ?? null,
                 'received_date' => $receivedDate,
                 'delivery_date' => $data['delivery_date'] ?? null,
+                'received_in' => $data['received_in'] ?? null,
                 'created_by' => auth()->id(),
             ]);
 
@@ -325,6 +327,7 @@ class ReceptionController extends Controller
             'email' => 'nullable|email|max:255',
             'city' => 'nullable|string|max:100',
             'delivery_date' => 'nullable|date',
+            'received_in' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -335,6 +338,7 @@ class ReceptionController extends Controller
                 'email' => $data['email'] ?? null,
                 'address' => $data['city'] ?? null,
                 'delivery_date' => $data['delivery_date'] ?? null,
+                'received_in' => $data['received_in'] ?? null,
             ]);
 
             return redirect()->route('reception.show-client', $client->id)->with('success', 'Client information updated successfully.');

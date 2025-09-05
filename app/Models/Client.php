@@ -19,6 +19,7 @@ class Client extends Model
         'address',
         'received_date',
         'delivery_date',
+        'received_in',
         'national_id',
         'nationality',
         'notes',

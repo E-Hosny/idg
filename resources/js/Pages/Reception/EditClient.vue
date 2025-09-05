@@ -57,6 +57,13 @@
               <input v-model="form.delivery_date" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.delivery_date }" />
               <p v-if="errors.delivery_date" class="text-red-500 text-sm mt-1">{{ errors.delivery_date }}</p>
             </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ __('Received In') }}
+              </label>
+              <input v-model="form.received_in" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" :class="{ 'border-red-500': errors.received_in }" />
+              <p v-if="errors.received_in" class="text-red-500 text-sm mt-1">{{ errors.received_in }}</p>
+            </div>
           </div>
         </div>
 
@@ -105,7 +112,8 @@ export default {
       mobile: props.client.phone,
       email: props.client.email || '',
       city: props.client.address || '',
-      delivery_date: props.client.delivery_date || ''
+      delivery_date: props.client.delivery_date || '',
+      received_in: props.client.received_in || ''
     })
 
     return { form }
@@ -132,6 +140,7 @@ export default {
         'Email': 'البريد الإلكتروني',
         'City': 'المدينة',
         'Delivery Date': 'تاريخ التسليم',
+        'Received In': 'استلم في',
         'Cancel': 'إلغاء',
         'Update Client': 'تحديث العميل',
         'Updating...': 'جاري التحديث...'

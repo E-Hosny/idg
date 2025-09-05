@@ -87,6 +87,7 @@
             <div><span class="font-bold">{{ __('Received Date') }}:</span> {{ client.received_date }}</div>
             <div><span class="font-bold">{{ __('Delivery Date') }}:</span> {{ client.delivery_date || '-' }}</div>
             <div><span class="font-bold">{{ __('Received By') }}:</span> {{ received_by || __('Not specified') }}</div>
+            <div><span class="font-bold">{{ __('Received In') }}:</span> {{ client.received_in || '-' }}</div>
           </div>
         </div>
 
@@ -239,6 +240,7 @@ export default {
         'Not specified': 'غير محدد',
         'Receiving Record No': 'رقم سجل الاستلام',
         'Received By': 'تم الاستلام بواسطة',
+        'Received In': 'استلم في',
         'Edit Client': 'تعديل العميل',
         'Actions': 'الإجراءات',
         'Edit': 'تعديل',
