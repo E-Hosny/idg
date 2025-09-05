@@ -78,10 +78,10 @@
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><span class="font-bold">{{ __('Receiving Record No') }}:</span> {{ client.receiving_record_no || '-' }}</div>
-            <div><span class="font-bold">{{ __('Full Name') }}:</span> {{ client.full_name }}</div>
+            <div><span class="font-bold">{{ __('Customer Name') }}:</span> {{ client.full_name }}</div>
             <div><span class="font-bold">{{ __('Company Name') }}:</span> {{ client.company_name || '-' }}</div>
             <div><span class="font-bold">{{ __('Customer Code') }}:</span> {{ client.customer_code }}</div>
-            <div><span class="font-bold">{{ __('Mobile') }}:</span> {{ client.phone }}</div>
+            <div><span class="font-bold">{{ __('Mobile No') }}:</span> {{ client.phone }}</div>
             <div><span class="font-bold">{{ __('Email') }}:</span> {{ client.email || '-' }}</div>
             <div><span class="font-bold">{{ __('City/Address') }}:</span> {{ client.address || '-' }}</div>
             <div><span class="font-bold">{{ __('Received Date') }}:</span> {{ client.received_date }}</div>
@@ -212,10 +212,10 @@ export default {
         'Client Details': 'تفاصيل العميل',
         'View all information about the client and their items.': 'عرض جميع بيانات العميل وعناصره المسجلة',
         'Client Information': 'معلومات العميل',
-        'Full Name': 'الاسم الكامل',
+        'Customer Name': 'اسم العميل',
         'Company Name': 'اسم الشركة',
         'Customer Code': 'كود العميل',
-        'Mobile': 'الجوال',
+        'Mobile No': 'رقم الجوال',
         'Email': 'البريد الإلكتروني',
         'City/Address': 'المدينة/العنوان',
         'Received Date': 'تاريخ الاستلام',
