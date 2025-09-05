@@ -87,99 +87,92 @@
           
           <!-- Client Information -->
           <div class="p-6 print:p-3">
-            <!-- Primary Information Section -->
-            <div class="mb-6 print:mb-3">
-              <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-4 print:gap-2">
-                <!-- Company Name -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Company name - اسم الشركة</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.company_name || 'Not specified' }}</span>
-                  </div>
-                </div>
-                
-                <!-- Customer Name -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Customer name - اسم العميل</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.full_name }}</span>
-                  </div>
-                </div>
-                
-                <!-- Customer Code -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Customer code - رمز العميل</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.customer_code }}</span>
-                  </div>
-                </div>
-                
-                <!-- Mobile Number -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Mobile No - رقم الجوال</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.phone }}</span>
-                  </div>
-                </div>
-                
-                <!-- Email -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Email address - البريد الإلكتروني</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.email || 'Not provided' }}</span>
-                  </div>
-                </div>
-                
-                <!-- Address -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Address - العنوان</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.address || 'Not specified' }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Reception Information Section -->
+            <!-- Client Information Section -->
             <div class="mb-8">
               <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6 print:gap-2">
-                <!-- Receiving Record Number -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Record No - رقم السجل</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.receiving_record_no || 'Not assigned' }}</span>
+                <!-- Column 1: Basic Information -->
+                <div class="space-y-4 print:space-y-2">
+                  <!-- Company Name -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Company name - اسم الشركة</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.company_name || 'Not specified' }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Customer Name -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Customer name - اسم العميل</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.full_name }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Customer Code -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Customer code - رمز العميل</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.customer_code }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Mobile Number -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Mobile No - رقم الجوال</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.phone }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Email -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Email - البريد الإلكتروني</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.email || 'Not provided' }}</span>
+                    </div>
                   </div>
                 </div>
                 
-                <!-- Received By -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Received By - استلم بواسطة</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ received_by || 'Not specified' }}</span>
+                <!-- Column 2: Reception Information -->
+                <div class="space-y-4 print:space-y-2">
+                  <!-- Receiving Record Number -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Receiving Record No - رقم السجل</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.receiving_record_no || 'Not assigned' }}</span>
+                    </div>
                   </div>
-                </div>
-                
-                <!-- Received Date -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Received Date - تاريخ الاستلام</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.received_date }}</span>
+                  
+                  <!-- Received By -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Received By - استلم بواسطة</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ received_by || 'Not specified' }}</span>
+                    </div>
                   </div>
-                </div>
-                
-                <!-- Received In -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Received In - استلم في</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.received_in || 'Not specified' }}</span>
+                  
+                  <!-- Received Date -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Received Date - تاريخ الاستلام</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.received_date }}</span>
+                    </div>
                   </div>
-                </div>
-                
-                <!-- Delivery Date -->
-                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2 lg:col-span-2">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-black text-base print:text-sm">Expected Delivery Date - تاريخ التسليم المتوقع</span>
-                    <span class="text-black text-lg print:text-sm font-medium">{{ client.delivery_date || 'Not scheduled' }}</span>
+                  
+                  <!-- Received In -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Received In - استلم في</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.received_in || 'Not specified' }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Delivery Date -->
+                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-black text-base print:text-sm">Delivery Date وقت التسليم</span>
+                      <span class="text-black text-lg print:text-sm font-medium">{{ client.delivery_date || 'Not scheduled' }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -578,6 +571,10 @@ export default {
   
   .print\\:gap-2 {
     gap: 0.4rem !important;
+  }
+  
+  .print\\:space-y-2 > * + * {
+    margin-top: 0.4rem !important;
   }
   
   /* Grid adjustments for landscape */
