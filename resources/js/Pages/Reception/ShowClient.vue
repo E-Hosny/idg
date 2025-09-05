@@ -9,18 +9,18 @@
         </div>
         
         <!-- Header Table - Optimized for A4 Landscape Print -->
-        <div class="border-2 border-black bg-white print:bg-white mb-6 print:mb-3 shadow-lg print:shadow-none">
+        <div class="border-2 border-gray-300 bg-white print:bg-white mb-6 print:mb-3 shadow-lg print:shadow-none">
           <table class="w-full border-collapse">
             <tbody>
-              <tr class="border-b-2 border-black">
+              <tr class="border-b-2 border-gray-300">
                 <!-- دمج 3 خانات على الشمال -->
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-black w-1/2 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3" colspan="3">
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 w-1/2 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3" colspan="3">
                   <div class="text-xl print:text-lg font-bold">Test Request</div>
                 </td>
-                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 text-center align-middle font-semibold print:text-sm">
+                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
                   <div>Prepared by</div>
                 </td>
-                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 text-center align-middle font-semibold print:text-sm">
+                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
                   <div>Approved by</div>
                 </td>
                 <!-- دمج خانة واحدة على اليمين -->
@@ -29,28 +29,28 @@
                   <div class="text-xs print:text-[10px] mt-1 font-semibold">IDG</div>
                 </td>
               </tr>
-              <tr class="border-b-2 border-black">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black text-center align-middle print:text-sm font-medium">Enas Ibrahim</td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black text-center align-middle print:text-sm font-medium">Sultan Aldosari</td>
+              <tr class="border-b-2 border-gray-300">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Enas Ibrahim</td>
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Sultan Aldosari</td>
               </tr>
-              <tr class="border-b-2 border-black">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black text-center align-middle text-xs print:text-[10px] text-gray-700">Lab. Management Supervisor</td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black text-center align-middle text-xs print:text-[10px] text-gray-700">Laboratory Manager</td>
+              <tr class="border-b-2 border-gray-300">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Lab. Management Supervisor</td>
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Laboratory Manager</td>
               </tr>
-              <tr class="border-b-2 border-black bg-gray-100">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 font-bold text-center align-middle print:text-xs">
+              <tr class="border-b-2 border-gray-300 bg-gray-100">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Document Number</div>
                 </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 font-bold text-center align-middle print:text-xs">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Document Classification</div>
                 </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 font-bold text-center align-middle print:text-xs">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Document Level</div>
                 </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 font-bold text-center align-middle print:text-xs">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Issue No., Revision No</div>
                 </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-black w-1/6 font-bold text-center align-middle print:text-xs">
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Document Date</div>
                 </td>
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black w-1/6 font-bold text-center align-middle print:text-xs">
@@ -58,11 +58,11 @@
                 </td>
               </tr>
               <tr>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-black text-center align-middle font-semibold print:text-sm">HOT-F03</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-black text-center align-middle font-semibold print:text-sm">Control</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-black text-center align-middle font-semibold print:text-sm">Document</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-black text-center align-middle font-semibold print:text-sm">002, 001</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-black text-center align-middle font-semibold print:text-sm">15/3/2025</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">HOT-F03</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Control</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Document</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">002, 001</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">15/3/2025</td>
                 <td class="px-2 py-3 print:px-1 print:py-2 text-black text-center align-middle font-semibold print:text-sm">3/15/2025</td>
               </tr>
             </tbody>
@@ -78,7 +78,7 @@
     <div class="p-4 print:p-2">
       <div class="max-w-7xl mx-auto print:max-w-none">
         <!-- Classic Client Information Form -->
-        <div class="bg-white border-2 border-black shadow-lg mb-6 print:shadow-none print:mb-3">
+        <div class="bg-white border-2 border-gray-300 shadow-lg mb-6 print:shadow-none print:mb-3">
           <!-- Header - Hidden in print to save space -->
           <div class="bg-gray-100 border-b-2 border-black p-4 text-center print:hidden">
             <h1 class="text-3xl font-bold text-black mb-1">Test Request</h1>
@@ -89,70 +89,52 @@
           <div class="p-6 print:p-3">
             <!-- Primary Information Section -->
             <div class="mb-6 print:mb-3">
-              <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-3 gap-4 print:gap-2">
+              <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-4 print:gap-2">
                 <!-- Company Name -->
-                <div class="bg-gray-50 border-l-4 border-gray-600 p-3 print:p-2">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="font-bold text-black text-base print:text-sm">Company Name</span>
-                    <span class="font-bold text-black text-base print:text-sm">اسم الشركة</span>
-                  </div>
-                  <div class="text-black text-lg print:text-sm font-medium bg-white p-2 print:p-1 border border-gray-300">
-                    {{ client.company_name || 'Not specified' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Company name - اسم الشركة</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.company_name || 'Not specified' }}</span>
                   </div>
                 </div>
                 
                 <!-- Customer Name -->
-                <div class="bg-gray-50 border-l-4 border-gray-600 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Customer Name</span>
-                    <span class="font-bold text-black text-lg">اسم العميل</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.full_name }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Customer name - اسم العميل</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.full_name }}</span>
                   </div>
                 </div>
                 
                 <!-- Customer Code -->
-                <div class="bg-gray-50 border-l-4 border-gray-600 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Customer Code</span>
-                    <span class="font-bold text-black text-lg">رمز العميل</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.customer_code }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Customer code - رمز العميل</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.customer_code }}</span>
                   </div>
                 </div>
                 
                 <!-- Mobile Number -->
-                <div class="bg-gray-50 border-l-4 border-gray-600 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Mobile No.</span>
-                    <span class="font-bold text-black text-lg">رقم الجوال</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.phone }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Mobile No - رقم الجوال</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.phone }}</span>
                   </div>
                 </div>
                 
                 <!-- Email -->
-                <div class="bg-gray-50 border-l-4 border-gray-600 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Email Address</span>
-                    <span class="font-bold text-black text-lg">البريد الإلكتروني</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.email || 'Not provided' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Email address - البريد الإلكتروني</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.email || 'Not provided' }}</span>
                   </div>
                 </div>
                 
                 <!-- Address -->
-                <div class="bg-gray-50 border-l-4 border-gray-600 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Address</span>
-                    <span class="font-bold text-black text-lg">العنوان</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.address || 'Not specified' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Address - العنوان</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.address || 'Not specified' }}</span>
                   </div>
                 </div>
               </div>
@@ -160,59 +142,44 @@
             
             <!-- Reception Information Section -->
             <div class="mb-8">
-              <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-3 gap-6 print:gap-2">
+              <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6 print:gap-2">
                 <!-- Receiving Record Number -->
-                <div class="bg-gray-50 border-l-4 border-gray-700 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Record No.</span>
-                    <span class="font-bold text-black text-lg">رقم السجل</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.receiving_record_no || 'Not assigned' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Record No - رقم السجل</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.receiving_record_no || 'Not assigned' }}</span>
                   </div>
                 </div>
                 
                 <!-- Received By -->
-                <div class="bg-gray-50 border-l-4 border-gray-700 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Received By</span>
-                    <span class="font-bold text-black text-lg">استلم بواسطة</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ received_by || 'Not specified' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Received By - استلم بواسطة</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ received_by || 'Not specified' }}</span>
                   </div>
                 </div>
                 
                 <!-- Received Date -->
-                <div class="bg-gray-50 border-l-4 border-gray-700 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Received Date</span>
-                    <span class="font-bold text-black text-lg">تاريخ الاستلام</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.received_date }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Received Date - تاريخ الاستلام</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.received_date }}</span>
                   </div>
                 </div>
                 
                 <!-- Received In -->
-                <div class="bg-gray-50 border-l-4 border-gray-700 p-4">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Received In</span>
-                    <span class="font-bold text-black text-lg">استلم في</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.received_in || 'Not specified' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Received In - استلم في</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.received_in || 'Not specified' }}</span>
                   </div>
                 </div>
                 
                 <!-- Delivery Date -->
-                <div class="bg-gray-50 border-l-4 border-gray-700 p-4 lg:col-span-2">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="font-bold text-black text-lg">Expected Delivery Date</span>
-                    <span class="font-bold text-black text-lg">تاريخ التسليم المتوقع</span>
-                  </div>
-                  <div class="text-black text-xl font-medium bg-white p-3 border border-gray-300">
-                    {{ client.delivery_date || 'Not scheduled' }}
+                <div class="bg-gray-50 border border-gray-300 p-3 print:p-2 lg:col-span-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-black text-base print:text-sm">Expected Delivery Date - تاريخ التسليم المتوقع</span>
+                    <span class="text-black text-lg print:text-sm font-medium">{{ client.delivery_date || 'Not scheduled' }}</span>
                   </div>
                 </div>
               </div>
@@ -240,7 +207,7 @@
         </div>
 
         <!-- Items Table - Optimized for A4 Landscape printing -->
-        <div class="bg-white shadow-lg print:shadow-none border-2 border-black print:border-black p-6 print:p-3 mb-6 print:mb-3">
+        <div class="bg-white shadow-lg print:shadow-none border-2 border-gray-300 p-6 print:p-3 mb-6 print:mb-3">
           <div class="flex justify-between items-center mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
             <h3 class="text-xl print:text-lg font-semibold text-black flex items-center">
               <i class="fas fa-gem mr-3 text-gray-600 text-xl print:hidden"></i>
@@ -251,9 +218,9 @@
             </div>
           </div>
           <div class="overflow-x-auto print:overflow-visible">
-            <table class="min-w-full bg-white border-2 border-black print:border-black">
+            <table class="min-w-full bg-white border-2 border-gray-300">
               <thead>
-                <tr class="bg-gray-100 border-b-2 border-black">
+                <tr class="bg-gray-100 border-b-2 border-gray-300">
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">#</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Code') }} | الكود</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Type') }} | النوع</th>
@@ -267,7 +234,7 @@
                 </tr>
               </thead>
               <tbody class="bg-white">
-                <tr v-for="(artifact, idx) in client.artifacts" :key="artifact.id" class="border-b border-gray-300 print:border-black">
+                <tr v-for="(artifact, idx) in client.artifacts" :key="artifact.id" class="border-b border-gray-300">
                   <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs font-medium text-black">{{ idx + 1 }}</div>
                   </td>
@@ -332,7 +299,7 @@
         </div>
 
         <!-- Delivery Documentation Section -->
-        <div class="bg-white shadow-lg print:shadow-none border-2 border-black print:border-black p-6 print:p-3 mb-6 print:mb-3">
+        <div class="bg-white shadow-lg print:shadow-none border-2 border-gray-300 p-6 print:p-3 mb-6 print:mb-3">
           <div class="mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
             <h3 class="text-xl print:text-lg font-semibold text-black flex items-center">
               <i class="fas fa-file-signature mr-3 text-gray-600 text-xl print:hidden"></i>
@@ -341,11 +308,11 @@
           </div>
           
           <div class="overflow-x-auto print:overflow-visible">
-            <table class="w-full border-2 border-black print:border-black border-collapse">
+            <table class="w-full border-2 border-gray-300 border-collapse">
               <tbody>
                 <!-- Row 1: Delivered by and Received by -->
-                <tr class="border-b-2 border-black">
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                <tr class="border-b-2 border-gray-300">
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
                     <div class="text-base print:text-sm font-semibold text-black mb-2">
                       Delivered by: سُلم بواسطة
                     </div>
@@ -353,7 +320,7 @@
                       {{ $page.props.auth?.user?.name || 'System User' }}
                     </div>
                   </td>
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
                     <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
                       Signature التوقيع:
                     </div>
@@ -372,7 +339,7 @@
                 </tr>
                 <!-- Row 2: Received by -->
                 <tr>
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
                     <div class="text-base print:text-sm font-semibold text-black mb-2">
                       Received by: أُستلم بواسطة
                     </div>
@@ -380,7 +347,7 @@
                       {{ client.full_name || 'Client Name' }}
                     </div>
                   </td>
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-black w-1/3 bg-gray-50 print:bg-gray-100">
+                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
                     <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
                       Signature التوقيع:
                     </div>
@@ -614,8 +581,8 @@ export default {
   }
   
   /* Grid adjustments for landscape */
-  .print\\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  .print\\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   
   .print\\:max-w-none {
