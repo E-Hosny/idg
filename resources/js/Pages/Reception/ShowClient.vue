@@ -260,7 +260,7 @@
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Service') }} | الخدمة</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Delivery Type') }} | نوع التسليم</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Weight') }} | الوزن</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Price') }} | السعر</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400 print:hidden">{{ __('Price') }} | السعر</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Notes') }} | ملاحظات</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Status') }} | الحالة</th>
                   <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm font-bold text-black print:hidden">{{ __('Actions') }}</th>
@@ -292,7 +292,7 @@
                     </div>
                     <div v-else class="text-sm print:text-xs text-black">-</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 print:hidden">
                     <div v-if="artifact.price" class="text-sm print:text-xs font-semibold text-black">
                       {{ artifact.price }} SAR
                     </div>
@@ -318,7 +318,7 @@
                   </td>
                 </tr>
                 <tr v-if="!client.artifacts.length">
-                  <td colspan="10" class="px-6 py-12 text-center">
+                  <td colspan="10" class="px-6 py-12 text-center print:colspan-9">
                     <div class="text-gray-400">
                       <i class="fas fa-inbox text-4xl mb-3 block"></i>
                       <div class="text-lg font-medium">{{ __('No items found.') }}</div>
