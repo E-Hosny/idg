@@ -11,7 +11,19 @@
       <!-- Advanced Search Form -->
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Advanced Search') }}</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Customer Name Search -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Customer Name') }}</label>
+            <input 
+              v-model="searchForm.full_name" 
+              type="text" 
+              :placeholder="__('Enter customer name')"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              @input="debouncedSearch"
+            />
+          </div>
+
           <!-- Customer Code Search -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Customer Code') }}</label>
@@ -134,6 +146,7 @@ export default {
   data() {
     return {
       searchForm: {
+        full_name: '',
         customer_code: '',
         phone: '',
         email: ''
@@ -148,11 +161,13 @@ export default {
       }
 
       return (this.clients.data || []).filter(client => {
+        const fullName = this.searchForm.full_name.toLowerCase()
         const customerCode = this.searchForm.customer_code.toLowerCase()
         const phone = this.searchForm.phone.toLowerCase()
         const email = this.searchForm.email.toLowerCase()
 
         return (
+          (fullName === '' || (client.full_name && client.full_name.toLowerCase().includes(fullName))) &&
           (customerCode === '' || (client.customer_code && client.customer_code.toLowerCase().includes(customerCode))) &&
           (phone === '' || (client.phone && client.phone.toLowerCase().includes(phone))) &&
           (email === '' || (client.email && client.email.toLowerCase().includes(email)))
@@ -181,6 +196,8 @@ export default {
         'Are you sure you want to delete': 'هل أنت متأكد من أنك تريد حذف',
         'Error deleting client. Please try again.': 'خطأ في حذف العميل. يرجى المحاولة مرة أخرى.',
         'Advanced Search': 'البحث المتقدم',
+        'Customer Name': 'اسم العميل',
+        'Enter customer name': 'أدخل اسم العميل',
         'Enter customer code': 'أدخل كود العميل',
         'Enter phone number': 'أدخل رقم الهاتف',
         'Enter email address': 'أدخل البريد الإلكتروني',
@@ -233,6 +250,7 @@ export default {
     },
     clearSearch() {
       this.searchForm = {
+        full_name: '',
         customer_code: '',
         phone: '',
         email: ''

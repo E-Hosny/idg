@@ -176,8 +176,8 @@
                   </div>
                 </div>
               </div>
-            </div>
-            
+        </div>
+
             <!-- Action Buttons - Hidden when printing -->
             <div class="text-center border-t-2 border-gray-300 pt-6 print:hidden">
               <div class="flex justify-center gap-4">
@@ -193,8 +193,8 @@
                   <span>Edit Client</span>
                   <span class="mx-3">|</span>
                   <span>تعديل العميل</span>
-                </button>
-              </div>
+            </button>
+          </div>
             </div>
           </div>
         </div>
@@ -214,16 +214,16 @@
             <table class="min-w-full bg-white border-2 border-gray-300">
               <thead>
                 <tr class="bg-gray-100 border-b-2 border-gray-300">
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">#</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Code') }} | الكود</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Type') }} | النوع</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Service') }} | الخدمة</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Delivery Type') }} | نوع التسليم</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Weight') }} | الوزن</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400 print:hidden">{{ __('Price') }} | السعر</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Notes') }} | ملاحظات</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Status') }} | الحالة</th>
-                  <th class="px-2 py-2 print:px-1 print:py-1 text-left text-sm font-bold text-black print:hidden">{{ __('Actions') }}</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">#</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">Item/Product ID - تعريف العينة للمنتج</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">Item type - نوع الصنف</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Service') }} | الخدمة</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">Delivery Type/Date - طريقة وتاريخ التسليم</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Weight') }} | الوزن</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400 print:hidden">{{ __('Price') }} | السعر</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400">{{ __('Notes') }} | ملاحظات</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm print:text-xs font-bold text-black border-r border-gray-400 print:hidden">{{ __('Status') }} | الحالة</th>
+                  <th class="px-2 py-2 print:px-1 print:py-1 text-center text-sm font-bold text-black print:hidden">{{ __('Actions') }}</th>
                 </tr>
               </thead>
               <tbody class="bg-white">
@@ -231,19 +231,19 @@
                   <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs font-medium text-black">{{ idx + 1 }}</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs font-medium text-black">{{ artifact.artifact_code || '-' }}</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.type }}</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.service || '-' }}</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.delivery_type || '-' }}</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div v-if="artifact.weight" class="text-sm print:text-xs text-black">
                       {{ artifact.weight }} 
                       <span v-if="artifact.weight_unit" class="text-black text-xs print:text-[10px] ml-1">
@@ -252,16 +252,16 @@
                     </div>
                     <div v-else class="text-sm print:text-xs text-black">-</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 print:hidden">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 print:hidden text-center">
                     <div v-if="artifact.price" class="text-sm print:text-xs font-semibold text-black">
                       {{ artifact.price }} SAR
                     </div>
                     <div v-else class="text-sm print:text-xs text-black">-</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.notes || '-' }}</div>
                   </td>
-                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400">
+                  <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center print:hidden">
                     <div class="text-sm print:text-xs font-medium text-black bg-gray-100 px-1 py-1 border border-gray-400 text-center">
                       {{ __(artifact.status) }}
                     </div>
@@ -278,8 +278,8 @@
                   </td>
                 </tr>
                 <tr v-if="!client.artifacts.length">
-                  <td colspan="10" class="px-6 py-12 text-center print:colspan-9">
-                    <div class="text-gray-400">
+                  <td colspan="10" class="px-6 py-12 text-center print:colspan-7">
+                    <div class="text-gray-400 text-center">
                       <i class="fas fa-inbox text-4xl mb-3 block"></i>
                       <div class="text-lg font-medium">{{ __('No items found.') }}</div>
                       <div class="text-sm">{{ __('This client has no items registered yet.') }}</div>
@@ -485,7 +485,7 @@ export default {
     }
   }
 }
-</script>
+</script> 
 
 <style>
 /* Print-specific styles */
