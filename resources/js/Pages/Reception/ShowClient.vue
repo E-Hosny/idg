@@ -173,6 +173,7 @@
                       <span class="font-bold text-black text-base print:text-sm">Delivery Date وقت التسليم</span>
                       <span class="text-black text-lg print:text-sm font-medium">{{ client.delivery_date || 'Not scheduled' }}</span>
                     </div>
+                    
                   </div>
                 </div>
               </div>
@@ -246,7 +247,7 @@
                   <td class="px-2 py-2 print:px-1 print:py-1 border-r border-gray-400 text-center">
                     <div v-if="artifact.weight" class="text-sm print:text-xs text-black">
                       {{ artifact.weight }} 
-                      <span v-if="artifact.weight_unit" class="text-black text-xs print:text-[10px] ml-1">
+                         <span v-if="artifact.weight_unit" class="text-black text-xs print:text-10px ml-1">
                         {{ __(artifact.weight_unit) }}
                       </span>
                     </div>
@@ -300,65 +301,64 @@
             </h3>
           </div>
           
-          <div class="overflow-x-auto print:overflow-visible">
-            <table class="w-full border-2 border-gray-300 border-collapse">
-              <tbody>
-                <!-- Row 1: Delivered by and Received by -->
-                <tr class="border-b-2 border-gray-300">
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
-                    <div class="text-base print:text-sm font-semibold text-black mb-2">
-                      Delivered by: سُلم بواسطة
-                    </div>
-                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center">
-                      {{ $page.props.auth?.user?.name || 'System User' }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
-                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
-                      Signature التوقيع:
-                    </div>
-                    <div class="bg-white p-3 print:p-2 border border-gray-300 min-h-[60px]">
-                      <!-- Empty signature space -->
-                    </div>
-                  </td>
-                  <td class="px-4 py-6 print:px-2 print:py-4 w-1/3 bg-gray-50 print:bg-gray-100">
-                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
-                      Date التاريخ:
-                    </div>
-                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center justify-center">
-                      {{ client.received_date || new Date().toLocaleDateString() }}
-                    </div>
-                  </td>
-                </tr>
-                <!-- Row 2: Received by -->
-                <tr>
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
-                    <div class="text-base print:text-sm font-semibold text-black mb-2">
-                      Received by: أُستلم بواسطة
-                    </div>
-                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center">
-                      {{ client.full_name || 'Client Name' }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-6 print:px-2 print:py-4 border-r-2 border-gray-300 w-1/3 bg-gray-50 print:bg-gray-100">
-                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
-                      Signature التوقيع:
-                    </div>
-                    <div class="bg-white p-3 print:p-2 border border-gray-300 min-h-[60px]">
-                      <!-- Empty signature space -->
-                    </div>
-                  </td>
-                  <td class="px-4 py-6 print:px-2 print:py-4 w-1/3 bg-gray-50 print:bg-gray-100">
-                    <div class="text-base print:text-sm font-semibold text-black mb-2 text-center">
-                      Date التاريخ:
-                    </div>
-                    <div class="text-lg print:text-base font-medium text-black bg-white p-3 print:p-2 border border-gray-300 min-h-[60px] flex items-center justify-center">
-                      {{ getCurrentDate() }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6 print:gap-2">
+            <!-- Column 1: Delivery Information -->
+            <div class="space-y-4 print:space-y-2">
+              <!-- Delivered By -->
+              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-black text-base print:text-sm">Delivered by - سُلم بواسطة</span>
+                  <span class="text-black text-lg print:text-sm font-medium">{{ $page.props.auth?.user?.name || 'System User' }}</span>
+                </div>
+              </div>
+              
+              <!-- Delivery Date -->
+              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-black text-base print:text-sm">Delivery Date - تاريخ التسليم</span>
+                  <span class="text-black text-lg print:text-sm font-medium">{{ client.received_date || new Date().toLocaleDateString() }}</span>
+                </div>
+              </div>
+              
+              <!-- Delivery Signature -->
+              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-black text-base print:text-sm">Delivery Signature - توقيع التسليم</span>
+                  <div class="bg-white border border-gray-300 w-48 h-16 print:w-36 print:h-12 flex items-center justify-center text-gray-400 text-xs">
+                    <!-- Empty signature space -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Column 2: Reception Information -->
+            <div class="space-y-4 print:space-y-2">
+              <!-- Received By -->
+              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-black text-base print:text-sm">Received by - أُستلم بواسطة</span>
+                  <span class="text-black text-lg print:text-sm font-medium">{{ client.full_name || 'Client Name' }}</span>
+                </div>
+              </div>
+              
+              <!-- Reception Date -->
+              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-black text-base print:text-sm">Reception Date - تاريخ الاستلام</span>
+                  <span class="text-black text-lg print:text-sm font-medium">{{ getCurrentDate() }}</span>
+                </div>
+              </div>
+              
+              <!-- Reception Signature -->
+              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-black text-base print:text-sm">Reception Signature - توقيع الاستلام</span>
+                  <div class="bg-white border border-gray-300 w-48 h-16 print:w-36 print:h-12 flex items-center justify-center text-gray-400 text-xs">
+                    <!-- Empty signature space -->
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -542,13 +542,13 @@ export default {
     font-size: 12pt !important;
   }
   
-  .print\\:text-\\[9px\\] {
-    font-size: 8pt !important;
-  }
-  
-  .print\\:text-\\[10px\\] {
-    font-size: 9pt !important;
-  }
+           .print\\:text-9px {
+             font-size: 8pt !important;
+           }
+           
+           .print\\:text-10px {
+             font-size: 9pt !important;
+           }
   
   /* Print-specific spacing */
   .print\\:px-1 {
