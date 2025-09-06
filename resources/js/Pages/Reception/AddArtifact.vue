@@ -76,12 +76,6 @@ export default {
   setup(props) {
     const { locale } = usePage().props;
     
-    // مراقب تغيير نوع القطعة لتحديث وحدة الوزن
-    watch(() => form.type, (newType) => {
-      if (newType) {
-        updateWeightUnit(newType);
-      }
-    });
     // Type options
     const typeOptions = [
       { value: 'Colored Gemstones', label: locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
@@ -157,6 +151,22 @@ export default {
       notes: '',
       client_id: props.client_id
     })
+
+    // تحديث وحدة الوزن تلقائياً عند تغيير نوع القطعة
+    const updateWeightUnit = (newType) => {
+      if (newType === 'Jewellery') {
+        form.weight_unit = 'gm'; // مجوهرات: جرام
+      } else {
+        form.weight_unit = 'ct'; // باقي الأنواع: قيراط
+      }
+    };
+
+    // مراقب تغيير نوع القطعة لتحديث وحدة الوزن
+    watch(() => form.type, (newType) => {
+      if (newType) {
+        updateWeightUnit(newType);
+      }
+    });
 
     // متغيرات السعر
     const calculatedPrice = ref('')
@@ -239,15 +249,6 @@ export default {
         alert('خطأ في حساب السعر. يرجى المحاولة مرة أخرى.')
       }
     }
-
-    // تحديث وحدة الوزن تلقائياً عند تغيير نوع القطعة
-    const updateWeightUnit = (newType) => {
-      if (newType === 'Jewellery') {
-        form.weight_unit = 'gm'; // مجوهرات: جرام
-      } else {
-        form.weight_unit = 'ct'; // باقي الأنواع: قيراط
-      }
-    };
 
     // إعادة تعيين الخدمة عند تغيير نوع القطعة
     const resetServiceWhenTypeChanges = () => {
