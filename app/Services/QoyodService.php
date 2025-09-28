@@ -249,6 +249,19 @@ class QoyodService
                 return true;
             }
 
+            // Handle 404 as success (customer might already be deleted)
+            if ($response->status() === 404) {
+                Log::info('Customer not found in Qoyod (already deleted)', [
+                    'customer_id' => $customerId
+                ]);
+                
+                // Clear cache anyway
+                $this->clearCustomersCache();
+                Cache::forget("qoyod_customer_{$customerId}");
+                
+                return true;
+            }
+
             Log::error('Failed to delete customer from Qoyod', [
                 'customer_id' => $customerId,
                 'status' => $response->status(),

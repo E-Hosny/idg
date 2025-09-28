@@ -727,14 +727,28 @@ class DashboardController extends Controller
                 'name' => 'required|string|max:255',
                 'organization' => 'nullable|string|max:255',
                 'email' => 'nullable|email|max:255',
-                'phone' => 'nullable|string|max:255',
+                'phone_number' => 'nullable|string|max:255',
+                'secondary_phone_number' => 'nullable|string|max:255',
+                'website' => 'nullable|url|max:255',
+                'address' => 'nullable|string|max:500',
+                'city' => 'nullable|string|max:255',
+                'state' => 'nullable|string|max:255',
+                'postal_code' => 'nullable|string|max:20',
+                'country' => 'nullable|string|max:255',
+                'tax_number' => 'nullable|string|max:255',
+                'commercial_registration_number' => 'nullable|string|max:255',
+                'status' => 'nullable|string|in:Active,Inactive',
+                'credit_limit' => 'nullable|numeric|min:0',
+                'pos' => 'nullable|boolean',
+                'government_entity' => 'nullable|boolean',
+                'allow_credit' => 'nullable|boolean',
+                'notes' => 'nullable|string|max:1000',
             ]);
 
-            // Map phone to phone_number for Qoyod API
-            if (isset($validatedData['phone'])) {
-                $validatedData['phone_number'] = $validatedData['phone'];
-                unset($validatedData['phone']);
-            }
+            // Convert boolean fields
+            $validatedData['pos'] = $request->boolean('pos');
+            $validatedData['government_entity'] = $request->boolean('government_entity');
+            $validatedData['allow_credit'] = $request->boolean('allow_credit');
 
             $qoyodService = new \App\Services\QoyodService();
             $result = $qoyodService->createCustomer($validatedData);
@@ -762,14 +776,28 @@ class DashboardController extends Controller
                 'name' => 'required|string|max:255',
                 'organization' => 'nullable|string|max:255',
                 'email' => 'nullable|email|max:255',
-                'phone' => 'nullable|string|max:255',
+                'phone_number' => 'nullable|string|max:255',
+                'secondary_phone_number' => 'nullable|string|max:255',
+                'website' => 'nullable|url|max:255',
+                'address' => 'nullable|string|max:500',
+                'city' => 'nullable|string|max:255',
+                'state' => 'nullable|string|max:255',
+                'postal_code' => 'nullable|string|max:20',
+                'country' => 'nullable|string|max:255',
+                'tax_number' => 'nullable|string|max:255',
+                'commercial_registration_number' => 'nullable|string|max:255',
+                'status' => 'nullable|string|in:Active,Inactive',
+                'credit_limit' => 'nullable|numeric|min:0',
+                'pos' => 'nullable|boolean',
+                'government_entity' => 'nullable|boolean',
+                'allow_credit' => 'nullable|boolean',
+                'notes' => 'nullable|string|max:1000',
             ]);
 
-            // Map phone to phone_number for Qoyod API
-            if (isset($validatedData['phone'])) {
-                $validatedData['phone_number'] = $validatedData['phone'];
-                unset($validatedData['phone']);
-            }
+            // Convert boolean fields
+            $validatedData['pos'] = $request->boolean('pos');
+            $validatedData['government_entity'] = $request->boolean('government_entity');
+            $validatedData['allow_credit'] = $request->boolean('allow_credit');
 
             $qoyodService = new \App\Services\QoyodService();
             $result = $qoyodService->updateCustomer($customerId, $validatedData);

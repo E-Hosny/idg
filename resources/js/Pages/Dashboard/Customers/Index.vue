@@ -217,50 +217,254 @@
                     {{ __('Add New Customer') }}
                   </h3>
                   
-                  <div class="space-y-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700">
-                        {{ __('Customer Name') }} *
-                      </label>
-                      <input
-                        v-model="newCustomer.name"
-                        type="text"
-                        required
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                      />
+                  <div class="space-y-6">
+                    <!-- Basic Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Basic Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Customer Name') }} *
+                          </label>
+                          <input
+                            v-model="newCustomer.name"
+                            type="text"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Organization Name') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.organization"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700">
-                        {{ __('Organization Name') }}
-                      </label>
-                      <input
-                        v-model="newCustomer.organization"
-                        type="text"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                      />
+
+                    <!-- Contact Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Contact Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Email') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.email"
+                            type="email"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Phone Number') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.phone_number"
+                            type="tel"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Secondary Phone') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.secondary_phone_number"
+                            type="tel"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Website') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.website"
+                            type="url"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700">
-                        {{ __('Email') }}
-                      </label>
-                      <input
-                        v-model="newCustomer.email"
-                        type="email"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                      />
+
+                    <!-- Address Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Address Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Address') }}
+                          </label>
+                          <textarea
+                            v-model="newCustomer.address"
+                            rows="3"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          ></textarea>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('City') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.city"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('State') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.state"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Postal Code') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.postal_code"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Country') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.country"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    
+
+                    <!-- Tax and Legal Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Tax and Legal Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Tax Number') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.tax_number"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Commercial Registration') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.commercial_registration_number"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Business Settings -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Business Settings') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Status') }}
+                          </label>
+                          <select
+                            v-model="newCustomer.status"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="Active">{{ __('Active') }}</option>
+                            <option value="Inactive">{{ __('Inactive') }}</option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Credit Limit') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.credit_limit"
+                            type="number"
+                            step="0.01"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div class="mt-4 space-y-3">
+                        <div class="flex items-center">
+                          <input
+                            v-model="newCustomer.pos"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('POS Enabled') }}
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
+                            v-model="newCustomer.government_entity"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('Government Entity') }}
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
+                            v-model="newCustomer.allow_credit"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('Allow Credit') }}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Additional Information -->
                     <div>
-                      <label class="block text-sm font-medium text-gray-700">
-                        {{ __('Phone') }}
-                      </label>
-                      <input
-                        v-model="newCustomer.phone"
-                        type="tel"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                      />
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Additional Information') }}</h4>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                          {{ __('Notes') }}
+                        </label>
+                        <textarea
+                          v-model="newCustomer.notes"
+                          rows="3"
+                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                        ></textarea>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -285,6 +489,465 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Customer Modal -->
+    <div v-if="showEditCustomerModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showEditCustomerModal = false"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <form @submit.prevent="updateCustomer">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="w-full">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    {{ __('Edit Customer') }}
+                  </h3>
+                  
+                  <div class="space-y-6">
+                    <!-- Basic Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Basic Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Customer Name') }} *
+                          </label>
+                          <input
+                            v-model="editCustomerData.name"
+                            type="text"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Organization Name') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.organization"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Contact Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Email') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.email"
+                            type="email"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Phone Number') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.phone_number"
+                            type="tel"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Secondary Phone') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.secondary_phone_number"
+                            type="tel"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Website') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.website"
+                            type="url"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Address Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Address') }}
+                          </label>
+                          <textarea
+                            v-model="editCustomerData.address"
+                            rows="3"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          ></textarea>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('City') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.city"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('State') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.state"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Postal Code') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.postal_code"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Country') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.country"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Tax and Legal Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Tax and Legal Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Tax Number') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.tax_number"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Commercial Registration') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.commercial_registration_number"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Business Settings -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Business Settings') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Status') }}
+                          </label>
+                          <select
+                            v-model="editCustomerData.status"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="Active">{{ __('Active') }}</option>
+                            <option value="Inactive">{{ __('Inactive') }}</option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Credit Limit') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.credit_limit"
+                            type="number"
+                            step="0.01"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div class="mt-4 space-y-3">
+                        <div class="flex items-center">
+                          <input
+                            v-model="editCustomerData.pos"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('POS Enabled') }}
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
+                            v-model="editCustomerData.government_entity"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('Government Entity') }}
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
+                            v-model="editCustomerData.allow_credit"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('Allow Credit') }}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Additional Information') }}</h4>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                          {{ __('Notes') }}
+                        </label>
+                        <textarea
+                          v-model="editCustomerData.notes"
+                          rows="3"
+                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                type="submit"
+                :disabled="editingCustomer"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                <i v-if="editingCustomer" class="fas fa-spinner fa-spin mr-2"></i>
+                {{ editingCustomer ? __('Updating...') : __('Update Customer') }}
+              </button>
+              <button
+                type="button"
+                @click="showEditCustomerModal = false"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                {{ __('Cancel') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Customer Modal -->
+    <div v-if="showViewCustomerModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showViewCustomerModal = false"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="w-full">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  {{ __('Customer Details') }}
+                </h3>
+                
+                <div v-if="selectedCustomer" class="space-y-6">
+                  <!-- Basic Information -->
+                  <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Basic Information') }}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Reference Number') }}</label>
+                        <p class="mt-1 text-sm text-gray-900 font-mono">{{ formatQoyodReferenceNumber(selectedCustomer.id) }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Customer Name') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.name || selectedCustomer.display_name || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Organization Name') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.organization || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Status') }}</label>
+                        <span 
+                          class="inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1"
+                          :class="(selectedCustomer.status && selectedCustomer.status.toLowerCase() === 'active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                        >
+                          {{ (selectedCustomer.status && selectedCustomer.status.toLowerCase() === 'active') ? __('Active') : __('Inactive') }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Contact Information -->
+                  <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Contact Information') }}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Email') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.email || selectedCustomer.email_address || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Phone Number') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.phone_number || selectedCustomer.phone || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Secondary Phone') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.secondary_phone_number || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Website') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.website || '-' }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Address Information -->
+                  <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Address Information') }}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Address') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.address || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('City') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.city || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('State') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.state || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Postal Code') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.postal_code || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Country') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.country || '-' }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tax and Legal Information -->
+                  <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Tax and Legal Information') }}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Tax Number') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.tax_number || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Commercial Registration') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.commercial_registration_number || '-' }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Business Settings -->
+                  <div class="border-b border-gray-200 pb-4">
+                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Business Settings') }}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Credit Limit') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.credit_limit || '-' }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ __('Created Date') }}</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ formatDate(selectedCustomer.created_at) }}</p>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-4 space-y-2">
+                      <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-700 mr-2">{{ __('POS Enabled') }}:</span>
+                        <span class="text-sm" :class="selectedCustomer.pos ? 'text-green-600' : 'text-gray-500'">
+                          {{ selectedCustomer.pos ? __('Yes') : __('No') }}
+                        </span>
+                      </div>
+                      <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-700 mr-2">{{ __('Government Entity') }}:</span>
+                        <span class="text-sm" :class="selectedCustomer.government_entity ? 'text-green-600' : 'text-gray-500'">
+                          {{ selectedCustomer.government_entity ? __('Yes') : __('No') }}
+                        </span>
+                      </div>
+                      <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-700 mr-2">{{ __('Allow Credit') }}:</span>
+                        <span class="text-sm" :class="selectedCustomer.allow_credit ? 'text-green-600' : 'text-gray-500'">
+                          {{ selectedCustomer.allow_credit ? __('Yes') : __('No') }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Additional Information -->
+                  <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Additional Information') }}</h4>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700">{{ __('Notes') }}</label>
+                      <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.notes || '-' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              @click="showViewCustomerModal = false"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              {{ __('Close') }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -323,11 +986,51 @@ export default {
       statusFilter: '',
       showAddCustomerModal: false,
       addingCustomer: false,
+      showEditCustomerModal: false,
+      showViewCustomerModal: false,
+      editingCustomer: false,
+      selectedCustomer: null,
       newCustomer: {
         name: '',
         organization: '',
         email: '',
-        phone: ''
+        phone_number: '',
+        secondary_phone_number: '',
+        website: '',
+        address: '',
+        city: '',
+        state: '',
+        postal_code: '',
+        country: '',
+        tax_number: '',
+        commercial_registration_number: '',
+        status: 'Active',
+        credit_limit: '',
+        pos: false,
+        government_entity: false,
+        allow_credit: false,
+        notes: ''
+      },
+      editCustomerData: {
+        name: '',
+        organization: '',
+        email: '',
+        phone_number: '',
+        secondary_phone_number: '',
+        website: '',
+        address: '',
+        city: '',
+        state: '',
+        postal_code: '',
+        country: '',
+        tax_number: '',
+        commercial_registration_number: '',
+        status: 'Active',
+        credit_limit: '',
+        pos: false,
+        government_entity: false,
+        allow_credit: false,
+        notes: ''
       }
     }
   },
@@ -384,7 +1087,27 @@ export default {
         this.$inertia.post('/dashboard/customers', this.newCustomer, {
           onSuccess: () => {
         // Reset form
-        this.newCustomer = { name: '', organization: '', email: '', phone: '' }
+        this.newCustomer = {
+          name: '',
+          organization: '',
+          email: '',
+          phone_number: '',
+          secondary_phone_number: '',
+          website: '',
+          address: '',
+          city: '',
+          state: '',
+          postal_code: '',
+          country: '',
+          tax_number: '',
+          commercial_registration_number: '',
+          status: 'Active',
+          credit_limit: '',
+          pos: false,
+          government_entity: false,
+          allow_credit: false,
+          notes: ''
+        }
             this.showAddCustomerModal = false
           },
           onError: (errors) => {
@@ -399,13 +1122,54 @@ export default {
     },
     
     viewCustomer(customer) {
-      // TODO: Implement customer view
-      console.log('View customer:', customer)
+      this.selectedCustomer = customer
+      this.showViewCustomerModal = true
     },
     
     editCustomer(customer) {
-      // TODO: Implement customer edit
-      console.log('Edit customer:', customer)
+      this.selectedCustomer = customer
+      // Copy customer data to edit form
+      this.editCustomerData = {
+        name: customer.name || customer.display_name || '',
+        organization: customer.organization || '',
+        email: customer.email || customer.email_address || '',
+        phone_number: customer.phone_number || customer.phone || '',
+        secondary_phone_number: customer.secondary_phone_number || '',
+        website: customer.website || '',
+        address: customer.address || '',
+        city: customer.city || '',
+        state: customer.state || '',
+        postal_code: customer.postal_code || '',
+        country: customer.country || '',
+        tax_number: customer.tax_number || '',
+        commercial_registration_number: customer.commercial_registration_number || '',
+        status: customer.status || 'Active',
+        credit_limit: customer.credit_limit || '',
+        pos: customer.pos || false,
+        government_entity: customer.government_entity || false,
+        allow_credit: customer.allow_credit || false,
+        notes: customer.notes || ''
+      }
+      this.showEditCustomerModal = true
+    },
+    
+    async updateCustomer() {
+      this.editingCustomer = true
+      try {
+        this.$inertia.put(`/dashboard/customers/${this.selectedCustomer.id}`, this.editCustomerData, {
+          onSuccess: () => {
+            this.showEditCustomerModal = false
+            this.selectedCustomer = null
+          },
+          onError: (errors) => {
+            console.error('Error updating customer:', errors)
+          }
+        })
+      } catch (error) {
+        console.error('Error updating customer:', error)
+      } finally {
+        this.editingCustomer = false
+      }
     },
     
     deleteCustomer(customer) {
@@ -468,7 +1232,36 @@ export default {
           'Reference Number': 'Reference Number',
           'Adding...': 'Adding...',
           'Cancel': 'Cancel',
-          'Are you sure you want to delete this customer?': 'Are you sure you want to delete this customer?'
+          'Are you sure you want to delete this customer?': 'Are you sure you want to delete this customer?',
+          'Basic Information': 'Basic Information',
+          'Contact Information': 'Contact Information',
+          'Address Information': 'Address Information',
+          'Tax and Legal Information': 'Tax and Legal Information',
+          'Business Settings': 'Business Settings',
+          'Additional Information': 'Additional Information',
+          'Phone Number': 'Phone Number',
+          'Secondary Phone': 'Secondary Phone',
+          'Website': 'Website',
+          'Address': 'Address',
+          'City': 'City',
+          'State': 'State',
+          'Postal Code': 'Postal Code',
+          'Country': 'Country',
+          'Tax Number': 'Tax Number',
+          'Commercial Registration': 'Commercial Registration',
+          'Credit Limit': 'Credit Limit',
+          'POS Enabled': 'POS Enabled',
+          'Government Entity': 'Government Entity',
+          'Allow Credit': 'Allow Credit',
+          'Notes': 'Notes',
+          'Edit Customer': 'Edit Customer',
+          'Update Customer': 'Update Customer',
+          'Updating...': 'Updating...',
+          'Customer Details': 'Customer Details',
+          'Close': 'Close',
+          'Created Date': 'Created Date',
+          'Yes': 'Yes',
+          'No': 'No'
         },
         ar: {
           'Customers': 'العملاء',
@@ -498,7 +1291,36 @@ export default {
           'Reference Number': 'الرقم المرجعي',
           'Adding...': 'جاري الإضافة...',
           'Cancel': 'إلغاء',
-          'Are you sure you want to delete this customer?': 'هل أنت متأكد من حذف هذا العميل؟'
+          'Are you sure you want to delete this customer?': 'هل أنت متأكد من حذف هذا العميل؟',
+          'Basic Information': 'المعلومات الأساسية',
+          'Contact Information': 'معلومات الاتصال',
+          'Address Information': 'معلومات العنوان',
+          'Tax and Legal Information': 'المعلومات الضريبية والقانونية',
+          'Business Settings': 'إعدادات العمل',
+          'Additional Information': 'معلومات إضافية',
+          'Phone Number': 'رقم الهاتف',
+          'Secondary Phone': 'الهاتف الثانوي',
+          'Website': 'الموقع الإلكتروني',
+          'Address': 'العنوان',
+          'City': 'المدينة',
+          'State': 'المنطقة',
+          'Postal Code': 'الرمز البريدي',
+          'Country': 'البلد',
+          'Tax Number': 'الرقم الضريبي',
+          'Commercial Registration': 'السجل التجاري',
+          'Credit Limit': 'حد الائتمان',
+          'POS Enabled': 'نقاط البيع مفعلة',
+          'Government Entity': 'جهة حكومية',
+          'Allow Credit': 'السماح بالائتمان',
+          'Notes': 'ملاحظات',
+          'Edit Customer': 'تعديل العميل',
+          'Update Customer': 'تحديث العميل',
+          'Updating...': 'جاري التحديث...',
+          'Customer Details': 'تفاصيل العميل',
+          'Close': 'إغلاق',
+          'Created Date': 'تاريخ الإنشاء',
+          'Yes': 'نعم',
+          'No': 'لا'
         }
       }
 
