@@ -72,6 +72,15 @@
                 <i class="fas fa-user-plus w-5 h-5 ml-3"></i>
                 <span class="ml-3">{{ __('Reception') }}</span>
               </Link>
+
+              <Link 
+                :href="$route('dashboard.customers')" 
+                class="sidebar-link"
+                :class="{ 'active': $page.component.startsWith('Dashboard/Customers') }"
+              >
+                <i class="fas fa-users w-5 h-5 ml-3"></i>
+                <span class="ml-3">{{ __('Customers') }}</span>
+              </Link>
             </div>
           </nav>
 
@@ -261,6 +270,7 @@ export default {
           'Categories': 'Categories',
           'Analytics': 'Analytics',
           'Reception': 'Reception',
+          'Customers': 'Customers',
           'Profile': 'Profile',
           'Settings': 'Settings',
           'Logout': 'Logout'
@@ -273,6 +283,7 @@ export default {
           'Categories': 'الفئات',
           'Analytics': 'التحليلات',
           'Reception': 'الاستقبال',
+          'Customers': 'العملاء',
           'Profile': 'الملف الشخصي',
           'Settings': 'الإعدادات',
           'Logout': 'تسجيل الخروج'

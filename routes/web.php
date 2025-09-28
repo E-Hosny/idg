@@ -30,6 +30,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/evaluations', [DashboardController::class, 'evaluations'])->name('dashboard.evaluations');
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('dashboard.analytics');
+    Route::get('/dashboard/customers', [DashboardController::class, 'customers'])->name('dashboard.customers');
+    Route::post('/dashboard/customers', [DashboardController::class, 'storeCustomer'])->name('dashboard.customers.store');
+    Route::put('/dashboard/customers/{customer}', [DashboardController::class, 'updateCustomer'])->name('dashboard.customers.update');
+    Route::delete('/dashboard/customers/{customer}', [DashboardController::class, 'deleteCustomer'])->name('dashboard.customers.delete');
     Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
     Route::post('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'storeEvaluation'])->name('dashboard.artifacts.evaluate.store');
     Route::get('/dashboard/artifacts/{artifact}/evaluation', [\App\Http\Controllers\DashboardController::class, 'showEvaluation'])->name('dashboard.artifacts.evaluation.show');

@@ -680,6 +680,139 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function customers(Request $request)
+    {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Get page and per_page from request
+            $page = $request->get('page', 1);
+            $perPage = $request->get('per_page', 50);
+            
+            // Fetch customers from Qoyod API
+            $response = $qoyodService->getCustomers($page, $perPage);
+            
+            $customers = $response['data'] ?? [];
+            $meta = $response['meta'] ?? [];
+            
+            return Inertia::render('Dashboard/Customers/Index', [
+                'customers' => $customers,
+                'meta' => $meta,
+                'currentPage' => $page,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching customers from Qoyod', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return empty list on error
+            return Inertia::render('Dashboard/Customers/Index', [
+                'customers' => [],
+                'meta' => [
+                    'current_page' => 1,
+                    'per_page' => 50,
+                    'total' => 0
+                ],
+                'currentPage' => 1,
+                'error' => 'Failed to load customers from Qoyod. Please check your API configuration.'
+            ]);
+        }
+    }
+
+    public function storeCustomer(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'organization' => 'nullable|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'phone' => 'nullable|string|max:255',
+            ]);
+
+            // Map phone to phone_number for Qoyod API
+            if (isset($validatedData['phone'])) {
+                $validatedData['phone_number'] = $validatedData['phone'];
+                unset($validatedData['phone']);
+            }
+
+            $qoyodService = new \App\Services\QoyodService();
+            $result = $qoyodService->createCustomer($validatedData);
+
+            if ($result) {
+                return redirect()->route('dashboard.customers')
+                    ->with('success', 'Customer created successfully in Qoyod!');
+            } else {
+                return back()->withErrors(['error' => 'Failed to create customer in Qoyod. Please try again.']);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error creating customer', [
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+
+            return back()->withErrors(['error' => 'An error occurred while creating the customer. Please try again.']);
+        }
+    }
+
+    public function updateCustomer(Request $request, $customerId)
+    {
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'organization' => 'nullable|string|max:255',
+                'email' => 'nullable|email|max:255',
+                'phone' => 'nullable|string|max:255',
+            ]);
+
+            // Map phone to phone_number for Qoyod API
+            if (isset($validatedData['phone'])) {
+                $validatedData['phone_number'] = $validatedData['phone'];
+                unset($validatedData['phone']);
+            }
+
+            $qoyodService = new \App\Services\QoyodService();
+            $result = $qoyodService->updateCustomer($customerId, $validatedData);
+
+            if ($result) {
+                return redirect()->route('dashboard.customers')
+                    ->with('success', 'Customer updated successfully in Qoyod!');
+            } else {
+                return back()->withErrors(['error' => 'Failed to update customer in Qoyod. Please try again.']);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error updating customer', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+
+            return back()->withErrors(['error' => 'An error occurred while updating the customer. Please try again.']);
+        }
+    }
+
+    public function deleteCustomer($customerId)
+    {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            $result = $qoyodService->deleteCustomer($customerId);
+
+            if ($result) {
+                return redirect()->route('dashboard.customers')
+                    ->with('success', 'Customer deleted successfully from Qoyod!');
+            } else {
+                return back()->withErrors(['error' => 'Failed to delete customer from Qoyod. Please try again.']);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error deleting customer', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->withErrors(['error' => 'An error occurred while deleting the customer. Please try again.']);
+        }
+    }
+
     /**
      * Edit artifact evaluation
      */

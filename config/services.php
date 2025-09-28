@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'qoyod' => [
+        'base_url' => env('QOYOD_BASE_URL', 'https://www.qoyod.com/api/2.0'),
+        'api_key' => env('QOYOD_API_KEY'),
+        'timeout' => env('QOYOD_TIMEOUT', 30),
+    ],
+
 ];
