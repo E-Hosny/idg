@@ -22,8 +22,11 @@ export default defineConfig({
     ],
     server: {
         host: '127.0.0.1',
-        port: 5173,
-        cors: true,
+        port: 5174,
+        cors: {
+            origin: ['http://127.0.0.1:8000', 'http://localhost:8000'],
+            credentials: true,
+        },
         hmr: {
             host: '127.0.0.1',
         },
