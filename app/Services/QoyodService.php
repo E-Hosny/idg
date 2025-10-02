@@ -108,7 +108,9 @@ class QoyodService
                     Log::info('Qoyod customer fetched successfully', [
                         'customer_id' => $customerId
                     ]);
-                    return $data;
+                    
+                    // Extract contact data from response
+                    return $data['contact'] ?? $data;
                 }
 
                 Log::error('Failed to fetch customer from Qoyod', [

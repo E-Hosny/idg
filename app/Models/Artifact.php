@@ -13,6 +13,7 @@ class Artifact extends Model
 
     protected $fillable = [
         'client_id',
+        'qoyod_customer_id',
         'artifact_code',
         'type',
         'service',

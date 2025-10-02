@@ -154,6 +154,20 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex items-center justify-end space-x-2">
                     <button 
+                      @click="addArtifactToCustomer(customer)"
+                      class="text-purple-600 hover:text-purple-900"
+                      :title="__('Add Artifact')"
+                    >
+                      <i class="fas fa-gem"></i>
+                    </button>
+                    <button 
+                      @click="viewCustomerArtifacts(customer)"
+                      class="text-orange-600 hover:text-orange-900"
+                      :title="__('View Artifacts')"
+                    >
+                      <i class="fas fa-list"></i>
+                    </button>
+                    <button 
                       @click="viewCustomer(customer)"
                       class="text-green-600 hover:text-green-900"
                     >
@@ -951,6 +965,159 @@
         </div>
       </div>
     </div>
+
+    <!-- Add Artifact Modal -->
+    <div v-if="showAddArtifactModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showAddArtifactModal = false"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <form @submit.prevent="submitArtifact">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="w-full">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    {{ __('Add Artifact for Customer') }}: {{ selectedCustomerForArtifact?.name || selectedCustomerForArtifact?.display_name }}
+                  </h3>
+                  
+                  <div class="space-y-6">
+                    <!-- Artifact Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Artifact Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Type') }} *
+                          </label>
+                          <select
+                            v-model="newArtifact.type"
+                            @change="resetServiceWhenTypeChanges"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>{{ __('Select Type') }}</option>
+                            <option v-for="option in typeOptions" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Service') }} *
+                          </label>
+                          <select
+                            v-model="newArtifact.service"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>{{ __('Select Service') }}</option>
+                            <option v-for="option in getServiceOptions(newArtifact.type)" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Weight') }} *
+                          </label>
+                          <div class="flex space-x-2">
+                            <input
+                              v-model="newArtifact.weight"
+                              type="number"
+                              step="0.01"
+                              required
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                              placeholder="0.00"
+                            />
+                            <select
+                              v-model="newArtifact.weight_unit"
+                              class="mt-1 block w-32 border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            >
+                              <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Delivery Type') }}
+                          </label>
+                          <select
+                            v-model="newArtifact.delivery_type"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>{{ __('Select Delivery Type') }}</option>
+                            <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Notes') }}
+                          </label>
+                          <textarea
+                            v-model="newArtifact.notes"
+                            rows="3"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="__('Any additional notes about the artifact...')"
+                          ></textarea>
+                        </div>
+                        
+                        <div v-if="newArtifact.type && newArtifact.service && newArtifact.weight">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Calculated Price') }}
+                          </label>
+                          <div class="flex items-center space-x-2 mt-1">
+                            <input
+                              v-model="newArtifact.price"
+                              type="text"
+                              readonly
+                              class="block w-full border-gray-300 rounded-md shadow-sm bg-gray-50"
+                              placeholder="0.00"
+                            />
+                            <button
+                              type="button"
+                              @click="calculatePriceForNewArtifact"
+                              class="px-3 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              {{ __('Calculate') }}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                type="submit"
+                :disabled="addingArtifact"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                <i v-if="addingArtifact" class="fas fa-spinner fa-spin mr-2"></i>
+                {{ addingArtifact ? __('Adding...') : __('Add Artifact') }}
+              </button>
+              <button
+                type="button"
+                @click="showAddArtifactModal = false"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                {{ __('Cancel') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -1031,7 +1198,39 @@ export default {
         government_entity: false,
         allow_credit: false,
         notes: ''
-      }
+      },
+      // Artifact modal data
+      showAddArtifactModal: false,
+      addingArtifact: false,
+      selectedCustomerForArtifact: null,
+      newArtifact: {
+        type: '',
+        service: '',
+        weight: '',
+        weight_unit: 'ct',
+        delivery_type: '',
+        notes: '',
+        price: ''
+      },
+      // Artifact options (copied from NewClient.vue)
+      typeOptions: [
+        { value: 'Colored Gemstones', label: this.$page.props.locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
+        { value: 'Other Colored Gemstones', label: this.$page.props.locale === 'ar' ? 'أحجار كريمة ملونة أخرى' : 'Other Colored Gemstones' },
+        { value: 'Colorless Diamonds', label: this.$page.props.locale === 'ar' ? 'ألماس عديم اللون' : 'Colorless Diamonds' },
+        { value: 'Jewellery', label: this.$page.props.locale === 'ar' ? 'مجوهرات' : 'Jewellery' },
+      ],
+      weightUnitOptions: [
+        { value: 'ct', label: this.$page.props.locale === 'ar' ? 'قيراط' : 'ct' },
+        { value: 'gm', label: this.$page.props.locale === 'ar' ? 'جرام' : 'gm' },
+      ],
+      deliveryOptions: [
+        { value: 'Regular', label: this.$page.props.locale === 'ar' ? 'عادي' : 'Regular' },
+        { value: 'Express Service', label: this.$page.props.locale === 'ar' ? 'خدمة سريعة' : 'Express Service' },
+        { value: 'Same Day', label: this.$page.props.locale === 'ar' ? 'نفس اليوم' : 'Same Day' },
+        { value: '24 hours', label: this.$page.props.locale === 'ar' ? '24 ساعة' : '24 hours' },
+        { value: '48 hours', label: this.$page.props.locale === 'ar' ? '48 ساعة' : '48 hours' },
+        { value: '72 hours', label: this.$page.props.locale === 'ar' ? '72 ساعة' : '72 hours' },
+      ]
     }
   },
   mounted() {
@@ -1201,6 +1400,174 @@ export default {
       return id.toString().replace(/\d/g, (digit) => arabicNumerals[parseInt(digit)])
     },
     
+    // Artifact functions
+    viewCustomerArtifacts(customer) {
+      // Navigate to customer artifacts page
+      this.$inertia.visit(`/dashboard/customers/${customer.id}/artifacts`)
+    },
+    
+    addArtifactToCustomer(customer) {
+      this.selectedCustomerForArtifact = customer
+      this.newArtifact = {
+        type: '',
+        service: '',
+        weight: '',
+        weight_unit: 'ct',
+        delivery_type: '',
+        notes: '',
+        price: ''
+      }
+      this.showAddArtifactModal = true
+    },
+    
+    getServiceOptions(artifactType) {
+      const locale = this.$page.props.locale || 'en'
+      const allServices = [
+        { value: 'Regular - ID Report', label: locale === 'ar' ? 'عادي - تقرير هوية' : 'Regular - ID Report' },
+        { value: 'Regular - ID + Origin', label: locale === 'ar' ? 'عادي - هوية + أصل' : 'Regular - ID + Origin' },
+        { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
+        { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
+        { value: 'Regular - Diamond Grading Report', label: locale === 'ar' ? 'عادي - تقرير تصنيف الألماس' : 'Regular - Diamond Grading Report' },
+        { value: 'Mini Card Report - Mini Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مصغر' : 'Mini Card Report - Mini Report' },
+        { value: 'Regular - Jewellery Report', label: locale === 'ar' ? 'عادي - تقرير المجوهرات' : 'Regular - Jewellery Report' },
+        { value: 'Mini Card Report - Mini Jewellery Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر' : 'Mini Card Report - Mini Jewellery Report' },
+      ]
+
+      // Filter services based on artifact type
+      switch (artifactType) {
+        case 'Colored Gemstones':
+          return allServices.filter(service => 
+            service.value.includes('ID Report') || service.value.includes('ID + Origin')
+          )
+        case 'Other Colored Gemstones':
+          return allServices.filter(service => 
+            service.value.includes('ID Report') && !service.value.includes('ID + Origin')
+          )
+        case 'Colorless Diamonds':
+          return allServices.filter(service => 
+            service.value.includes('Diamond Grading Report') || service.value.includes('Mini Report')
+          )
+        case 'Jewellery':
+          return allServices.filter(service => 
+            service.value.includes('Jewellery Report')
+          )
+        default:
+          return []
+      }
+    },
+    
+    resetServiceWhenTypeChanges() {
+      const availableServices = this.getServiceOptions(this.newArtifact.type)
+      const currentServiceExists = availableServices.some(service => service.value === this.newArtifact.service)
+      
+      if (!currentServiceExists) {
+        this.newArtifact.service = ''
+      }
+      
+      // Update weight unit based on type
+      if (this.newArtifact.type === 'Jewellery') {
+        this.newArtifact.weight_unit = 'gm'
+      } else {
+        this.newArtifact.weight_unit = 'ct'
+      }
+    },
+    
+    async calculatePriceForNewArtifact() {
+      if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
+        return
+      }
+
+      try {
+        const csrfToken = this.$page.props.csrf_token || 
+                         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                         document.querySelector('input[name="_token"]')?.value
+
+        const response = await fetch('/reception/calculate-price', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            type: this.newArtifact.type,
+            service: this.newArtifact.service,
+            weight: parseFloat(this.newArtifact.weight)
+          })
+        })
+
+        const data = await response.json()
+        const priceValue = parseFloat(data.price)
+        
+        if (data.price && priceValue && !isNaN(priceValue)) {
+          let finalPrice = priceValue
+
+          // Calculate price based on delivery type
+          if (this.newArtifact.delivery_type === 'Same Day') {
+            finalPrice = priceValue * 2
+          } else if (this.newArtifact.delivery_type === '48 hours') {
+            finalPrice = priceValue * 0.7
+          } else if (this.newArtifact.delivery_type === '72 hours') {
+            finalPrice = priceValue * 0.5
+          }
+
+          this.newArtifact.price = finalPrice.toFixed(2)
+        } else {
+          this.newArtifact.price = 'N/A'
+        }
+      } catch (error) {
+        console.error('Error calculating price:', error)
+        this.newArtifact.price = 'Error'
+        alert(this.__('Error calculating price. Please try again.'))
+      }
+    },
+    
+    async submitArtifact() {
+      this.addingArtifact = true
+      try {
+        // Validate required fields
+        if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
+          alert(this.__('Please fill in all required fields (Type, Service, Weight)'))
+          return
+        }
+
+        // Submit artifact to Laravel backend
+        this.$inertia.post('/dashboard/customers/artifacts', {
+          client_id: this.selectedCustomerForArtifact.id,
+          type: this.newArtifact.type,
+          service: this.newArtifact.service,
+          weight: this.newArtifact.weight,
+          weight_unit: this.newArtifact.weight_unit,
+          delivery_type: this.newArtifact.delivery_type,
+          notes: this.newArtifact.notes
+        }, {
+          onSuccess: () => {
+            this.showAddArtifactModal = false
+            this.selectedCustomerForArtifact = null
+            // Reset form
+            this.newArtifact = {
+              type: '',
+              service: '',
+              weight: '',
+              weight_unit: 'ct',
+              delivery_type: '',
+              notes: '',
+              price: ''
+            }
+          },
+          onError: (errors) => {
+            console.error('Error adding artifact:', errors)
+            alert(this.__('Error adding artifact. Please try again.'))
+          }
+        })
+      } catch (error) {
+        console.error('Error adding artifact:', error)
+        alert(this.__('Error adding artifact. Please try again.'))
+      } finally {
+        this.addingArtifact = false
+      }
+    },
+    
     __(key, replace = {}) {
       // Simple translation function
       const translations = {
@@ -1261,7 +1628,26 @@ export default {
           'Close': 'Close',
           'Created Date': 'Created Date',
           'Yes': 'Yes',
-          'No': 'No'
+          'No': 'No',
+          // Artifact translations
+          'Add Artifact': 'Add Artifact',
+          'Add Artifact for Customer': 'Add Artifact for Customer',
+          'Artifact Information': 'Artifact Information',
+          'Type': 'Type',
+          'Service': 'Service',
+          'Weight': 'Weight',
+          'Delivery Type': 'Delivery Type',
+          'Notes': 'Notes',
+          'Select Type': 'Select Type',
+          'Select Service': 'Select Service',
+          'Select Delivery Type': 'Select Delivery Type',
+          'Calculated Price': 'Calculated Price',
+          'Calculate': 'Calculate',
+          'Any additional notes about the artifact...': 'Any additional notes about the artifact...',
+          'Please fill in all required fields (Type, Service, Weight)': 'Please fill in all required fields (Type, Service, Weight)',
+          'Error calculating price. Please try again.': 'Error calculating price. Please try again.',
+          'Error adding artifact. Please try again.': 'Error adding artifact. Please try again.',
+          'View Artifacts': 'View Artifacts'
         },
         ar: {
           'Customers': 'العملاء',
@@ -1320,7 +1706,26 @@ export default {
           'Close': 'إغلاق',
           'Created Date': 'تاريخ الإنشاء',
           'Yes': 'نعم',
-          'No': 'لا'
+          'No': 'لا',
+          // Artifact translations
+          'Add Artifact': 'إضافة قطعة',
+          'Add Artifact for Customer': 'إضافة قطعة للعميل',
+          'Artifact Information': 'معلومات القطعة',
+          'Type': 'النوع',
+          'Service': 'الخدمة',
+          'Weight': 'الوزن',
+          'Delivery Type': 'نوع التسليم',
+          'Notes': 'ملاحظات',
+          'Select Type': 'اختر النوع',
+          'Select Service': 'اختر الخدمة',
+          'Select Delivery Type': 'اختر نوع التسليم',
+          'Calculated Price': 'السعر المحسوب',
+          'Calculate': 'حساب',
+          'Any additional notes about the artifact...': 'أي ملاحظات إضافية عن القطعة...',
+          'Please fill in all required fields (Type, Service, Weight)': 'يرجى ملء جميع الحقول المطلوبة (النوع، الخدمة، الوزن)',
+          'Error calculating price. Please try again.': 'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.',
+          'Error adding artifact. Please try again.': 'خطأ في إضافة القطعة. يرجى المحاولة مرة أخرى.',
+          'View Artifacts': 'عرض القطع'
         }
       }
 

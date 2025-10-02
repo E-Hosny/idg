@@ -10,6 +10,7 @@ use App\Models\DiamondEvaluation;
 use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Services\PricingService;
 
 class DashboardController extends Controller
 {
@@ -838,6 +839,198 @@ class DashboardController extends Controller
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while deleting the customer. Please try again.']);
+        }
+    }
+
+    public function storeCustomerArtifact(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'client_id' => 'required|integer',
+                'type' => 'required|string|max:100',
+                'service' => 'nullable|string|max:100',
+                'weight' => 'nullable|numeric',
+                'weight_unit' => 'nullable|in:ct,gm',
+                'delivery_type' => 'nullable|string|max:100',
+                'notes' => 'nullable|string|max:1000',
+            ]);
+
+            \Log::info('Creating artifact for Qoyod customer', [
+                'client_id' => $validatedData['client_id'],
+                'type' => $validatedData['type']
+            ]);
+
+            // Generate artifact code
+            $artifactCode = \App\Models\Artifact::generateArtifactCode($validatedData['type']);
+
+            // Calculate price automatically
+            $price = null;
+            if ($validatedData['type'] && $validatedData['service'] && $validatedData['weight']) {
+                $weight = floatval($validatedData['weight']);
+                $price = PricingService::calculatePrice(
+                    $validatedData['type'],
+                    $validatedData['service'],
+                    $weight
+                );
+            }
+
+            // Create artifact with Qoyod customer ID
+            $artifact = \App\Models\Artifact::create([
+                'client_id' => null, // Qoyod customers are not in local clients table
+                'qoyod_customer_id' => $validatedData['client_id'], // Store Qoyod customer ID
+                'artifact_code' => $artifactCode,
+                'type' => $validatedData['type'],
+                'service' => $validatedData['service'] ?? null,
+                'weight' => $validatedData['weight'] ? (string)$validatedData['weight'] : null,
+                'weight_unit' => $validatedData['weight_unit'] ?? null,
+                'price' => $price,
+                'delivery_type' => $validatedData['delivery_type'] ?? null,
+                'notes' => $validatedData['notes'] ?? null,
+                'status' => 'pending',
+                'title' => ['en' => '', 'ar' => ''],
+                'description' => ['en' => '', 'ar' => ''],
+                'category_id' => null,
+            ]);
+
+            \Log::info('Artifact created successfully for Qoyod customer', [
+                'artifact_id' => $artifact->id,
+                'artifact_code' => $artifact->artifact_code,
+                'qoyod_customer_id' => $artifact->qoyod_customer_id
+            ]);
+
+            return redirect()->route('dashboard.customers')
+                ->with('success', 'Artifact added successfully for customer!');
+
+        } catch (\Exception $e) {
+            \Log::error('Error creating artifact for Qoyod customer', [
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+
+            return back()->withErrors(['error' => 'An error occurred while adding the artifact. Please try again.']);
+        }
+    }
+
+    public function customerArtifacts($customerId)
+    {
+        try {
+            \Log::info('Fetching customer artifacts', ['customer_id' => $customerId]);
+            
+            // Get customer info from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            \Log::info('Customer data from Qoyod', ['customer' => $customer]);
+            
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Get artifacts for this Qoyod customer
+            $artifacts = \App\Models\Artifact::where('qoyod_customer_id', $customerId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            \Log::info('Artifacts found', ['count' => $artifacts->count(), 'artifacts' => $artifacts->toArray()]);
+
+            return Inertia::render('Dashboard/Customers/Artifacts', [
+                'customer' => $customer,
+                'artifacts' => $artifacts,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching customer artifacts', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => 'An error occurred while fetching customer artifacts.']);
+        }
+    }
+
+    /**
+     * Update artifact
+     */
+    public function updateArtifact(Request $request, Artifact $artifact)
+    {
+        try {
+            $validatedData = $request->validate([
+                'type' => 'required|string|max:100',
+                'service' => 'nullable|string|max:100',
+                'weight' => 'nullable|numeric',
+                'weight_unit' => 'nullable|in:ct,gm',
+                'delivery_type' => 'nullable|string|max:100',
+                'price' => 'nullable|numeric',
+                'status' => 'required|string|in:pending,under_evaluation,evaluated,certified,rejected',
+                'notes' => 'nullable|string|max:1000',
+            ]);
+
+            \Log::info('Updating artifact', [
+                'artifact_id' => $artifact->id,
+                'artifact_code' => $artifact->artifact_code,
+                'data' => $validatedData
+            ]);
+
+            // Update artifact
+            $artifact->update([
+                'type' => $validatedData['type'],
+                'service' => $validatedData['service'] ?? null,
+                'weight' => $validatedData['weight'] ? (string)$validatedData['weight'] : null,
+                'weight_unit' => $validatedData['weight_unit'] ?? null,
+                'delivery_type' => $validatedData['delivery_type'] ?? null,
+                'price' => $validatedData['price'] ?? null,
+                'status' => $validatedData['status'],
+                'notes' => $validatedData['notes'] ?? null,
+            ]);
+
+            \Log::info('Artifact updated successfully', [
+                'artifact_id' => $artifact->id,
+                'artifact_code' => $artifact->artifact_code
+            ]);
+
+            return redirect()->back()->with('success', 'Artifact updated successfully');
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating artifact', [
+                'artifact_id' => $artifact->id,
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while updating the artifact. Please try again.']);
+        }
+    }
+
+    /**
+     * Delete artifact
+     */
+    public function deleteArtifact(Artifact $artifact)
+    {
+        try {
+            \Log::info('Deleting artifact', [
+                'artifact_id' => $artifact->id,
+                'artifact_code' => $artifact->artifact_code
+            ]);
+
+            $artifact->delete();
+
+            \Log::info('Artifact deleted successfully', [
+                'artifact_id' => $artifact->id,
+                'artifact_code' => $artifact->artifact_code
+            ]);
+
+            return redirect()->back()->with('success', 'Artifact deleted successfully');
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting artifact', [
+                'artifact_id' => $artifact->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the artifact. Please try again.']);
         }
     }
 
