@@ -74,7 +74,7 @@
                 :disabled="creating"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 :class="{ 'bg-gray-50': creating, 'border-red-300': errors.quotation_number }"
-                placeholder="e.g., QUO-2025-001"
+                :placeholder="__('e.g., QUO-2025-001')"
                 required
               />
               <p v-if="errors.quotation_number" class="mt-1 text-sm text-red-600">{{ errors.quotation_number }}</p>
@@ -146,7 +146,7 @@
                 :disabled="creating"
                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 :class="{ 'bg-gray-50': creating, 'border-red-300': errors.inventory_id }"
-                placeholder="e.g., 1"
+                :placeholder="__('e.g., 1')"
                 required
               />
               <p v-if="errors.inventory_id" class="mt-1 text-sm text-red-600">{{ errors.inventory_id }}</p>
@@ -191,7 +191,7 @@
               rows="3"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               :class="{ 'bg-gray-50': creating, 'border-red-300': errors.terms_conditions }"
-              placeholder="{{ __('Enter terms and conditions for this quote') }}"
+              :placeholder="__('Enter terms and conditions for this quote')"
             ></textarea>
             <p v-if="errors.terms_conditions" class="mt-1 text-sm text-red-600">{{ errors.terms_conditions }}</p>
           </div>
@@ -208,7 +208,7 @@
               rows="3"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               :class="{ 'bg-gray-50': creating, 'border-red-300': errors.notes }"
-              placeholder="{{ __('Add any additional notes for this quote') }}"
+              :placeholder="__('Add any additional notes for this quote')"
             ></textarea>
             <p v-if="errors.notes" class="mt-1 text-sm text-red-600">{{ errors.notes }}</p>
           </div>
@@ -324,7 +324,7 @@
                     :disabled="creating"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     :class="{ 'bg-gray-50': creating }"
-                    placeholder="{{ __('Item description') }}"
+                    :placeholder="__('Item description')"
                   />
                 </div>
 
@@ -346,7 +346,7 @@
                     max="999"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     :class="{ 'bg-gray-50': creating, 'border-red-300': errors[`line_items.${index}.quantity`] }"
-                    placeholder="1"
+                    :placeholder="__('1')"
                     required
                     @input="calculateTotal"
                   />
@@ -380,7 +380,7 @@
                       'border-green-300 bg-green-50': item.unit_price > 0,
                       'border-red-300': errors[`line_items.${index}.unit_price`] 
                     }"
-                    placeholder="0.00"
+                    :placeholder="__('0.00')"
                     required
                     @input="calculateTotal"
                   />
@@ -413,15 +413,15 @@
                         :class="{ 'bg-gray-50': creating, 'border-purple-300 bg-purple-50': item.unit_type }"
                       >
                         <option value="">-- {{ __('Select Unit Type') }} --</option>
-                        <option value="piece">{{ __('Piece') }} (قطعة)</option>
-                        <option value="gram">{{ __('Gram') }} (جرام)</option>
-                        <option value="kilogram">{{ __('Kilogram') }} (كيلوجرام)</option>
-                        <option value="carat">{{ __('Carat') }} (قيراط)</option>
-                        <option value="meter">{{ __('Meter') }} (متر)</option>
-                        <option value="centimeter">{{ __('Centimeter') }} (سنتيمتر)</option>
-                        <option value="hour">{{ __('Hour') }} (ساعة)</option>
-                        <option value="service">{{ __('Service') }} (خدمة)</option>
-                        <option value="report">{{ __('Report') }} (تقرير)</option>
+                        <option value="piece">{{ __('Piece') }}</option>
+                        <option value="gram">{{ __('Gram') }}</option>
+                        <option value="kilogram">{{ __('Kilogram') }}</option>
+                        <option value="carat">{{ __('Carat') }}</option>
+                        <option value="meter">{{ __('Meter') }}</option>
+                        <option value="centimeter">{{ __('Centimeter') }}</option>
+                        <option value="hour">{{ __('Hour') }}</option>
+                        <option value="service">{{ __('Service') }}</option>
+                        <option value="report">{{ __('Report') }}</option>
                       </select>
                       <p v-if="item.unit_type" class="mt-1 text-xs text-purple-600">
                         <i class="fas fa-exchange-alt mr-1"></i>
@@ -443,7 +443,7 @@
                         min="0"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         :class="{ 'bg-gray-50': creating }"
-                        placeholder="0.00"
+                        :placeholder="__('0.00')"
                         @input="calculateTotal"
                       />
                     </div>
@@ -480,7 +480,7 @@
                         max="100"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         :class="{ 'bg-gray-50': creating }"
-                        placeholder="15"
+                        :placeholder="__('15')"
                       />
                     </div>
 
@@ -529,7 +529,7 @@
                     :disabled="creating"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     :class="{ 'bg-gray-50': creating }"
-                    placeholder="{{ __('Field name') }}"
+                    :placeholder="__('Field name')"
                   />
                 </div>
                 <div>
@@ -543,7 +543,7 @@
                     :disabled="creating"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     :class="{ 'bg-gray-50': creating }"
-                    placeholder="{{ __('Field value') }}"
+                    :placeholder="__('Field value')"
                   />
                 </div>
               </div>
@@ -887,6 +887,9 @@ export default {
           'Gemstones': 'الأحجار الكريمة',
           'Diamonds': 'الألماس',
           'Other Products': 'منتجات أخرى',
+          '1': '1',
+          '0.00': '0.00',
+          '15': '15',
           'Customer Information': 'معلومات العميل',
           'Name': 'الاسم',
           'Email': 'البريد الإلكتروني',

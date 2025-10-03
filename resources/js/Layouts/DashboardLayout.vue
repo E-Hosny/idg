@@ -10,7 +10,7 @@
           <!-- Logo -->
           <div class="flex items-center flex-shrink-0 px-6 py-4">
             <img class="w-12 h-12 rounded-full" :src="'/images/idg_logo.jpg'" alt="IDG">
-            <div class="ml-3">
+            <div :class="$page.props.locale === 'ar' ? 'mr-4' : 'ml-4'">
               <h1 class="text-xl font-bold text-white">IDG</h1>
               <p class="text-sm text-green-200">{{ __('Items Dashboard') }}</p>
             </div>
