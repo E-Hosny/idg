@@ -45,6 +45,34 @@
         </div>
       </div>
 
+      <!-- Success Message -->
+      <div v-if="$page.props.flash?.success" class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <i class="fas fa-check-circle text-green-400"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-green-800">
+              {{ $page.props.flash.success }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div v-if="$page.props.flash?.error" class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <i class="fas fa-exclamation-circle text-red-400"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-red-800">
+              {{ $page.props.flash.error }}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Customer Info Card -->
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Customer Information') }}</h3>
@@ -350,6 +378,159 @@
         </div>
       </div>
     </div>
+
+    <!-- Add Artifact Modal -->
+    <div v-if="showAddArtifactModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showAddArtifactModal = false"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <form @submit.prevent="submitArtifact">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="w-full">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    {{ __('Add Artifact for Customer') }}: {{ selectedCustomerForArtifact?.name || selectedCustomerForArtifact?.display_name }}
+                  </h3>
+                  
+                  <div class="space-y-6">
+                    <!-- Artifact Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Artifact Information') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Type') }} *
+                          </label>
+                          <select
+                            v-model="newArtifact.type"
+                            @change="resetServiceWhenTypeChanges"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>{{ __('Select Type') }}</option>
+                            <option v-for="option in typeOptions" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Service') }} *
+                          </label>
+                          <select
+                            v-model="newArtifact.service"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>{{ __('Select Service') }}</option>
+                            <option v-for="option in getServiceOptions(newArtifact.type)" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Weight') }} *
+                          </label>
+                          <div class="flex space-x-2">
+                            <input
+                              v-model="newArtifact.weight"
+                              type="number"
+                              step="0.01"
+                              required
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                              placeholder="0.00"
+                            />
+                            <select
+                              v-model="newArtifact.weight_unit"
+                              class="mt-1 block w-32 border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            >
+                              <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Delivery Type') }}
+                          </label>
+                          <select
+                            v-model="newArtifact.delivery_type"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>{{ __('Select Delivery Type') }}</option>
+                            <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Notes') }}
+                          </label>
+                          <textarea
+                            v-model="newArtifact.notes"
+                            rows="3"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="__('Any additional notes about the artifact...')"
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Price Calculation -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700">
+                          {{ __('Calculated Price') }}:
+                        </span>
+                        <span class="text-lg font-semibold text-green-600">
+                          {{ newArtifact.price ? newArtifact.price + ' SAR' : 'Please calculate' }}
+                        </span>
+                      </div>
+                      <div class="mt-2">
+                        <button
+                          @click="calculatePrice"
+                          type="button"
+                          :disabled="addingArtifact || !newArtifact.type || !newArtifact.service || !newArtifact.weight"
+                          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {{ __('Calculate') }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                type="submit"
+                :disabled="addingArtifact || !newArtifact.type || !newArtifact.service || !newArtifact.weight"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                <i v-if="addingArtifact" class="fas fa-spinner fa-spin mr-2"></i>
+                {{ addingArtifact ? __('Adding...') : __('Add Artifact') }}
+              </button>
+              <button
+                @click="showAddArtifactModal = false"
+                type="button"
+                class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                {{ __('Cancel') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -373,8 +554,11 @@ export default {
   data() {
     return {
       showEditArtifactModal: false,
+      showAddArtifactModal: false,
       updatingArtifact: false,
+      addingArtifact: false,
       selectedArtifact: null,
+      selectedCustomerForArtifact: null,
       editArtifactData: {
         type: '',
         service: '',
@@ -384,6 +568,15 @@ export default {
         price: '',
         status: 'pending',
         notes: ''
+      },
+      newArtifact: {
+        type: '',
+        service: '',
+        weight: '',
+        weight_unit: 'ct',
+        delivery_type: '',
+        notes: '',
+        price: ''
       },
       // Artifact options
       typeOptions: [
@@ -419,8 +612,12 @@ export default {
     },
     
     addArtifact() {
+      console.log('addArtifact clicked, customer ID:', this.customer?.id)
       if (this.customer?.id) {
-        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/add-artifact`)
+        this.selectedCustomerForArtifact = this.customer
+        this.showAddArtifactModal = true
+      } else {
+        console.log('No customer ID available')
       }
     },
     
@@ -471,6 +668,136 @@ export default {
     deleteArtifact(artifact) {
       if (confirm(this.__('Are you sure you want to delete this artifact?'))) {
         this.$inertia.delete(`/dashboard/artifacts/${artifact.id}`)
+      }
+    },
+    
+    resetServiceWhenTypeChanges() {
+      this.newArtifact.service = ''
+    },
+    
+    getServiceOptions(type) {
+      const serviceOptions = {
+        'Colored Gemstones': [
+          { value: 'Regular - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عادي' : 'Regular - ID Report' },
+          { value: 'Express - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عاجل' : 'Express - ID Report' },
+          { value: 'Standard - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة معيارية' : 'Standard - Certification' },
+          { value: 'Express - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة عاجلة' : 'Express - Certification' }
+        ],
+        'Other Colored Gemstones': [
+          { value: 'Regular - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عادي' : 'Regular - ID Report' },
+          { value: 'Express - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عاجل' : 'Express - ID Report' },
+          { value: 'Standard - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة معيارية' : 'Standard - Certification' },
+          { value: 'Express - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة عاجلة' : 'Express - Certification' }
+        ],
+        'Colorless Diamonds': [
+          { value: 'Regular - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عادي' : 'Regular - ID Report' },
+          { value: 'Express - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عاجل' : 'Express - ID Report' },
+          { value: 'Standard - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة معيارية' : 'Standard - Certification' },
+          { value: 'Express - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة عاجلة' : 'Express - Certification' }
+        ],
+        'Jewellery': [
+          { value: 'Regular - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عادي' : 'Regular - ID Report' },
+          { value: 'Express - ID Report', label: this.$page.props.locale === 'ar' ? 'تقرير معرف عاجل' : 'Express - ID Report' },
+          { value: 'Standard - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة معيارية' : 'Standard - Certification' },
+          { value: 'Express - Certification', label: this.$page.props.locale === 'ar' ? 'شهادة عاجلة' : 'Express - Certification' }
+        ]
+      }
+      
+      return serviceOptions[type] || []
+    },
+    
+    async calculatePrice() {
+      try {
+        const response = await fetch('/reception/calculate-price', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({
+            type: this.newArtifact.type,
+            service: this.newArtifact.service,
+            weight: parseFloat(this.newArtifact.weight) || 0,
+            weight_unit: this.newArtifact.weight_unit
+          })
+        })
+        
+        const data = await response.json()
+        
+        if (data.price) {
+          const priceValue = parseFloat(data.price)
+          
+          if (!isNaN(priceValue)) {
+            let finalPrice = priceValue
+
+            // Calculate price based on delivery type
+            if (this.newArtifact.delivery_type === 'Same Day') {
+              finalPrice = priceValue * 2
+            } else if (this.newArtifact.delivery_type === '48 hours') {
+              finalPrice = priceValue * 0.7
+            } else if (this.newArtifact.delivery_type === '72 hours') {
+              finalPrice = priceValue * 0.5
+            }
+
+            this.newArtifact.price = finalPrice.toFixed(2)
+          } else {
+            this.newArtifact.price = 'N/A'
+          }
+        } else {
+          this.newArtifact.price = 'N/A'
+          alert(this.__('Error calculating price. Please try again.'))
+        }
+      } catch (error) {
+        console.error('Error calculating price:', error)
+        alert(this.__('Error calculating price. Please try again.'))
+      }
+    },
+    
+    async submitArtifact() {
+      // Validate required fields
+      if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
+        alert(this.__('Please fill in all required fields (Type, Service, Weight)'))
+        return
+      }
+
+      this.addingArtifact = true
+      
+      try {
+        // Submit artifact to Laravel backend
+        this.$inertia.post('/dashboard/customers/artifacts', {
+          client_id: this.selectedCustomerForArtifact.id,
+          type: this.newArtifact.type,
+          service: this.newArtifact.service,
+          weight: this.newArtifact.weight,
+          weight_unit: this.newArtifact.weight_unit,
+          delivery_type: this.newArtifact.delivery_type,
+          notes: this.newArtifact.notes,
+          price: this.newArtifact.price
+        }, {
+          onSuccess: (page) => {
+            this.showAddArtifactModal = false
+            this.selectedCustomerForArtifact = null
+            // Reset form
+            this.newArtifact = {
+              type: '',
+              service: '',
+              weight: '',
+              weight_unit: 'ct',
+              delivery_type: '',
+              notes: '',
+              price: ''
+            }
+            // No need for manual reload, Inertia will handle the redirect
+          },
+          onError: (errors) => {
+            console.error('Error adding artifact:', errors)
+            alert(this.__('Error adding artifact. Please try again.'))
+          }
+        })
+      } catch (error) {
+        console.error('Error adding artifact:', error)
+      } finally {
+        this.addingArtifact = false
       }
     },
     
@@ -599,7 +926,8 @@ export default {
           'Under Evaluation': 'Under Evaluation',
           'Evaluated': 'Evaluated',
           'Certified': 'Certified',
-          'Rejected': 'Rejected'
+          'Rejected': 'Rejected',
+          'Artifact added successfully!': 'Artifact added successfully!'
         },
         ar: {
           'Customer Artifacts': 'قطع العميل',
@@ -642,7 +970,8 @@ export default {
           'Under Evaluation': 'قيد التقييم',
           'Evaluated': 'تم التقييم',
           'Certified': 'معتمد',
-          'Rejected': 'مرفوض'
+          'Rejected': 'مرفوض',
+          'Artifact added successfully!': 'تم إضافة القطعة بنجاح!'
         }
       }
       

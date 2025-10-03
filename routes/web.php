@@ -36,6 +36,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Customer specific routes (more specific first)
     Route::get('/dashboard/customers/{customer}/artifacts', [DashboardController::class, 'customerArtifacts'])->name('dashboard.customers.artifacts.index');
+    Route::get('/dashboard/customers/{customer}/add-artifact', [DashboardController::class, 'showAddArtifact'])->name('dashboard.customers.add-artifact');
+    Route::post('/dashboard/customers/{customer}/store-artifact', [DashboardController::class, 'storeArtifactForCustomer'])->name('dashboard.customers.store-artifact');
     Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
     Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
     Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');

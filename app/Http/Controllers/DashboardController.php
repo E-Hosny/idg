@@ -957,13 +957,97 @@ class DashboardController extends Controller
                 'qoyod_customer_id' => $artifact->qoyod_customer_id
             ]);
 
-            return redirect()->route('dashboard.customers')
+            return redirect()->route('dashboard.customers.artifacts.index', ['customer' => $validatedData['client_id']])
                 ->with('success', 'Artifact added successfully for customer!');
 
         } catch (\Exception $e) {
             \Log::error('Error creating artifact for Qoyod customer', [
                 'error' => $e->getMessage(),
                 'data' => $request->all()
+            ]);
+
+            return back()->withErrors(['error' => 'An error occurred while adding the artifact. Please try again.']);
+        }
+    }
+
+    public function showAddArtifact($customerId)
+    {
+        try {
+            \Log::info('Showing add artifact form', ['customer_id' => $customerId]);
+            
+            // Get customer info from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            return Inertia::render('Dashboard/Customers/AddArtifact', [
+                'customer' => $customer,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing add artifact form', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => 'An error occurred while loading the form.']);
+        }
+    }
+
+    public function storeArtifactForCustomer($customerId, Request $request)
+    {
+        try {
+            \Log::info('Storing artifact for customer', ['customer_id' => $customerId]);
+            
+            $validatedData = $request->validate([
+                'type' => 'required|string|max:255',
+                'service' => 'required|string|max:255',
+                'weight' => 'required|numeric|min:0',
+                'weight_unit' => 'required|string|in:ct,g,kg,mg',
+                'delivery_type' => 'required|string|max:255',
+                'notes' => 'nullable|string|max:1000',
+            ]);
+
+            // Generate artifact code
+            $artifactCode = 'GR' . str_pad(rand(1, 9999999999), 9, '0', STR_PAD_LEFT);
+            
+            // Create artifact with Qoyod customer ID
+            $artifact = \App\Models\Artifact::create([
+                'client_id' => null,
+                'qoyod_customer_id' => $customerId,
+                'artifact_code' => $artifactCode,
+                'type' => $validatedData['type'],
+                'service' => $validatedData['service'],
+                'weight' => (string)$validatedData['weight'],
+                'weight_unit' => $validatedData['weight_unit'],
+                'delivery_type' => $validatedData['delivery_type'],
+                'notes' => $validatedData['notes'],
+                'status' => 'pending',
+                'title' => ['en' => '', 'ar' => ''],
+                'description' => ['en' => '', 'ar' => ''],
+                'category_id' => null,
+            ]);
+
+            \Log::info('Artifact created successfully for customer', [
+                'artifact_id' => $artifact->id,
+                'artifact_code' => $artifactCode,
+                'customer_id' => $customerId
+            ]);
+
+            return redirect()->route('dashboard.customers.artifacts.index', ['customer' => $customerId])
+                ->with('success', 'Artifact added successfully!');
+
+        } catch (\Exception $e) {
+            \Log::error('Error creating artifact for customer', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while adding the artifact. Please try again.']);
