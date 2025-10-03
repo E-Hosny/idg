@@ -201,7 +201,7 @@ export default {
 
   methods: {
     goBack() {
-      this.$inertia.visit('/dashboard');
+      this.$inertia.visit(`/dashboard/customers/${this.customer.id}/artifacts`);
     },
 
     goToArtifacts() {
