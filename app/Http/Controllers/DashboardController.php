@@ -721,6 +721,65 @@ class DashboardController extends Controller
         }
     }
 
+    public function showCustomer($customerId)
+    {
+        try {
+            \Log::info('Showing customer details', ['customer_id' => $customerId]);
+
+            // Get customer info from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = $qoyodService->getCustomer($customerId);
+
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Get basic statistics for this customer
+            $artifactsCount = \App\Models\Artifact::where('qoyod_customer_id', $customerId)->count();
+            
+            // Get recent quotes for this customer from Qoyod
+            $quotesResponse = $qoyodService->getQuotes();
+            $allQuotes = $quotesResponse['quotes'] ?? [];
+            $customerQuotes = array_filter($allQuotes, function($quote) use ($customerId) {
+                return isset($quote['contact_id']) && $quote['contact_id'] == $customerId;
+            });
+
+            \Log::info('Customer data prepared for display', [
+                'customer_id' => $customerId,
+                'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
+                'artifacts_count' => $artifactsCount,
+                'quotes_count' => count($customerQuotes),
+                'customer_data' => $customer,
+                'statistics_data' => [
+                    'artifacts_count' => $artifactsCount,
+                    'quotes_count' => count($customerQuotes),
+                    'recent_quotes' => array_slice($customerQuotes, 0, 5)
+                ]
+            ]);
+
+            return Inertia::render('Dashboard/Customers/Show', [
+                'customer' => $customer,
+                'statistics' => [
+                    'artifacts_count' => $artifactsCount,
+                    'quotes_count' => count($customerQuotes),
+                    'recent_quotes' => array_slice($customerQuotes, 0, 5) // Last 5 quotes
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error showing customer', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => 'An error occurred while loading the customer.']);
+        }
+    }
+
     public function storeCustomer(Request $request)
     {
         try {
@@ -1730,56 +1789,6 @@ class DashboardController extends Controller
         }
     }
 
-    /**
-     * Download quote PDF from Qoyod
-     */
-    public function downloadQuotePDF($quoteId)
-    {
-        try {
-            \Log::info('Downloading quote PDF', ['quote_id' => $quoteId]);
-
-            // Get quote from Qoyod first to check if it exists
-            $qoyodService = new \App\Services\QoyodService();
-            $quote = $qoyodService->getQuote($quoteId);
-
-            if (!$quote) {
-                \Log::warning('Quote not found for PDF download', ['quote_id' => $quoteId]);
-                return redirect()->back()->withErrors(['error' => 'Quote not found.']);
-            }
-
-            // Try to download PDF from Qoyod
-            $downloadResult = $qoyodService->downloadQuotePDF($quoteId);
-
-            if ($downloadResult['success']) {
-                \Log::info('Quote PDF downloaded successfully', [
-                    'quote_id' => $quoteId,
-                    'filename' => $downloadResult['filename']
-                ]);
-
-                return response($downloadResult['pdf_content'], 200)
-                    ->header('Content-Type', $downloadResult['mime_type'])
-                    ->header('Content-Disposition', 'attachment; filename="' . $downloadResult['filename'] . '"')
-                    ->header('Content-Length', strlen($downloadResult['pdf_content']));
-            } else {
-                \Log::warning('Failed to download PDF from Qoyod', [
-                    'quote_id' => $quoteId,
-                    'error' => $downloadResult['error'] ?? 'Unknown error'
-                ]);
-
-                // Try alternative method - generate PDF locally
-                return $this->generateLocalQuotePDF($quote);
-            }
-
-        } catch (\Exception $e) {
-            \Log::error('Error downloading quote PDF', [
-                'quote_id' => $quoteId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return redirect()->back()->withErrors(['error' => 'An error occurred while downloading the PDF.']);
-        }
-    }
 
     /**
      * Generate local PDF for quote (fallback method)
@@ -1846,25 +1855,39 @@ class DashboardController extends Controller
             $dompdf = new \Dompdf\Dompdf([
                 'isRemoteEnabled' => true,
                 'isHtml5ParserEnabled' => true,
+                'defaultMediaType' => 'screen',
+                'defaultPaperSize' => 'a4',
+                'defaultPaperOrientation' => 'portrait',
             ]);
+            
+            \Log::info('Dompdf configuration', [
+                'html_length' => strlen($html),
+                'quote_id' => $quote['id'] ?? 'unknown'
+            ]);
+            
             $dompdf->loadHtml($html, 'UTF-8');
-            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
-            $filename = 'quote-' . ($quote['reference'] ?? $quote['id']) . '.pdf';
-
-            \Log::info('Local PDF generated successfully', [
-                'quote_id' => $quote['id'],
-                'filename' => $filename
-            ]);
+            $filename = 'quote-' . ($quote['reference'] ?? $quote['id'] ?? 'unknown') . '.pdf';
 
             $output = $dompdf->output();
             
+            \Log::info('Local PDF generation completed', [
+                'quote_id' => $quote['id'] ?? 'unknown',
+                'filename' => $filename,
+                'output_size' => strlen($output)
+            ]);
+            
             if (empty($output)) {
                 \Log::error('Generated PDF output is empty', [
-                    'quote_id' => $quote['id'] ?? 'unknown'
+                    'quote_id' => $quote['id'] ?? 'unknown',
+                    'html_length' => strlen($html)
                 ]);
-                throw new \Exception('Generated PDF is empty');
+                
+                // Log the HTML content for debugging
+                \Log::debug('HTML content for debugging', ['html' => $html]);
+                throw new \Exception('Generated PDF is empty - check HTML content');
             }
 
             return response($output, 200)

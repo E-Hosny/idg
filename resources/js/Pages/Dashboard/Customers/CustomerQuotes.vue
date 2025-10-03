@@ -163,13 +163,6 @@
                       <i class="fas fa-eye"></i>
                     </button>
                     <button
-                      @click="downloadPDF(quote.id)"
-                      class="text-green-600 hover:text-green-900 p-1"
-                      :title="__('Download PDF')"
-                    >
-                      <i class="fas fa-download"></i>
-                    </button>
-                    <button
                       @click="editQuote(quote.id)"
                       class="text-gray-600 hover:text-gray-900 p-1"
                       :title="__('Edit Quote')"
@@ -223,16 +216,6 @@ export default {
       this.$inertia.visit(`/dashboard/quotes/${quoteId}`);
     },
 
-    downloadPDF(quoteId) {
-      // Trigger PDF download
-      const url = `/dashboard/quotes/${quoteId}/download-pdf`;
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `quote-${quoteId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    },
 
     editQuote(quoteId) {
       // Placeholder for edit functionality

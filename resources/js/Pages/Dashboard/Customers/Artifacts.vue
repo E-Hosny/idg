@@ -413,6 +413,8 @@ export default {
   },
   methods: {
     goBack() {
+      // Return to the customers list page
+      console.log('goBack clicked - navigating to customers list')
       this.$inertia.visit('/dashboard/customers')
     },
     

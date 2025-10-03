@@ -18,12 +18,14 @@
         }
         
         body {
-            font-family: 'Times New Roman', serif;
+            font-family: 'Times New Roman', 'serif', sans-serif;
             font-size: 14px;
             line-height: 1.6;
             color: #333;
             direction: rtl;
             background: #fff;
+            margin: 0;
+            padding: 0;
         }
         
         .pdf-container {
@@ -88,6 +90,7 @@
             letter-spacing: 1px;
             font-weight: 900;
             color: #d4af37;
+            font-family: 'Times New Roman', 'serif', sans-serif;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         

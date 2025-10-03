@@ -37,16 +37,6 @@
               <i class="fas fa-edit mr-2"></i>
               {{ __('Edit Quote') }}
             </button>
-            <button 
-              @click="downloadPDF"
-              :disabled="downloading"
-              class="px-4 py-2 rounded-md focus:outline-none focus:ring-2"
-              :class="downloading ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500'"
-            >
-              <i class="fas fa-spinner fa-spin mr-2" v-if="downloading"></i>
-              <i class="fas fa-download mr-2" v-else></i>
-              {{ downloading ? __('Downloading...') : __('Download PDF') }}
-            </button>
           </div>
         </div>
       </div>
@@ -279,7 +269,6 @@ export default {
 
   data() {
     return {
-      downloading: false
     }
   },
 
@@ -288,30 +277,6 @@ export default {
       this.$inertia.visit('/dashboard');
     },
 
-    async downloadPDF() {
-      if (this.downloading) return;
-
-      this.downloading = true;
-      
-      try {
-        const url = `/dashboard/quotes/${this.quote.id}/download-pdf`;
-        
-        // Create a temporary link element to trigger download
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `quote-${this.quote.reference || this.quote.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log('PDF download initiated');
-      } catch (error) {
-        console.error('Download error:', error);
-        alert(this.__('Download failed. Please try again.'));
-      } finally {
-        this.downloading = false;
-      }
-    },
 
     printQuote() {
       const url = `/dashboard/quotes/${this.quote.id}/print`;
