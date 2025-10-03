@@ -400,4 +400,598 @@ class QoyodService
             ];
         }
     }
+
+    /**
+     * Create a quote in Qoyod
+     */
+    public function createQuote($quoteData)
+    {
+        try {
+            Log::info('Creating quote in Qoyod', ['quote_data' => $quoteData]);
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->post("{$this->baseUrl}/quotes", $quoteData);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Quote created successfully in Qoyod', [
+                    'quote_id' => $data['quote']['id'] ?? null,
+                    'quotation_number' => $quoteData['quote']['quotation_number'] ?? null
+                ]);
+
+                return $data;
+            }
+
+            Log::error('Failed to create quote in Qoyod', [
+                'status' => $response->status(),
+                'response' => $response->body(),
+                'data' => $quoteData
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to create quote',
+                'status' => $response->status(),
+                'error' => $response->body()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while creating quote in Qoyod', [
+                'error' => $e->getMessage(),
+                'data' => $quoteData
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Exception occurred while creating quote',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Get products from Qoyod for line items
+     */
+    public function getProducts($page = 1, $perPage = 100)
+    {
+        try {
+            $cacheKey = "qoyod_products_page_{$page}_per_{$perPage}";
+            
+            return Cache::remember($cacheKey, 300, function () use ($page, $perPage) {
+                $response = Http::timeout($this->timeout)
+                    ->withHeaders([
+                        'API-KEY' => $this->apiKey,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->get("{$this->baseUrl}/products", [
+                        'page' => $page,
+                        'per_page' => $perPage,
+                    ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    Log::info('Qoyod products fetched successfully', [
+                        'page' => $page,
+                        'per_page' => $perPage,
+                        'total' => count($data['products'] ?? [])
+                    ]);
+                    
+                    // Transform products to include both Arabic and English names
+                    $products = [];
+                    foreach ($data['products'] ?? [] as $product) {
+                        // Get local pricing data
+                        $localPrice = $this->getLocalPricingForProduct($product);
+                        
+                        $products[] = [
+                            'id' => $product['id'],
+                            'name' => $product['name_en'] ?? $product['name_ar'] ?? 'Unknown Product',
+                            'name_ar' => $product['name_ar'] ?? 'منتج غير معروف',
+                            'name_en' => $product['name_en'] ?? 'Unknown Product',
+                            'description' => $product['description'] ?? '',
+                            'category_id' => $product['category_id'] ?? null,
+                            'type' => $product['type'] ?? 'Product',
+                            'unit_type' => $product['unit_type'] ?? null,
+                            'unit' => $product['unit'] ?? '',
+                            'price' => $localPrice !== null ? $localPrice : ($product['price'] ?? 0),
+                            'original_qoyod_price' => $product['price'] ?? 0,
+                            'is_local_pricing' => $localPrice !== null,
+                            'created_at' => $product['created_at'] ?? null,
+                            'updated_at' => $product['updated_at'] ?? null
+                        ];
+                    }
+                    
+                    return [
+                        'products' => $products,
+                        'meta' => [
+                            'current_page' => $page,
+                            'per_page' => $perPage,
+                            'total' => count($products)
+                        ]
+                    ];
+                }
+
+                Log::error('Failed to fetch products from Qoyod', [
+                    'status' => $response->status(),
+                    'response' => $response->body()
+                ]);
+
+                return [
+                    'products' => [],
+                    'meta' => [
+                        'current_page' => $page,
+                        'per_page' => $perPage,
+                        'total' => 0
+                    ]
+                ];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching products from Qoyod', [
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'products' => [],
+                'meta' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total' => 0
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Get locations/inventories from Qoyod using inventories endpoint
+     */
+    public function getLocations()
+    {
+        try {
+            $cacheKey = "qoyod_inventories";
+            
+            return Cache::remember($cacheKey, 300, function () {
+                $response = Http::timeout($this->timeout)
+                    ->withHeaders([
+                        'API-KEY' => $this->apiKey,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->get("{$this->baseUrl}/inventories");
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    Log::info('Qoyod inventories fetched successfully', [
+                        'total' => count($data['inventories'] ?? [])
+                    ]);
+                    
+                    // Transform the data to include both Arabic and English names
+                    $locations = [];
+                    foreach ($data['inventories'] ?? [] as $inventory) {
+                        $locations[] = [
+                            'id' => $inventory['id'],
+                            'name' => $inventory['ar_name'] ?? $inventory['name'] ?? 'Unknown Location',
+                            'name_en' => $inventory['name'] ?? $inventory['ar_name'] ?? 'Unknown Location',
+                            'ar_name' => $inventory['ar_name'] ?? 'موقع غير معروف',
+                            'address' => $inventory['address'] ?? null,
+                            'account_id' => $inventory['account_id'] ?? null
+                        ];
+                    }
+                    
+                    return $locations;
+                }
+
+                Log::error('Failed to fetch inventories from Qoyod', [
+                    'status' => $response->status(),
+                    'response' => $response->body()
+                ]);
+
+                // Return mock data if API fails
+                return [
+                    [
+                        'id' => 1,
+                        'name' => 'الادارة العامة',
+                        'name_en' => 'General Administration',
+                        'ar_name' => 'الادارة العامة',
+                        'reference' => 'ADMIN'
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => 'ادارة التشغيل', 
+                        'name_en' => 'Operations Management',
+                        'ar_name' => 'ادارة التشغيل',
+                        'reference' => 'OPS'
+                    ]
+                ];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching inventories from Qoyod', [
+                'error' => $e->getMessage()
+            ]);
+
+            // Return mock data on exception
+            return [
+                [
+                    'id' => 1,
+                    'name' => 'الادارة العامة',
+                    'name_en' => 'General Administration', 
+                    'ar_name' => 'الادارة العامة',
+                    'reference' => 'ADMIN'
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'ادارة التشغيل',
+                    'name_en' => 'Operations Management',
+                    'ar_name' => 'ادارة التشغيل', 
+                    'reference' => 'OPS'
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Get warehouses from Qoyod
+     */
+    public function getWarehouses()
+    {
+        return $this->getLocations(); // Same as locations for now
+    }
+
+    /**
+     * Get local pricing data for a product based on product name analysis
+     */
+    private function getLocalPricingForProduct($product)
+    {
+        try {
+            // Load pricing data from JSON file
+            $pricingData = json_decode(file_get_contents(base_path('pricing_data.json')), true);
+            
+            if (!$pricingData) {
+                return null;
+            }
+
+            $productName = $product['name_ar'] ?? $product['name_en'] ?? '';
+            
+            Log::info('Checking local pricing for product', [
+                'product_name' => $productName,
+                'product_id' => $product['id'] ?? 'unknown'
+            ]);
+            
+            // Parse product name to extract artifact type, service type, and weight range
+            if (preg_match('/الأحجار الكريمة الملونة\s*\((.*?)\)/', $productName, $matches)) {
+                $artifactType = 'Colored Gemstones';
+                $weightRange = $matches[1];
+                
+                // Determine service type from Arabic name
+                $serviceType = null;
+                if (strpos($productName, 'تقرير كبير') !== false && strpos($productName, 'المنشأ') === false) {
+                    $serviceType = 'Regular - ID Report';
+                } elseif (strpos($productName, 'تقرير') !== false && strpos($productName, 'المنشأ') !== false) {
+                    $serviceType = 'Regular - ID + Origin';
+                } elseif (strpos($productName, 'بطاقة') !== false && strpos($productName, 'المنشأ') === false) {
+                    $serviceType = 'Mini Card Report - ID Report';
+                } elseif (strpos($productName, 'بطاقة') !== false && strpos($productName, 'المنشأ') !== false) {
+                    $serviceType = 'Mini Card Report - ID + Origin';
+                }
+                
+                // Parse weight range
+                if (strpos($weightRange, '-') !== false) {
+                    preg_match('/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/', $weightRange, $weightMatches);
+                    if (count($weightMatches) >= 3) {
+                        $minWeight = (float)$weightMatches[1];
+                        $maxWeight = (float)$weightMatches[2];
+                        
+                        // Find matching pricing entry
+                        Log::info('Looking for pricing match', [
+                            'artifact_type' => $artifactType,
+                            'service_type' => $serviceType,
+                            'min_weight' => $maxWeight, // Note: swap order in Arabic product names
+                            'max_weight' => $minWeight
+                        ]);
+                        
+                        foreach ($pricingData as $pricing) {
+                            if ($pricing['artifact_type'] === $artifactType && 
+                                $pricing['service_type'] === $serviceType &&
+                                $pricing['min_weight'] == $maxWeight && // Note: swap order in Arabic product names
+                                $pricing['max_weight'] == $minWeight) {
+                                Log::info('Found pricing match', [
+                                    'price' => $pricing['price'],
+                                    'pricing_id' => $pricing['id']
+                                ]);
+                                return (float)$pricing['price'];
+                            }
+                        }
+                    }
+                } elseif (preg_match('/(\d+\.?\d*)/', $weightRange, $singleWeight)) {
+                    $weight = (float)$singleWeight[1];
+                    
+                    // Find matching pricing entry for single weight
+                    foreach ($pricingData as $pricing) {
+                        if ($pricing['artifact_type'] === $artifactType && 
+                            $pricing['service_type'] === $serviceType) {
+                            // Check if weight falls within range
+                            if (($pricing['min_weight'] <= $weight) &&
+                                ($pricing['max_weight'] === null || $pricing['max_weight'] >= $weight)) {
+                                return (float)$pricing['price'];
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check for Other Colored Gemstones
+            if (strpos($productName, 'الأحجار الكريمة الملونة الأخرى') !== false) {
+                $artifactType = 'Other Colored Gemstones';
+                preg_match('/\((.*?)\)/', $productName, $weightMatches);
+                if (count($weightMatches) >= 2) {
+                    $weightRange = $weightMatches[1];
+                    
+                    $serviceType = strpos($productName, 'تقرير كبير') !== false ? 'Regular - ID Report' : 'Mini Card Report - ID Report';
+                    
+                    if (strpos($weightRange, '-') !== false) {
+                        preg_match('/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/', $weightRange, $rangeMatches);
+                        if (count($rangeMatches) >= 3) {
+                            $minWeight = (float)$rangeMatches[1];
+                            $maxWeight = (float)$rangeMatches[2];
+                            
+                            foreach ($pricingData as $pricing) {
+                                if ($pricing['artifact_type'] === $artifactType && 
+                                    $pricing['service_type'] === $serviceType &&
+                                    $pricing['min_weight'] == $maxWeight && // Note: swap order in Arabic product names
+                                    $pricing['max_weight'] == $minWeight) {
+                                    return (float)$pricing['price'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check for Colorless Diamonds
+            if (strpos($productName, 'الألماس عديم اللون') !== false) {
+                $artifactType = 'Colorless Diamonds';
+                $serviceType = strpos($productName, 'تقرير كبير') !== false ? 'Regular - Diamond Grading Report' : 'Mini Card Report - Mini Report';
+                
+                preg_match('/\((.*?)\)/', $productName, $weightMatches);
+                
+                foreach ($pricingData as $pricing) {
+                    if ($pricing['artifact_type'] === $artifactType && 
+                        $pricing['service_type'] === $serviceType) {
+                        
+                        if (strpos($productName, '-') !== false) {
+                            preg_match('/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/', $productName, $rangeMatches);
+                            if (count($rangeMatches) >= 3) {
+                                $minWeight = (float)$rangeMatches[1];
+                                $maxWeight = (float)$rangeMatches[2];
+                                
+                                if ($pricing['min_weight'] == $minWeight && $pricing['max_weight'] == $maxWeight) {
+                                    return (float)$pricing['price'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return null;
+            
+        } catch (\Exception $e) {
+            Log::error('Error getting local pricing for product', [
+                'product' => $product['name_ar'] ?? $product['name_en'] ?? 'Unknown',
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Get a quote by ID from Qoyod
+     */
+    public function getQuote($quoteId)
+    {
+        try {
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/quotes/{$quoteId}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Qoyod quote fetched successfully', [
+                    'quote_id' => $quoteId,
+                    'status' => $data['quote']['status'] ?? 'Unknown'
+                ]);
+                
+                return $data['quote'];
+            }
+
+            Log::error('Failed to fetch quote from Qoyod', [
+                'quote_id' => $quoteId,
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching quote from Qoyod', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Get all quotes from Qoyod
+     */
+    public function getQuotes($page = 1, $perPage = 50)
+    {
+        try {
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/quotes", [
+                    'page' => $page,
+                    'per_page' => $perPage,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Qoyod quotes fetched successfully', [
+                    'page' => $page,
+                    'per_page' => $perPage,
+                    'total' => count($data['quote'] ?? [])
+                ]);
+                
+                return [
+                    'quotes' => $data['quote'] ?? [],
+                    'meta' => $data['meta'] ?? [
+                        'current_page' => $page,
+                        'per_page' => $perPage,
+                        'total' => count($data['quote'] ?? [])
+                    ]
+                ];
+            }
+
+            Log::error('Failed to fetch quotes from Qoyod', [
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            return [
+                'quotes' => [],
+                'meta' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total' => 0
+                ]
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching quotes from Qoyod', [
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'quotes' => [],
+                'meta' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total' => 0
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Download PDF for a quote from Qoyod
+     */
+    public function downloadQuotePDF($quoteId)
+    {
+        try {
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/pdf',
+                    'Content-Type' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/quotes/{$quoteId}/pdf");
+
+            if ($response->successful()) {
+                Log::info('Qoyod quote PDF downloaded successfully', [
+                    'quote_id' => $quoteId,
+                    'content_length' => strlen($response->body())
+                ]);
+                
+                return [
+                    'success' => true,
+                    'pdf_content' => $response->body(),
+                    'filename' => "quote-{$quoteId}.pdf",
+                    'mime_type' => 'application/pdf'
+                ];
+            }
+
+            Log::error('Failed to download quote PDF from Qoyod', [
+                'quote_id' => $quoteId,
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => 'Failed to download PDF from Qoyod',
+                'status' => $response->status()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while downloading quote PDF from Qoyod', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Get quote export URL from Qoyod (alternative method)
+     */
+    public function getQuoteExportUrl($quoteId)
+    {
+        try {
+            // Try to get the export URL for the quote
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/quotes/{$quoteId}/export");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Qoyod quote export URL retrieved successfully', [
+                    'quote_id' => $quoteId,
+                    'export_data' => $data
+                ]);
+                
+                return [
+                    'success' => true,
+                    'export_url' => $data['export_url'] ?? $data['download_url'] ?? null,
+                    'data' => $data
+                ];
+            }
+
+            Log::warning('No export URL found for quote', [
+                'quote_id' => $quoteId,
+                'status' => $response->status()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => 'No export URL available',
+                'status' => $response->status()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while getting quote export URL from Qoyod', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
 }

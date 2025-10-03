@@ -27,6 +27,20 @@
               <i class="fas fa-plus mr-2"></i>
               {{ __('Add Artifact') }}
             </button>
+            <button
+              @click="viewQuotes"
+              class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mr-3"
+            >
+              <i class="fas fa-list mr-2"></i>
+              {{ __('View Quotes') }}
+            </button>
+            <button
+              @click="createQuote"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <i class="fas fa-file-invoice mr-2"></i>
+              {{ __('Create Quote') }}
+            </button>
           </div>
         </div>
       </div>
@@ -408,6 +422,18 @@ export default {
       }
     },
     
+      createQuote() {
+        if (this.customer?.id) {
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-quote`)
+        }
+      },
+
+      viewQuotes() {
+        if (this.customer?.id) {
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/quotes`)
+        }
+      },
+    
     editArtifact(artifact) {
       this.selectedArtifact = artifact
       this.editArtifactData = {
@@ -536,6 +562,8 @@ export default {
           'View all artifacts added for this customer from Qoyod': 'View all artifacts added for this customer from Qoyod',
           'Back to Customers': 'Back to Customers',
           'Add Artifact': 'Add Artifact',
+          'View Quotes': 'View Quotes',
+          'Create Quote': 'Create Quote',
           'Customer Information': 'Customer Information',
           'Reference Number': 'Reference Number',
           'Customer Name': 'Customer Name',
@@ -577,6 +605,8 @@ export default {
           'View all artifacts added for this customer from Qoyod': 'عرض جميع القطع المضافة لهذا العميل من قيود',
           'Back to Customers': 'العودة للعملاء',
           'Add Artifact': 'إضافة قطعة',
+          'View Quotes': 'عرض عروض الأسعار',
+          'Create Quote': 'إنشاء عرض سعر',
           'Customer Information': 'معلومات العميل',
           'Reference Number': 'الرقم المرجعي',
           'Customer Name': 'اسم العميل',

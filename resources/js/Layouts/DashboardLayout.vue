@@ -115,7 +115,7 @@
     </div>
 
     <!-- Main content -->
-    <div class="flex-1 overflow-hidden" :class="{ 'lg:order-1': $page.props.locale === 'ar' }">
+    <div class="flex-1 overflow-y-auto" :class="{ 'lg:order-1': $page.props.locale === 'ar' }">
       <!-- Top navigation -->
       <div class="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
         <!-- Mobile menu button -->
@@ -205,8 +205,8 @@
       </div>
 
       <!-- Page content -->
-      <main class="flex-1 relative focus:outline-none">
-        <div class="py-6">
+      <main class="flex-1 relative focus:outline-none overflow-y-auto">
+        <div class="py-6 min-h-full">
           <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
             <slot />
           </div>

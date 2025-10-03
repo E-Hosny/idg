@@ -952,6 +952,163 @@ class DashboardController extends Controller
     }
 
     /**
+     * Show create quote form for customer
+     */
+    public function showCreateQuote($customerId)
+    {
+        try {
+            \Log::info('Showing create quote form', ['customer_id' => $customerId]);
+            
+            // Get customer info from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Get artifacts for this customer
+            $artifacts = \App\Models\Artifact::where('qoyod_customer_id', $customerId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get products from Qoyod
+            $productsResponse = $qoyodService->getProducts();
+            $products = $productsResponse['products'] ?? [];
+            
+            // Get locations from Qoyod
+            $locations = $qoyodService->getLocations();
+
+            \Log::info('Data prepared for quote form', [
+                'customer_id' => $customerId,
+                'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
+                'artifacts_count' => $artifacts->count(),
+                'products_count' => count($products)
+            ]);
+
+            return Inertia::render('Dashboard/Customers/CreateQuote', [
+                'customer' => $customer,
+                'artifacts' => $artifacts,
+                'products' => $products,
+                'locations' => $locations,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing create quote form', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers.artifacts.index', $customerId)
+                ->withErrors(['error' => 'An error occurred while loading the quote form.']);
+        }
+    }
+
+    /**
+     * Store/create quote for customer
+     */
+    public function storeQuote(Request $request, $customerId)
+    {
+        try {
+            $validatedData = $request->validate([
+                'quotation_number' => 'required|string|max:100',
+                'issue_date' => 'required|date|date_format:Y-m-d',
+                'expiry_date' => 'required|date|date_format:Y-m-d|after:issue_date',
+                'status' => 'required|string|in:Draft,Approved',
+                'terms_conditions' => 'nullable|string|max:1000',
+                'notes' => 'nullable|string|max:1000',
+                'inventory_id' => 'required|integer',
+                'location_id' => 'required|integer',
+                'line_items' => 'required|array|min:1',
+                'line_items.*.product_id' => 'required|integer',
+                'line_items.*.description' => 'nullable|string|max:500',
+                'line_items.*.quantity' => 'required|numeric|min:0.01',
+                'line_items.*.unit_price' => 'required|numeric|min:0',
+                'line_items.*.unit_type' => 'nullable|string|max:50',
+                'line_items.*.discount' => 'nullable|numeric|min:0',
+                'line_items.*.discount_type' => 'nullable|string|in:percentage,amount',
+                'line_items.*.tax_percent' => 'nullable|numeric|min:0|max:100',
+                'line_items.*.is_inclusive' => 'nullable|boolean',
+                'custom_fields' => 'nullable|array',
+            ]);
+
+            \Log::info('Creating quote in Qoyod', [
+                'customer_id' => $customerId,
+                'quotation_number' => $validatedData['quotation_number'],
+                'line_items_count' => count($validatedData['line_items'])
+            ]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Prepare quote data for Qoyod API
+            $quoteData = [
+                'quote' => [
+                    'contact_id' => $customerId,
+                    'quotation_number' => $validatedData['quotation_number'],
+                    'issue_date' => $validatedData['issue_date'],
+                    'expiry_date' => $validatedData['expiry_date'],
+                    'status' => $validatedData['status'],
+                    'terms_conditions' => $validatedData['terms_conditions'] ?? null,
+                    'notes' => $validatedData['notes'] ?? null,
+                    'inventory_id' => $validatedData['inventory_id'],
+                    'line_items' => $validatedData['line_items'],
+                ]
+            ];
+
+            // Add custom_fields if provided
+            if (isset($validatedData['custom_fields']) && !empty($validatedData['custom_fields'])) {
+                $quoteData['quote']['custom_fields'] = $validatedData['custom_fields'];
+            }
+
+            // Create quote via Qoyod API
+            $response = $qoyodService->createQuote($quoteData);
+
+            if (isset($response['quote']) && isset($response['quote']['id'])) {
+                \Log::info('Quote created successfully', [
+                    'customer_id' => $customerId,
+                    'quote_id' => $response['quote']['id'],
+                    'quotation_number' => $validatedData['quotation_number'],
+                    'total_amount' => $response['quote']['total_amount'] ?? 'N/A'
+                ]);
+
+                return redirect()->route('dashboard.customers.artifacts.index', $customerId)
+                    ->with('success', 'Quote created successfully! Quote ID: ' . $response['quote']['id']);
+            } else {
+                \Log::error('Failed to create quote', [
+                    'customer_id' => $customerId,
+                    'response' => $response
+                ]);
+
+                return redirect()->back()
+                    ->withErrors(['error' => 'Failed to create quote: ' . ($response['message'] ?? 'Unknown error')])
+                    ->withInput();
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error when creating quote', [
+                'customer_id' => $customerId,
+                'errors' => $e->errors()
+            ]);
+
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Error creating quote', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'An error occurred while creating the quote. Please try again.'])
+                ->withInput();
+        }
+    }
+
+    /**
      * Update artifact
      */
     public function updateArtifact(Request $request, Artifact $artifact)
@@ -1455,6 +1612,482 @@ class DashboardController extends Controller
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine()
             ], 500);
+        }
+    }
+
+    /**
+     * Show a specific quote
+     */
+    public function showQuote($quoteId)
+    {
+        try {
+            \Log::info('Showing quote', ['quote_id' => $quoteId]);
+
+            // Get quote from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $quote = $qoyodService->getQuote($quoteId);
+
+            if (!$quote) {
+                \Log::warning('Quote not found in Qoyod', ['quote_id' => $quoteId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Quote not found in Qoyod.']);
+            }
+
+            // Get customer info if available
+            $customer = null;
+            if (isset($quote['contact_id'])) {
+                $customer = $qoyodService->getCustomer($quote['contact_id']);
+            }
+
+            // Get products info for quote line items
+            $products = [];
+            if (isset($quote['line_items']) && is_array($quote['line_items'])) {
+                // Get all unique product IDs from line items
+                $productIds = array_unique(array_column($quote['line_items'], 'product_id'));
+                
+                // Fetch products from Qoyod
+                $productsResponse = $qoyodService->getProducts();
+                $allProducts = $productsResponse['products'] ?? [];
+                
+                // Filter to only products used in this quote
+                $products = array_filter($allProducts, function($product) use ($productIds) {
+                    return in_array($product['id'], $productIds);
+                });
+            }
+
+            \Log::info('Quote data prepared', [
+                'quote_id' => $quoteId,
+                'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
+                'total_amount' => $quote['total_amount'] ?? 'N/A',
+                'status' => $quote['status'] ?? 'Unknown',
+                'line_items_count' => count($quote['line_items'] ?? []),
+                'products_count' => count($products)
+            ]);
+
+            return Inertia::render('Dashboard/Quotes/ShowQuote', [
+                'quote' => $quote,
+                'customer' => $customer,
+                'products' => array_values($products), // Re-index array
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing quote', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => 'An error occurred while loading the quote.']);
+        }
+    }
+
+    /**
+     * List customer quotes
+     */
+    public function listCustomerQuotes($customerId)
+    {
+        try {
+            \Log::info('Showing customer quotes', ['customer_id' => $customerId]);
+
+            // Get customer info from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = $qoyodService->getCustomer($customerId);
+
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Get all quotes from Qoyod (we'll filter by customer_id in the frontend)
+            $quotesResponse = $qoyodService->getQuotes();
+            $allQuotes = $quotesResponse['quotes'] ?? [];
+            
+            // Filter quotes for this customer
+            $customerQuotes = array_filter($allQuotes, function($quote) use ($customerId) {
+                return isset($quote['contact_id']) && $quote['contact_id'] == $customerId;
+            });
+
+            \Log::info('Customer quotes data prepared', [
+                'customer_id' => $customerId,
+                'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
+                'quotes_count' => count($customerQuotes)
+            ]);
+
+            return Inertia::render('Dashboard/Customers/CustomerQuotes', [
+                'customer' => $customer,
+                'quotes' => array_values($customerQuotes), // Re-index array
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing customer quotes', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers.artifacts.index', $customerId)
+                ->withErrors(['error' => 'An error occurred while loading quotes.']);
+        }
+    }
+
+    /**
+     * Download quote PDF from Qoyod
+     */
+    public function downloadQuotePDF($quoteId)
+    {
+        try {
+            \Log::info('Downloading quote PDF', ['quote_id' => $quoteId]);
+
+            // Get quote from Qoyod first to check if it exists
+            $qoyodService = new \App\Services\QoyodService();
+            $quote = $qoyodService->getQuote($quoteId);
+
+            if (!$quote) {
+                \Log::warning('Quote not found for PDF download', ['quote_id' => $quoteId]);
+                return redirect()->back()->withErrors(['error' => 'Quote not found.']);
+            }
+
+            // Try to download PDF from Qoyod
+            $downloadResult = $qoyodService->downloadQuotePDF($quoteId);
+
+            if ($downloadResult['success']) {
+                \Log::info('Quote PDF downloaded successfully', [
+                    'quote_id' => $quoteId,
+                    'filename' => $downloadResult['filename']
+                ]);
+
+                return response($downloadResult['pdf_content'], 200)
+                    ->header('Content-Type', $downloadResult['mime_type'])
+                    ->header('Content-Disposition', 'attachment; filename="' . $downloadResult['filename'] . '"')
+                    ->header('Content-Length', strlen($downloadResult['pdf_content']));
+            } else {
+                \Log::warning('Failed to download PDF from Qoyod', [
+                    'quote_id' => $quoteId,
+                    'error' => $downloadResult['error'] ?? 'Unknown error'
+                ]);
+
+                // Try alternative method - generate PDF locally
+                return $this->generateLocalQuotePDF($quote);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error downloading quote PDF', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while downloading the PDF.']);
+        }
+    }
+
+    /**
+     * Generate local PDF for quote (fallback method)
+     */
+    private function generateLocalQuotePDF($quote)
+    {
+        try {
+            // Get customer info
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = null;
+            if (isset($quote['contact_id'])) {
+                $customer = $qoyodService->getCustomer($quote['contact_id']);
+            }
+
+            // Generate base64 encoded logo for PDF
+            $logoPath = public_path('images/idg_logo.jpg');
+            $logoDataUri = '';
+            if (file_exists($logoPath)) {
+                $logoData = base64_encode(file_get_contents($logoPath));
+                $imageInfo = getimagesize($logoPath);
+                $mimeType = $imageInfo['mime'];
+                $logoDataUri = "data:$mimeType;base64,$logoData";
+            }
+
+            // Generate PDF using professional template
+            try {
+                // Get products info for PDF generation
+                $products = [];
+                if (isset($quote['line_items']) && is_array($quote['line_items'])) {
+                    $productIds = array_unique(array_column($quote['line_items'], 'product_id'));
+                    $productsResponse = $qoyodService->getProducts();
+                    $allProducts = $productsResponse['products'] ?? [];
+                    
+                    $productsFiltered = array_filter($allProducts, function($product) use ($productIds) {
+                        return in_array($product['id'], $productIds);
+                    });
+                    
+                    $productsLookup = [];
+                    foreach ($productsFiltered as $product) {
+                        $productsLookup[$product['id']] = $product;
+                    }
+                    $products = $productsLookup;
+                }
+
+                $html = view('quotes.professional-pdf', [
+                    'quote' => $quote,
+                    'customer' => $customer,
+                    'products' => $products,
+                    'logoDataUri' => $logoDataUri,
+                ])->render();
+            } catch (\Exception $viewError) {
+                \Log::warning('Fallback to simplified PDF template', [
+                    'error' => $viewError->getMessage()
+                ]);
+                // Use simplified template as fallback
+                $html = view('quotes.pdf-simple', [
+                    'quote' => $quote,
+                    'customer' => $customer,
+                    'logoDataUri' => $logoDataUri,
+                ])->render();
+            }
+
+            // Use dompdf to generate PDF
+            $dompdf = new \Dompdf\Dompdf([
+                'isRemoteEnabled' => true,
+                'isHtml5ParserEnabled' => true,
+            ]);
+            $dompdf->loadHtml($html, 'UTF-8');
+            $dompdf->setPaper('A4', 'landscape');
+            $dompdf->render();
+
+            $filename = 'quote-' . ($quote['reference'] ?? $quote['id']) . '.pdf';
+
+            \Log::info('Local PDF generated successfully', [
+                'quote_id' => $quote['id'],
+                'filename' => $filename
+            ]);
+
+            $output = $dompdf->output();
+            
+            if (empty($output)) {
+                \Log::error('Generated PDF output is empty', [
+                    'quote_id' => $quote['id'] ?? 'unknown'
+                ]);
+                throw new \Exception('Generated PDF is empty');
+            }
+
+            return response($output, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Content-Length', strlen($output));
+
+        } catch (\Exception $e) {
+            \Log::error('Error generating local PDF', [
+                'quote_id' => $quote['id'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'Failed to generate PDF. Please try again later.']);
+        }
+    }
+
+    /**
+     * Generate basic PDF HTML as fallback
+     */
+    private function generateBasicPDFHtml($quote, $customer)
+    {
+        $html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quote ' . ($quote['id'] ?? 'N/A') . '</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #007bff; }
+        .title { font-size: 24px; color: #007bff; font-weight: bold; }
+        .section { margin-bottom: 20px; }
+        .section-title { font-size: 18px; color: #007bff; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #007bff; color: white; font-weight: bold; }
+        .total { background-color: #f8f9fa; padding: 15px; margin-top: 20px; border-radius: 5px; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .grand-total { background-color: #007bff; color: white; padding: 10px; border-radius: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">QUOTE</div>
+        <div>' . ($quote['reference'] ?? '#' . ($quote['id'] ?? '')) . '</div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">Quote Details</div>
+        <p><strong>Quote Number:</strong> ' . ($quote['reference'] ?? '#') . '</p>
+        <p><strong>Status:</strong> ' . ($quote['status'] ?? 'Draft') . '</p>
+        <p><strong>Issue Date:</strong> ' . ($quote['issue_date'] ?? 'N/A') . '</p>
+        <p><strong>Expiry Date:</strong> ' . ($quote['expiry_date'] ?? 'N/A') . '</p>
+    </div>';
+        
+        if ($customer) {
+            $html .= '
+    <div class="section">
+        <div class="section-title">Customer Information</div>
+        <p><strong>Customer Name:</strong> ' . ($customer['display_name'] ?? $customer['name'] ?? 'N/A') . '</p>';
+            if (isset($customer['email'])) {
+                $html .= '<p><strong>Email:</strong> ' . $customer['email'] . '</p>';
+            }
+            if (isset($customer['phone'])) {
+                $html .= '<p><strong>Phone:</strong> ' . $customer['phone'] . '</p>';
+            }
+            $html .= '</div>';
+        }
+        
+        if (isset($quote['line_items']) && count($quote['line_items']) > 0) {
+            $html .= '
+    <div class="section">
+        <div class="section-title">Quote Items</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>';
+            
+            $subtotal = 0;
+            foreach ($quote['line_items'] as $index => $item) {
+                $itemTotal = ($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0);
+                $subtotal += $itemTotal;
+                
+                $html .= '
+                <tr>
+                    <td>' . ($index + 1) . '</td>
+                    <td>' . ($item['product_name'] ?? 'Product #' . ($item['product_id'] ?? '')) . '</td>
+                    <td>' . ($item['quantity'] ?? 0) . '</td>
+                    <td>SAR ' . number_format($item['unit_price'] ?? 0, 2) . '</td>
+                    <td>SAR ' . number_format($itemTotal, 2) . '</td>
+                </tr>';
+            }
+            
+            $html .= '
+            </tbody>
+        </table>
+    </div>';
+            
+            $tax = $subtotal * 0.15;
+            $total = $quote['total_amount'] ?? ($subtotal + $tax);
+            
+            $html .= '
+    <div class="total">
+        <div class="total-row">
+            <span>Subtotal:</span>
+            <span>SAR ' . number_format($subtotal, 2) . '</span>
+        </div>
+        <div class="total-row">
+            <span>Tax (15%):</span>
+            <span>SAR ' . number_format($tax, 2) . '</span>
+        </div>
+        <div class="total-row grand-total">
+            <span><strong>Total Amount:</strong></span>
+            <span><strong>SAR ' . number_format($total, 2) . '</strong></span>
+        </div>
+    </div>';
+        }
+        
+        if (isset($quote['notes']) && !empty($quote['notes'])) {
+            $html .= '
+    <div class="section">
+        <div class="section-title">Notes</div>
+        <p>' . $quote['notes'] . '</p>
+    </div>';
+        }
+        
+        $html .= '
+    <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #666;">
+        <p>This quote is valid until ' . ($quote['expiry_date'] ?? 'N/A') . '</p>
+        <p>Generated on ' . date('Y/m/d H:i') . '</p>
+    </div>
+</body>
+</html>';
+        
+        return $html;
+}
+    
+    /**
+     * Print quote (view only)
+     */
+    public function printQuote($quoteId)
+    {
+        try {
+            \Log::info('Printing quote', ['quote_id' => $quoteId]);
+
+            // Get quote from Qoyod first to check if it exists
+            $qoyodService = new \App\Services\QoyodService();
+            $quote = $qoyodService->getQuote($quoteId);
+
+            if (!$quote) {
+                \Log::warning('Quote not found for printing', ['quote_id' => $quoteId]);
+                return redirect()->route('dashboard.customers')->withErrors(['error' => 'Quote not found.']);
+            }
+
+            // Get customer info if available
+            $customer = null;
+            if (isset($quote['contact_id'])) {
+                $customer = $qoyodService->getCustomer($quote['contact_id']);
+            }
+
+            // Get products info for quote line items
+            $products = [];
+            if (isset($quote['line_items']) && is_array($quote['line_items'])) {
+                // Get all unique product IDs from line items
+                $productIds = array_unique(array_column($quote['line_items'], 'product_id'));
+                
+                // Fetch products from Qoyod
+                $productsResponse = $qoyodService->getProducts();
+                $allProducts = $productsResponse['products'] ?? [];
+                
+                // Filter to only products used in this quote
+                $products = array_filter($allProducts, function($product) use ($productIds) {
+                    return in_array($product['id'], $productIds);
+                });
+                
+                // Create a keyed array for easy lookup
+                $productsLookup = [];
+                foreach ($products as $product) {
+                    $productsLookup[$product['id']] = $product;
+                }
+                $products = $productsLookup;
+            }
+
+            \Log::info('Quote data prepared for printing', [
+                'quote_id' => $quoteId,
+                'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
+                'total_amount' => $quote['total_amount'] ?? 'N/A',
+                'line_items_count' => count($quote['line_items']),
+                'products_count' => count($products)
+            ]);
+
+            // Generate base64 encoded logo for PDF
+            $logoPath = public_path('images/idg_logo.jpg');
+            $logoDataUri = '';
+            if (file_exists($logoPath)) {
+                $logoData = base64_encode(file_get_contents($logoPath));
+                $imageInfo = getimagesize($logoPath);
+                $mimeType = $imageInfo['mime'];
+                $logoDataUri = "data:$mimeType;base64,$logoData";
+            }
+
+            return view('quotes.print-view', [
+                'quote' => $quote,
+                'customer' => $customer,
+                'products' => $products,
+                'logoDataUri' => $logoDataUri,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error preparing quote for printing', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while preparing the quote for printing.']);
         }
     }
 }

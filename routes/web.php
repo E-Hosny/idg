@@ -36,6 +36,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/dashboard/customers/{customer}', [DashboardController::class, 'deleteCustomer'])->name('dashboard.customers.delete');
     Route::post('/dashboard/customers/artifacts', [DashboardController::class, 'storeCustomerArtifact'])->name('dashboard.customers.artifacts.store');
     Route::get('/dashboard/customers/{customer}/artifacts', [DashboardController::class, 'customerArtifacts'])->name('dashboard.customers.artifacts.index');
+    
+    // Quote routes
+    Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
+    Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');
+    
+    // Quote viewing routes
+    Route::get('/dashboard/quotes/{quote}', [DashboardController::class, 'showQuote'])->name('dashboard.quotes.show');
+    Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
+    Route::get('/dashboard/quotes/{quote}/download-pdf', [DashboardController::class, 'downloadQuotePDF'])->name('dashboard.quotes.download-pdf');
+    Route::get('/dashboard/quotes/{quote}/print', [DashboardController::class, 'printQuote'])->name('dashboard.quotes.print');
     Route::put('/dashboard/artifacts/{artifact}', [DashboardController::class, 'updateArtifact'])->name('dashboard.artifacts.update');
     Route::delete('/dashboard/artifacts/{artifact}', [DashboardController::class, 'deleteArtifact'])->name('dashboard.artifacts.delete');
     Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
