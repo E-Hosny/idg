@@ -69,13 +69,6 @@
               {{ __('Refresh') }}
             </button>
             <button
-              @click="showAllInvoices"
-              class="px-3 py-1 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700"
-            >
-              <i class="fas fa-list mr-1"></i>
-              {{ __('View All Invoices') }}
-            </button>
-            <button
               @click="createInvoice"
               class="px-3 py-1 bg-green-600 text-white rounded-md text-sm hover:bg-green-700"
             >
@@ -293,11 +286,6 @@ export default {
           this.loadingInvoices = false;
         }
       });
-    },
-    
-    showAllInvoices() {
-      // Redirect to all invoices page for debugging
-      this.$inertia.visit('/dashboard/invoices');
     },
     
     async testQoyodConnection() {
