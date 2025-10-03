@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Services\PricingService;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -2195,6 +2196,361 @@ class DashboardController extends Controller
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while preparing the quote for printing.']);
+        }
+    }
+
+    /**
+     * Show create invoice form for customer
+     */
+    public function showCreateInvoice($customerId)
+    {
+        try {
+            \Log::info('Showing create invoice form', ['customer_id' => $customerId]);
+            
+            // Get customer info from Qoyod
+            $qoyodService = new \App\Services\QoyodService();
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Get artifacts for this customer
+            $artifacts = \App\Models\Artifact::where('qoyod_customer_id', $customerId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Get products from Qoyod
+            $productsResponse = $qoyodService->getProducts();
+            
+              // Get locations from Qoyod for default selection
+            $locations = $qoyodService->getLocations();
+
+            \Log::info('Data prepared for invoice form', [
+                'customer_id' => $customerId,
+                'customer_name' => $customer['name'] || $customer['display_name'] || 'Unknown',
+                'artifacts_count' => $artifacts->count(),
+                'products_count' => count($productsResponse['products'] ?? [])
+            ]);
+
+            return Inertia::render('Dashboard/Customers/CreateInvoice', [
+                'customer' => $customer,
+                'artifacts' => $artifacts,
+                'products' => $productsResponse['products'] ?? [],
+                'locations' => $locations,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing create invoice form', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('dashboard.customers.artifacts.index', $customerId)
+                ->withErrors(['error' => 'An error occurred while loading the invoice form.']);
+        }
+    }
+
+    /**
+     * Store/create invoice for customer
+     */
+    public function storeInvoice(Request $request, $customerId)
+    {
+        try {
+            $validatedData = $request->validate([
+                'reference' => 'nullable|string|max:255',
+                'description' => 'nullable|string|max:500',
+                'issue_date' => 'required|date',
+                'due_date' => 'required|date|after:issue_date',
+                'delivery_date' => 'required|date',
+                'status' => 'required|in:Draft,Approved',
+                'contact_id' => 'required|integer',
+                'inventory_id' => 'required|integer',
+                'location_id' => 'required|integer',
+                'draft_if_out_of_stock' => 'boolean',
+                'line_items' => 'required|array|min:1',
+                'line_items.*.product_id' => 'required|integer',
+                'line_items.*.description' => 'nullable|string|max:500',
+                'line_items.*.quantity' => 'required|numeric|min:0.01',
+                'line_items.*.unit_price' => 'required|numeric|min:0',
+                'line_items.*.unit_type' => 'nullable|string|max:100',
+                'line_items.*.discount' => 'nullable|numeric|min:0',
+                'line_items.*.discount_type' => 'nullable|in:percentage,amount',
+                'line_items.*.tax_percent' => 'nullable|integer|min:0|max:100',
+                'line_items.*.is_inclusive' => 'boolean',
+                'custom_fields' => 'nullable|array',
+                'custom_fields.*.name' => 'required_with:custom_fields|string|max:255',
+                'custom_fields.*.value' => 'required_with:custom_fields|string|max:500',
+            ]);
+
+            \Log::info('Creating invoice in Qoyod', [
+                'customer_id' => $customerId,
+                'invoice_data' => $validatedData
+            ]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            $invoiceData = [
+                'invoice' => $validatedData
+            ];
+
+            $result = $qoyodService->createInvoice($invoiceData);
+
+            if (isset($result['invoice']) && isset($result['invoice']['id'])) {
+                \Log::info('Invoice created successfully', [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $result['invoice']['id'],
+                    'reference' => $result['invoice']['reference'] ?? null
+                ]);
+
+                return redirect()->route('dashboard.customers.invoices.show', [$customerId, $result['invoice']['id']])
+                    ->with('success', 'Invoice created successfully!');
+            } else {
+                \Log::error('Failed to create invoice', [
+                    'customer_id' => $customerId,
+                    'response' => $result
+                ]);
+
+                $errorMessage = $result['message'] ?? 'Failed to create invoice';
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['error' => $errorMessage]);
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error while creating invoice', [
+                'customer_id' => $customerId,
+                'errors' => $e->errors()
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors($e->errors());
+
+        } catch (\Exception $e) {
+            \Log::error('Exception while creating invoice', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'An error occurred while creating the invoice. Please try again.']);
+        }
+    }
+
+    /**
+     * List customer invoices
+     */
+    public function listCustomerInvoices($customerId)
+    {
+        try {
+            \Log::info('Listing customer invoices', ['customer_id' => $customerId]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Get customer info
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Clear invoice cache first
+            Cache::forget("qoyod_invoices_page_1_per_50");
+            
+            // Get all invoices from Qoyod (exactly same logic as quotes)
+            $invoicesResponse = $qoyodService->getInvoices();
+            $allInvoices = $invoicesResponse['invoices'] ?? $invoicesResponse['data'] ?? [];
+            
+            // Filter invoices for this customer and add customer info
+            $customerInvoices = array_filter($allInvoices, function($invoice) use ($customerId) {
+                return isset($invoice['contact_id']) && $invoice['contact_id'] == $customerId;
+            });
+            
+            // Add customer name to each invoice
+            $customerInvoices = array_map(function($invoice) use ($customer) {
+                $invoice['customer_name'] = $customer['name'] ?? $customer['display_name'] ?? $customer['title'] ?? 'Unknown Customer';
+                $invoice['contact_name'] = $invoice['customer_name']; // Ensure contact_name exists
+                return $invoice;
+            }, $customerInvoices);
+
+            \Log::info('Customer invoices data prepared', [
+                'customer_id' => $customerId,
+                'customer_data' => $customer,
+                'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
+                'total_invoices' => count($allInvoices),
+                'customer_invoices_count' => count($customerInvoices),
+                'response_structure' => array_keys($invoicesResponse),
+                'sample_invoice' => isset($customerInvoices[0]) ? $customerInvoices[0] : null
+            ]);
+
+            return Inertia::render('Dashboard/Customers/ShowCustomerInvoices', [
+                'customer' => $customer,
+                'invoices' => $customerInvoices,
+                'meta' => $invoicesResponse['meta'] ?? []
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error listing customer invoices', [
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while fetching invoices.']);
+        }
+    }
+
+    /**
+     * Show specific invoice details
+     */
+    public function showInvoice($customerId, $invoiceId)
+    {
+        try {
+            \Log::info('Showing invoice details', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId
+            ]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Get customer info
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            if (!$customer) {
+                \Log::warning('Customer not found in Qoyod', ['customer_id' => $customerId]);
+                return redirect()->route('dashboard.customers')
+                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
+            }
+
+            // Get invoice details
+            $invoiceResponse = $qoyodService->getInvoice($invoiceId);
+
+            if (!isset($invoiceResponse['invoice'])) {
+                \Log::error('Invoice not found in Qoyod', [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $invoiceId,
+                    'response' => $invoiceResponse
+                ]);
+
+                return redirect()->route('dashboard.customers.invoices', $customerId)
+                    ->withErrors(['error' => $invoiceResponse['message'] ?? 'Invoice not found.']);
+            }
+
+            \Log::info('Invoice details retrieved successfully', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId,
+                'reference' => $invoiceResponse['invoice']['reference'] ?? null
+            ]);
+
+            return Inertia::render('Dashboard/Customers/ShowInvoice', [
+                'customer' => $customer,
+                'invoice' => $invoiceResponse['invoice'],
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error showing invoice details', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while fetching invoice details.']);
+        }
+    }
+
+    /**
+     * Download invoice PDF
+     */
+    public function downloadInvoicePdf($customerId, $invoiceId)
+    {
+        try {
+            \Log::info('Downloading invoice PDF', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId
+            ]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            $pdfResponse = $qoyodService->getInvoicePdf($invoiceId);
+
+            if (isset($pdfResponse['pdf_file'])) {
+                \Log::info('Invoice PDF link retrieved successfully', [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $invoiceId,
+                    'pdf_url' => $pdfResponse['pdf_file']
+                ]);
+
+                // Redirect to PDF URL
+                return redirect($pdfResponse['pdf_file']);
+            } else {
+                \Log::error('Failed to get invoice PDF', [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $invoiceId,
+                    'response' => $pdfResponse
+                ]);
+
+                return redirect()->back()->withErrors(['error' => 'Failed to generate PDF. Please try again.']);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error downloading invoice PDF', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while generating PDF.']);
+        }
+    }
+
+    /**
+     * Delete invoice
+     */
+    public function deleteInvoice($customerId, $invoiceId)
+    {
+        try {
+            \Log::info('Deleting invoice', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId
+            ]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            $result = $qoyodService->deleteInvoice($invoiceId);
+
+            if ($result['success']) {
+                \Log::info('Invoice deleted successfully', [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $invoiceId
+                ]);
+
+                return redirect()->route('dashboard.customers.invoices', $customerId)
+                    ->with('success', 'Invoice deleted successfully!');
+            } else {
+                \Log::error('Failed to delete invoice', [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $invoiceId,
+                    'response' => $result
+                ]);
+
+                return redirect()->back()->withErrors(['error' => $result['message'] ?? 'Failed to delete invoice.']);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error deleting invoice', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the invoice.']);
         }
     }
 }

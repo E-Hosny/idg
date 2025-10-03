@@ -41,6 +41,20 @@
               <i class="fas fa-file-invoice mr-2"></i>
               {{ __('Create Quote') }}
             </button>
+            <button
+              @click="viewInvoices"
+              class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <i class="fas fa-list mr-2"></i>
+              {{ __('View Invoices') }}
+            </button>
+            <button
+              @click="createInvoice"
+              class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <i class="fas fa-file-alt mr-2"></i>
+              {{ __('Create Invoice') }}
+            </button>
           </div>
         </div>
       </div>
@@ -632,6 +646,18 @@ export default {
           this.$inertia.visit(`/dashboard/customers/${this.customer.id}/quotes`)
         }
       },
+
+      viewInvoices() {
+        if (this.customer?.id) {
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/invoices`)
+        }
+      },
+
+      createInvoice() {
+        if (this.customer?.id) {
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-invoice`)
+        }
+      },
     
     editArtifact(artifact) {
       this.selectedArtifact = artifact
@@ -893,6 +919,8 @@ export default {
           'Add Artifact': 'Add Artifact',
           'View Quotes': 'View Quotes',
           'Create Quote': 'Create Quote',
+          'View Invoices': 'View Invoices',
+          'Create Invoice': 'Create Invoice',
           'Customer Information': 'Customer Information',
           'Reference Number': 'Reference Number',
           'Customer Name': 'Customer Name',
@@ -937,6 +965,8 @@ export default {
           'Add Artifact': 'إضافة قطعة',
           'View Quotes': 'عرض عروض الأسعار',
           'Create Quote': 'إنشاء عرض سعر',
+          'View Invoices': 'عرض الفواتير',
+          'Create Invoice': 'إنشاء فاتورة',
           'Customer Information': 'معلومات العميل',
           'Reference Number': 'الرقم المرجعي',
           'Customer Name': 'اسم العميل',

@@ -35,6 +35,20 @@
               <i class="fas fa-file-invoice mr-2"></i>
               {{ __('View Quotes') }}
             </button>
+            <button 
+              @click="viewInvoices"
+              class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+            >
+              <i class="fas fa-file-alt mr-2"></i>
+              {{ __('View Invoices') }}
+            </button>
+            <button 
+              @click="createInvoice"
+              class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              {{ __('Create Invoice') }}
+            </button>
           </div>
         </div>
       </div>
@@ -208,7 +222,20 @@ export default {
     
     createQuote() {
       if (this.customer?.id) {
-        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-quote`)
+        // Redirect to create invoice instead of quote
+        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-invoice`)
+      }
+    },
+    
+    viewInvoices() {
+      if (this.customer?.id) {
+        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/invoices`)
+      }
+    },
+    
+    createInvoice() {
+      if (this.customer?.id) {
+        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-invoice`)
       }
     },
     

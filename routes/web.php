@@ -41,6 +41,67 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
     Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
     Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');
+    Route::get('/dashboard/customers/{customer}/invoices', [DashboardController::class, 'listCustomerInvoices'])->name('dashboard.customers.invoices');
+    Route::get('/dashboard/customers/{customer}/create-invoice', [DashboardController::class, 'showCreateInvoice'])->name('dashboard.customers.create-invoice');
+    Route::post('/dashboard/customers/{customer}/store-invoice', [DashboardController::class, 'storeInvoice'])->name('dashboard.customers.store-invoice');
+    Route::get('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'showInvoice'])->name('dashboard.customers.invoices.show');
+    Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
+    Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
+    
+    // Debug route for testing Qoyod connection
+    Route::get('/dashboard/api/test-qoyod', function(\Illuminate\Http\Request $request) {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            
+            $customerId = $request->get('customer_id');
+            $allInvoices = $qoyodService->getInvoices();
+            
+            return response()->json([
+                'status' => 'success',
+                'customer_id' => $customerId,
+                'total_invoices' => count($allInvoices['data'] ?? []),
+                'invoices' => $allInvoices['data'] ?? [],
+                'meta' => $allInvoices['meta'] ?? []
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+        }
+    })->name('debug.test.qoyod');
+    
+    // Debug route for testing quotes specifically
+    Route::get('/dashboard/api/test-qoyod-quotes', function(\Illuminate\Http\Request $request) {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            
+            $customerId = $request->get('customer_id') ?: 4;
+            $quotes = $qoyodService->getQuotes();
+            
+            return response()->json([
+                'status' => 'success',
+                'customer_id' => $customerId,
+                'quotes_structure' => array_keys($quotes),
+                'all_quotes_count' => count($quotes['quotes'] ?? []),
+                'customer_quotes' => array_filter($quotes['quotes'] ?? [], function($quote) use ($customerId) {
+                    return isset($quote['contact_id']) && $quote['contact_id'] == $customerId;
+                }),
+                'sample_customer_quote' => collect($quotes['quotes'] ?? [])->where('contact_id', $customerId)->first(),
+                'sample_all_quote' => collect($quotes['quotes'] ?? [])->first()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+        }
+    })->name('debug.test.quotes');
+    
     Route::get('/dashboard/customers/{customer}', [DashboardController::class, 'showCustomer'])->name('dashboard.customers.show');
     Route::put('/dashboard/customers/{customer}', [DashboardController::class, 'updateCustomer'])->name('dashboard.customers.update');
     Route::delete('/dashboard/customers/{customer}', [DashboardController::class, 'deleteCustomer'])->name('dashboard.customers.delete');

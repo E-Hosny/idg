@@ -402,6 +402,277 @@ class QoyodService
     }
 
     /**
+     * Get all invoices from Qoyod
+     */
+    public function getInvoices($page = 1, $perPage = 50)
+    {
+        try {
+            $cacheKey = "qoyod_invoices_page_{$page}_per_{$perPage}";
+            
+            return Cache::remember($cacheKey, 60, function () use ($page, $perPage) {
+                $response = Http::timeout($this->timeout)
+                    ->withHeaders([
+                        'API-KEY' => $this->apiKey,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->get("{$this->baseUrl}/invoices", [
+                        'page' => $page,
+                        'per_page' => $perPage,
+                    ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    Log::info('Qoyod invoices fetched successfully', [
+                        'page' => $page,
+                        'per_page' => $perPage,
+                        'response_structure' => array_keys($data),
+                        'invoices_count' => count($data['invoices'] ?? []),
+                        'data_count' => count($data['data'] ?? [])
+                    ]);
+                    return $data;
+                }
+
+                Log::error('Failed to fetch invoices from Qoyod', [
+                    'status' => $response->status(),
+                    'response' => $response->body()
+                ]);
+
+                return [
+                    'invoices' => [],
+                    'data' => [],
+                    'meta' => [
+                        'current_page' => $page,
+                        'per_page' => $perPage,
+                        'total' => 0
+                    ]
+                ];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching invoices from Qoyod', [
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'invoices' => [],
+                'data' => [],
+                'meta' => [
+                    'current_page' => $page,
+                    'per_page' => $perPage,
+                    'total' => 0
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Get a specific invoice by ID from Qoyod
+     */
+    public function getInvoice($invoiceId)
+    {
+        try {
+            $cacheKey = "qoyod_invoice_{$invoiceId}";
+            
+            return Cache::remember($cacheKey, 300, function () use ($invoiceId) {
+                $response = Http::timeout($this->timeout)
+                    ->withHeaders([
+                        'API-KEY' => $this->apiKey,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->get("{$this->baseUrl}/invoices/{$invoiceId}");
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    Log::info('Qoyod invoice fetched successfully', [
+                        'invoice_id' => $invoiceId,
+                        'invoice_number' => $data['invoice']['reference'] ?? null
+                    ]);
+                    return $data;
+                }
+
+                Log::error('Failed to fetch invoice from Qoyod', [
+                    'invoice_id' => $invoiceId,
+                    'status' => $response->status(),
+                    'response' => $response->body()
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'Invoice not found',
+                    'status' => $response->status()
+                ];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching invoice from Qoyod', [
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Exception occurred while fetching invoice',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Create an invoice in Qoyod
+     */
+    public function createInvoice($invoiceData)
+    {
+        try {
+            Log::info('Creating invoice in Qoyod', ['invoice_data' => $invoiceData]);
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->post("{$this->baseUrl}/invoices", $invoiceData);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Invoice created successfully in Qoyod', [
+                    'invoice_id' => $data['invoice']['id'] ?? null,
+                    'reference' => $invoiceData['invoice']['reference'] ?? null
+                ]);
+
+                return $data;
+            }
+
+            Log::error('Failed to create invoice in Qoyod', [
+                'status' => $response->status(),
+                'response' => $response->body(),
+                'data' => $invoiceData
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to create invoice',
+                'status' => $response->status(),
+                'response' => $response->body()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while creating invoice in Qoyod', [
+                'error' => $e->getMessage(),
+                'data' => $invoiceData
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Exception occurred while creating invoice',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Get invoice PDF from Qoyod
+     */
+    public function getInvoicePdf($invoiceId)
+    {
+        try {
+            Log::info('Fetching invoice PDF from Qoyod', ['invoice_id' => $invoiceId]);
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/invoices/{$invoiceId}/pdf");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Invoice PDF fetched successfully from Qoyod', [
+                    'invoice_id' => $invoiceId,
+                    'pdf_url' => $data['pdf_file'] ?? null
+                ]);
+
+                return $data;
+            }
+
+            Log::error('Failed to fetch invoice PDF from Qoyod', [
+                'invoice_id' => $invoiceId,
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to get invoice PDF',
+                'status' => $response->status()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching invoice PDF from Qoyod', [
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Exception occurred while fetching invoice PDF',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Delete an invoice from Qoyod
+     */
+    public function deleteInvoice($invoiceId)
+    {
+        try {
+            Log::info('Deleting invoice from Qoyod', ['invoice_id' => $invoiceId]);
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->delete("{$this->baseUrl}/invoices/{$invoiceId}");
+
+            if ($response->successful()) {
+                Log::info('Invoice deleted successfully from Qoyod', [
+                    'invoice_id' => $invoiceId
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Invoice deleted successfully'
+                ];
+            }
+
+            Log::error('Failed to delete invoice from Qoyod', [
+                'invoice_id' => $invoiceId,
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to delete invoice',
+                'status' => $response->status()
+            ];
+        } catch (\Exception $e) {
+            Log::error('Exception while deleting invoice from Qoyod', [
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Exception occurred while deleting invoice',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Create a quote in Qoyod
      */
     public function createQuote($quoteData)
