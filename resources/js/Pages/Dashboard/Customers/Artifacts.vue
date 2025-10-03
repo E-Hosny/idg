@@ -198,14 +198,14 @@
                   <div class="flex items-center space-x-2">
                     <button 
                       @click="editArtifact(artifact)"
-                      class="text-blue-600 hover:text-blue-900"
+                      class="p-1 rounded-md text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors duration-200"
                       :title="__('Edit')"
                     >
                       <i class="fas fa-edit"></i>
                     </button>
                     <button 
                       @click="deleteArtifact(artifact)"
-                      class="text-red-600 hover:text-red-900"
+                      class="p-1 rounded-md text-red-600 hover:text-red-900 hover:bg-red-50 transition-colors duration-200"
                       :title="__('Delete')"
                     >
                       <i class="fas fa-trash"></i>

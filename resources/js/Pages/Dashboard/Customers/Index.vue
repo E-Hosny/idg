@@ -155,33 +155,36 @@
                   <div class="flex items-center justify-end space-x-2">
                     <button 
                       @click="addArtifactToCustomer(customer)"
-                      class="text-purple-600 hover:text-purple-900"
+                      class="p-1 rounded-md text-purple-600 hover:text-purple-900 hover:bg-purple-50 transition-colors duration-200"
                       :title="__('Add Artifact')"
                     >
                       <i class="fas fa-gem"></i>
                     </button>
                     <button 
                       @click="viewCustomerArtifacts(customer)"
-                      class="text-orange-600 hover:text-orange-900"
+                      class="p-1 rounded-md text-orange-600 hover:text-orange-900 hover:bg-orange-50 transition-colors duration-200"
                       :title="__('View Artifacts')"
                     >
                       <i class="fas fa-list"></i>
                     </button>
                     <button 
                       @click="viewCustomer(customer)"
-                      class="text-green-600 hover:text-green-900"
+                      class="p-1 rounded-md text-green-600 hover:text-green-900 hover:bg-green-50 transition-colors duration-200"
+                      :title="__('View Customer')"
                     >
                       <i class="fas fa-eye"></i>
                     </button>
                     <button 
                       @click="editCustomer(customer)"
-                      class="text-blue-600 hover:text-blue-900"
+                      class="p-1 rounded-md text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors duration-200"
+                      :title="__('Edit Customer')"
                     >
                       <i class="fas fa-edit"></i>
                     </button>
                     <button 
                       @click="deleteCustomer(customer)"
-                      class="text-red-600 hover:text-red-900"
+                      class="p-1 rounded-md text-red-600 hover:text-red-900 hover:bg-red-50 transition-colors duration-200"
+                      :title="__('Delete Customer')"
                     >
                       <i class="fas fa-trash"></i>
                     </button>
@@ -1725,7 +1728,10 @@ export default {
           'Please fill in all required fields (Type, Service, Weight)': 'يرجى ملء جميع الحقول المطلوبة (النوع، الخدمة، الوزن)',
           'Error calculating price. Please try again.': 'خطأ في حساب السعر. يرجى المحاولة مرة أخرى.',
           'Error adding artifact. Please try again.': 'خطأ في إضافة القطعة. يرجى المحاولة مرة أخرى.',
-          'View Artifacts': 'عرض القطع'
+          'View Artifacts': 'عرض القطع',
+          'View Customer': 'عرض العميل',
+          'Edit Customer': 'تحرير العميل',
+          'Delete Customer': 'حذف العميل'
         }
       }
 

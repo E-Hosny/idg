@@ -157,14 +157,14 @@
                   <div class="flex items-center justify-end space-x-2">
                     <button
                       @click="viewQuote(quote.id)"
-                      class="text-blue-600 hover:text-blue-900 p-1"
+                      class="p-1 rounded-md text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors duration-200"
                       :title="__('View Quote')"
                     >
                       <i class="fas fa-eye"></i>
                     </button>
                     <button
                       @click="editQuote(quote.id)"
-                      class="text-gray-600 hover:text-gray-900 p-1"
+                      class="p-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-200"
                       :title="__('Edit Quote')"
                     >
                       <i class="fas fa-edit"></i>
