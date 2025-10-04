@@ -45,7 +45,7 @@ app.component('example-component', ExampleComponent);
 window.route = route
 
 createInertiaApp({
-  title: (title) => `${title} - IDG Artifacts`,
+  title: (title) => title ? `${title} - IDG` : 'IDG',
   resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
   setup({ el, App, props, plugin }) {
     const app = createApp({ render: () => h(App, props) })

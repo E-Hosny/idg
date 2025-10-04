@@ -90,29 +90,15 @@
           <h3 class="mt-4 text-lg font-medium text-gray-900">{{ __('No invoices found') }}</h3>
           <p class="mt-2 text-gray-600">{{ __('No invoices have been created for this customer yet.') }}</p>
           <p class="mt-1 text-sm text-gray-500">{{ __('Debug: Customer ID') }} = {{ customer?.id }} - {{ __('Name:') }} {{ customer?.name || customer?.display_name || 'Unknown' }}</p>
-          <div class="mt-4 space-x-3">
-            <button
-              @click="testQoyodConnection"
-              class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
-            >
-              <i class="fas fa-bug mr-2"></i>
-              {{ __('Test Qoyod Invoices') }}
-            </button>
-            <button
-              @click="testQoyodQuotes"
-              class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
-            >
-              <i class="fas fa-quote-left mr-2"></i>
-              {{ __('Test Customer Quotes') }}
-            </button>
-            <button
-              @click="createInvoice"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              <i class="fas fa-plus mr-2"></i>
-              {{ __('Create First Invoice') }}
-            </button>
-          </div>
+           <div class="mt-4 space-x-3">
+             <button
+               @click="createInvoice"
+               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+             >
+               <i class="fas fa-plus mr-2"></i>
+               {{ __('Create First Invoice') }}
+             </button>
+           </div>
         </div>
 
         <!-- Invoices Table -->
@@ -199,14 +185,14 @@
                       <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                     
-                    <!-- Edit -->
+                    <!-- Download -->
                     <button 
-                      @click="editInvoice(invoice)" 
-                      class="text-green-600 hover:text-green-800 transition-colors duration-200 mr-2" 
-                      :title="__('Edit')"
-                      :disabled="isActionLoading(invoice.id, 'edit')"
+                      @click="downloadInvoicePdf(invoice)" 
+                      class="text-purple-600 hover:text-purple-800 transition-colors duration-200" 
+                      :title="__('Download')"
+                      :disabled="isActionLoading(invoice.id, 'download')"
                     >
-                      <i v-if="!isActionLoading(invoice.id, 'edit')" class="fas fa-edit text-lg"></i>
+                      <i v-if="!isActionLoading(invoice.id, 'download')" class="fas fa-download text-lg"></i>
                       <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                     
@@ -218,17 +204,6 @@
                       :disabled="isActionLoading(invoice.id, 'delete')"
                     >
                       <i v-if="!isActionLoading(invoice.id, 'delete')" class="fas fa-trash text-lg"></i>
-                      <i v-else class="fas fa-spinner fa-spin text-lg"></i>
-                    </button>
-                    
-                    <!-- Download -->
-                    <button 
-                      @click="downloadInvoicePdf(invoice)" 
-                      class="text-purple-600 hover:text-purple-800 transition-colors duration-200" 
-                      :title="__('Download')"
-                      :disabled="isActionLoading(invoice.id, 'download')"
-                    >
-                      <i v-if="!isActionLoading(invoice.id, 'download')" class="fas fa-download text-lg"></i>
                       <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                   </div>
@@ -313,30 +288,6 @@ export default {
           this.loadingInvoices = false;
         }
       });
-    },
-    
-    async testQoyodConnection() {
-      alert(`${this.__('Testing Qoyod invoices for customer')} ID: ${this.customer?.id}\n\n${this.__('Check browser console and Laravel logs for debug information.')}`);
-      
-      try {
-        // Open a new window to test API directly
-        const testUrl = `/dashboard/api/test-qoyod?customer_id=${this.customer?.id}`;
-        window.open(testUrl, '_blank');
-      } catch (error) {
-        console.error('Error testing Qoyod connection:', error);
-      }
-    },
-    
-    async testQoyodQuotes() {
-      alert(`${this.__('Testing customer quotes for')} ID: ${this.customer?.id}\n\n${this.__('This will show how quotes are fetched and filtered for the same customer.')}`);
-      
-      try {
-        // Open a new window to test quotes API
-        const testUrl = `/dashboard/api/test-qoyod-quotes?customer_id=${this.customer?.id}`;
-        window.open(testUrl, '_blank');
-      } catch (error) {
-        console.error('Error testing quotes connection:', error);
-      }
     },
     
     async createInvoice() {
@@ -462,18 +413,9 @@ export default {
       }
     },
     
-    async editInvoice(invoice) {
-      this.setActionLoading(invoice.id, 'edit', true);
-      
-      try {
-        // Navigate to edit page or open edit modal
-        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/invoices/${invoice.id}/edit`);
-      } catch (error) {
-        console.error('Error navigating to edit invoice:', error);
-        alert(this.__('Error opening edit page. Please try again.'));
-      } finally {
-        this.setActionLoading(invoice.id, 'edit', false);
-      }
+    
+    goBack() {
+      this.$inertia.visit(`/dashboard/customers/${this.customer.id}/artifacts`);
     },
     
     setActionLoading(invoiceId, action, loading) {
@@ -566,7 +508,6 @@ export default {
           'Status': 'Status',
           'Download': 'Download',
           'View': 'View',
-          'Edit': 'Edit',
           'Draft': 'Draft',
           'Name:': 'Name:',
           'View Invoice': 'View Invoice',
@@ -576,11 +517,6 @@ export default {
           'Error deleting invoice': 'Error deleting invoice',
           'Error downloading invoice PDF': 'Error downloading invoice PDF',
           'Debug: Customer ID': 'Debug: Customer ID',
-          'Test Qoyod Invoices': 'Test Qoyod Invoices',
-          'Testing Qoyod invoices for customer': 'Testing Qoyod invoices for customer',
-          'Test Customer Quotes': 'Test Customer Quotes',
-          'Testing customer quotes for': 'Testing customer quotes for',
-          'This will show how quotes are fetched and filtered for the same customer.': 'This will show how quotes are fetched and filtered for the same customer.',
           'Displaying': 'يتم عرض',
           'sales invoices': 'فواتير مبيعات',
           'Error viewing invoice PDF. Please try again.': 'Error viewing invoice PDF. Please try again.',
@@ -622,7 +558,6 @@ export default {
           'Status': 'الحالة',
           'Download': 'تحميل',
           'View': 'عرض',
-          'Edit': 'تعديل',
           'Draft': 'مسودة',
           'Name:': 'الاسم:',
           'View Invoice': 'عرض الفاتورة',
@@ -632,11 +567,6 @@ export default {
           'Error deleting invoice': 'خطأ في حذف الفاتورة',
           'Error downloading invoice PDF': 'خطأ في تحميل PDF الفاتورة',
           'Debug: Customer ID': 'تشخيص: معرف العميل',
-          'Test Qoyod Invoices': 'اختبار فواتير قيود',
-          'Testing Qoyod invoices for customer': 'اختبار فواتير قيود للعميل',
-          'Test Customer Quotes': 'اختبار عروض السعر',
-          'Testing customer quotes for': 'اختبار عروض السعر للعميل',
-          'This will show how quotes are fetched and filtered for the same customer.': 'هذا سيُظهر كيفية جلب وتصفية عروض السعر لنفس العميل.',
           'Displaying': 'يتم عرض',
           'sales invoices': 'فواتير مبيعات',
           'Error viewing invoice PDF. Please try again.': 'خطأ في عرض PDF الفاتورة. يرجى المحاولة مرة أخرى.',
