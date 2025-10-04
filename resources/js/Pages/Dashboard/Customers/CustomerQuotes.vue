@@ -20,22 +20,22 @@
               </p>
             </div>
           </div>
-          <div class="flex items-center space-x-3">
-            <button 
-              @click="goToArtifacts"
-              class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-            >
-              <i class="fas fa-gem mr-2"></i>
-              {{ __('View Artifacts') }}
-            </button>
-            <button 
-              @click="createNewQuote"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              <i class="fas fa-plus mr-2"></i>
-              {{ __('Create Quote') }}
-            </button>
-          </div>
+           <div class="flex items-center space-x-3">
+             <button 
+               @click="createNewQuote"
+               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+             >
+               <i class="fas fa-plus mr-2"></i>
+               {{ __('Create Quote') }}
+             </button>
+             <button 
+               @click="goToArtifacts"
+               class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+             >
+               <i class="fas fa-arrow-left mr-2"></i>
+               {{ __('Back to Artifacts') }}
+             </button>
+           </div>
         </div>
       </div>
     </div>
@@ -245,10 +245,11 @@ export default {
     __(key) {
       const translations = {
         en: {
-          'Customer Quotes': 'Customer Quotes',
-          'All quotes for': 'All quotes for',
-          'View Artifacts': 'View Artifacts',
-          'Create Quote': 'Create Quote',
+           'Customer Quotes': 'Customer Quotes',
+           'All quotes for': 'All quotes for',
+           'Back to Artifacts': 'Back to Artifacts',
+           'View Artifacts': 'View Artifacts',
+           'Create Quote': 'Create Quote',
           'Customer Information': 'Customer Information',
           'Customer Name': 'Customer Name',
           'Email': 'Email',
@@ -269,10 +270,11 @@ export default {
           'Quote editing feature will be implemented soon': 'Quote editing feature will be implemented soon'
         },
         ar: {
-          'Customer Quotes': 'عروض أسعار العميل',
-          'All quotes for': 'جميع عروض الأسعار لـ',
-          'View Artifacts': 'عرض القطع',
-          'Create Quote': 'إنشاء عرض سعر',
+           'Customer Quotes': 'عروض أسعار العميل',
+           'All quotes for': 'جميع عروض الأسعار لـ',
+           'Back to Artifacts': 'العودة للقطع',
+           'View Artifacts': 'عرض القطع',
+           'Create Quote': 'إنشاء عرض سعر',
           'Customer Information': 'معلومات العميل',
           'Customer Name': 'اسم العميل',
           'Email': 'البريد الإلكتروني',
