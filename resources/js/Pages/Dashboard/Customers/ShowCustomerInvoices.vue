@@ -34,22 +34,35 @@
       <!-- Customer Info Card -->
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Customer Information') }}</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">{{ __('Reference Number') }}</label>
+            <p class="mt-1 text-sm text-gray-900 font-mono">{{ customer?.id ? formatQoyodReferenceNumber(customer.id) : 'CUS000' }}</p>
+          </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Customer Name') }}</label>
             <p class="mt-1 text-sm text-gray-900">{{ customer?.name || customer?.display_name || '-' }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">{{ __('Phone') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.phone || '-' }}</p>
+            <label class="block text-sm font-medium text-gray-700">{{ __('Organization') }}</label>
+            <p class="mt-1 text-sm text-gray-900">{{ customer?.organization || '-' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Email') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.email || '-' }}</p>
+            <p class="mt-1 text-sm text-gray-900">{{ customer?.email || customer?.email_address || '-' }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">{{ __('Qoyod ID') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.id || '-' }}</p>
+            <label class="block text-sm font-medium text-gray-700">{{ __('Phone') }}</label>
+            <p class="mt-1 text-sm text-gray-900">{{ customer?.phone_number || customer?.phone || '-' }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">{{ __('Status') }}</label>
+            <span 
+              class="inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1"
+              :class="(customer?.status && customer?.status.toLowerCase() === 'active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+            >
+              {{ customer?.status ? (customer.status.toLowerCase() === 'active' ? __('Active') : __('Inactive')) : '-' }}
+            </span>
           </div>
         </div>
       </div>
@@ -259,6 +272,11 @@ export default {
   },
   
   methods: {
+    formatQoyodReferenceNumber(id) {
+      if (!id) return 'CUS000'
+      return `CUS${id.toString().padStart(3, '0')}`
+    },
+    
     async loadInvoices() {
       this.loadingInvoices = true;
       
@@ -482,10 +500,14 @@ export default {
           'Create Invoice': 'Create Invoice',
           'Back to Customer': 'Back to Customer',
           'Customer Information': 'Customer Information',
+          'Reference Number': 'Reference Number',
           'Customer Name': 'Customer Name',
-          'Phone': 'Phone',
+          'Organization': 'Organization',
           'Email': 'Email',
-          'Qoyod ID': 'Qoyod ID',
+          'Phone': 'Phone',
+          'Status': 'Status',
+          'Active': 'Active',
+          'Inactive': 'Inactive',
           'Invoices': 'Invoices',
           'Refresh': 'Refresh',
           'View All Invoices': 'View All Invoices',
@@ -532,10 +554,14 @@ export default {
           'Create Invoice': 'إنشاء فاتورة',
           'Back to Customer': 'العودة للعميل',
           'Customer Information': 'معلومات العميل',
+          'Reference Number': 'الرقم المرجعي',
           'Customer Name': 'اسم العميل',
-          'Phone': 'الهاتف',
+          'Organization': 'المنشأة',
           'Email': 'البريد الإلكتروني',
-          'Qoyod ID': 'رقم قيود',
+          'Phone': 'الهاتف',
+          'Status': 'الحالة',
+          'Active': 'نشط',
+          'Inactive': 'غير نشط',
           'Invoices': 'الفواتير',
           'Refresh': 'تحديث',
           'View All Invoices': 'عرض جميع الفواتير',
