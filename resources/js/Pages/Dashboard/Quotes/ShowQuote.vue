@@ -33,9 +33,16 @@
               <i class="fas fa-print mr-2"></i>
               {{ __('Print Quote') }}
             </button>
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mr-3">
               <i class="fas fa-edit mr-2"></i>
               {{ __('Edit Quote') }}
+            </button>
+            <button 
+              @click="backToQuotes"
+              class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            >
+              <i class="fas fa-arrow-left mr-2"></i>
+              {{ __('Back to Quotes') }}
             </button>
           </div>
         </div>
@@ -277,6 +284,14 @@ export default {
       this.$inertia.visit('/dashboard');
     },
 
+    backToQuotes() {
+      if (this.customer && this.customer.id) {
+        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/quotes`);
+      } else {
+        // Fallback to dashboard if customer info is not available
+        this.$inertia.visit('/dashboard');
+      }
+    },
 
     printQuote() {
       const url = `/dashboard/quotes/${this.quote.id}/print`;
@@ -356,6 +371,7 @@ export default {
           'Quote ID': 'Quote ID',
           'Draft': 'Draft',
           'Edit Quote': 'Edit Quote',
+          'Back to Quotes': 'Back to Quotes',
           'Download PDF': 'Download PDF',
           'Downloading...': 'Downloading...',
           'Download failed. Please try again.': 'Download failed. Please try again.',
@@ -389,6 +405,7 @@ export default {
           'Quote ID': 'رقم عرض السعر',
           'Draft': 'مسودة',
           'Edit Quote': 'تعديل عرض السعر',
+          'Back to Quotes': 'العودة لعروض السعر',
           'Download PDF': 'تحميل PDF',
           'Downloading...': 'جاري التحميل...',
           'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.',
