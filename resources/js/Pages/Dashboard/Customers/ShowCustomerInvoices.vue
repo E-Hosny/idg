@@ -189,23 +189,47 @@
                 <td class="px-6 py-4 text-center text-sm font-medium">
                   <div class="flex justify-center space-x-3">
                     <!-- View -->
-                    <button @click="viewInvoice(invoice)" class="text-blue-600 hover:text-blue-800 transition-colors duration-200" :title="__('View')">
-                      <i class="fas fa-eye text-lg"></i>
+                    <button 
+                      @click="viewInvoice(invoice)" 
+                      class="text-blue-600 hover:text-blue-800 transition-colors duration-200" 
+                      :title="__('View')"
+                      :disabled="isActionLoading(invoice.id, 'view')"
+                    >
+                      <i v-if="!isActionLoading(invoice.id, 'view')" class="fas fa-eye text-lg"></i>
+                      <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                     
                     <!-- Edit -->
-                    <button class="text-green-600 hover:text-green-800 transition-colors duration-200" :title="__('Edit')">
-                      <i class="fas fa-edit text-lg"></i>
+                    <button 
+                      @click="editInvoice(invoice)" 
+                      class="text-green-600 hover:text-green-800 transition-colors duration-200" 
+                      :title="__('Edit')"
+                      :disabled="isActionLoading(invoice.id, 'edit')"
+                    >
+                      <i v-if="!isActionLoading(invoice.id, 'edit')" class="fas fa-edit text-lg"></i>
+                      <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                     
                     <!-- Delete -->
-                    <button @click="deleteInvoice(invoice)" class="text-red-600 hover:text-red-800 transition-colors duration-200" :title="__('Delete')" :disabled="deleting">
-                      <i class="fas fa-trash text-lg"></i>
+                    <button 
+                      @click="deleteInvoice(invoice)" 
+                      class="text-red-600 hover:text-red-800 transition-colors duration-200" 
+                      :title="__('Delete')" 
+                      :disabled="isActionLoading(invoice.id, 'delete')"
+                    >
+                      <i v-if="!isActionLoading(invoice.id, 'delete')" class="fas fa-trash text-lg"></i>
+                      <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                     
                     <!-- Download -->
-                    <button @click="downloadInvoicePdf(invoice)" class="text-purple-600 hover:text-purple-800 transition-colors duration-200" :title="__('Download')">
-                      <i class="fas fa-download text-lg"></i>
+                    <button 
+                      @click="downloadInvoicePdf(invoice)" 
+                      class="text-purple-600 hover:text-purple-800 transition-colors duration-200" 
+                      :title="__('Download')"
+                      :disabled="isActionLoading(invoice.id, 'download')"
+                    >
+                      <i v-if="!isActionLoading(invoice.id, 'download')" class="fas fa-download text-lg"></i>
+                      <i v-else class="fas fa-spinner fa-spin text-lg"></i>
                     </button>
                   </div>
                 </td>
@@ -242,6 +266,9 @@ export default {
     return {
       loadingInvoices: false,
       deleting: false,
+      downloading: false,
+      editing: false,
+      actionLoading: {}, // Track loading state for each invoice action
     }
   },
   
@@ -317,18 +344,73 @@ export default {
     },
     
     async viewInvoice(invoice) {
-      this.$inertia.visit(`/dashboard/customers/${this.customer.id}/invoices/${invoice.id}`);
+      this.setActionLoading(invoice.id, 'view', true);
+      
+      try {
+        // Use Qoyod API to get PDF URL
+        const response = await fetch(`/api/qoyod/invoices/${invoice.id}/pdf`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.pdf_file) {
+          // Open PDF in new tab
+          window.open(data.pdf_file, '_blank');
+        } else {
+          throw new Error('PDF file not found in response');
+        }
+      } catch (error) {
+        console.error('Error viewing invoice PDF:', error);
+        alert(this.__('Error viewing invoice PDF. Please try again.'));
+      } finally {
+        this.setActionLoading(invoice.id, 'view', false);
+      }
     },
     
     async downloadInvoicePdf(invoice) {
+      this.setActionLoading(invoice.id, 'download', true);
+      
       try {
-        const response = await this.$inertia.get(`/dashboard/customers/${this.customer.id}/invoices/${invoice.id}/pdf`, {}, {
-          preserveState: false,
-          preserveScroll: false,
+        // Use Qoyod API to get PDF URL
+        const response = await fetch(`/api/qoyod/invoices/${invoice.id}/pdf`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.pdf_file) {
+          // Create download link
+          const link = document.createElement('a');
+          link.href = data.pdf_file;
+          link.download = `invoice-${invoice.reference || invoice.id}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          throw new Error('PDF file not found in response');
+        }
       } catch (error) {
         console.error('Error downloading invoice PDF:', error);
-        alert(this.__('Error downloading invoice PDF'));
+        alert(this.__('Error downloading invoice PDF. Please try again.'));
+      } finally {
+        this.setActionLoading(invoice.id, 'download', false);
       }
     },
     
@@ -337,30 +419,59 @@ export default {
         return;
       }
       
-      this.deleting = true;
+      this.setActionLoading(invoice.id, 'delete', true);
       
       try {
-        await this.$inertia.delete(`/dashboard/customers/${this.customer.id}/invoices/${invoice.id}`, {
-          preserveState: false,
-          preserveScroll: false,
-          onSuccess: () => {
-            this.refreshInvoices();
-          },
-          onError: (errors) => {
-            console.error('Error deleting invoice:', errors);
-            alert(this.__('Error deleting invoice'));
+        // Use Qoyod API to delete invoice
+        const response = await fetch(`/api/qoyod/invoices/${invoice.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           }
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success || response.status === 200) {
+          // Refresh the invoices list
+          this.refreshInvoices();
+          alert(this.__('Invoice deleted successfully'));
+        } else {
+          throw new Error(data.message || 'Failed to delete invoice');
+        }
       } catch (error) {
         console.error('Error deleting invoice:', error);
-        alert(this.__('Error deleting invoice'));
+        alert(this.__('Error deleting invoice. Please try again.'));
       } finally {
-        this.deleting = false;
+        this.setActionLoading(invoice.id, 'delete', false);
       }
     },
     
-    goBack() {
-      this.$inertia.visit(`/dashboard/customers/${this.customer.id}/artifacts`);
+    async editInvoice(invoice) {
+      this.setActionLoading(invoice.id, 'edit', true);
+      
+      try {
+        // Navigate to edit page or open edit modal
+        this.$inertia.visit(`/dashboard/customers/${this.customer.id}/invoices/${invoice.id}/edit`);
+      } catch (error) {
+        console.error('Error navigating to edit invoice:', error);
+        alert(this.__('Error opening edit page. Please try again.'));
+      } finally {
+        this.setActionLoading(invoice.id, 'edit', false);
+      }
+    },
+    
+    setActionLoading(invoiceId, action, loading) {
+      this.actionLoading[`${invoiceId}_${action}`] = loading;
+    },
+    
+    isActionLoading(invoiceId, action) {
+      return this.actionLoading[`${invoiceId}_${action}`] || false;
     },
     
     getStatusBadgeClass(status) {
@@ -462,7 +573,11 @@ export default {
           'This will show how quotes are fetched and filtered for the same customer.': 'This will show how quotes are fetched and filtered for the same customer.',
           'Displaying': 'يتم عرض',
           'sales invoices': 'فواتير مبيعات',
-          'Check browser console and Laravel logs for debug information.': 'Check browser console and Laravel logs for debug information.'
+          'Error viewing invoice PDF. Please try again.': 'Error viewing invoice PDF. Please try again.',
+          'Error downloading invoice PDF. Please try again.': 'Error downloading invoice PDF. Please try again.',
+          'Error deleting invoice. Please try again.': 'Error deleting invoice. Please try again.',
+          'Invoice deleted successfully': 'Invoice deleted successfully',
+          'Error opening edit page. Please try again.': 'Error opening edit page. Please try again.',
         },
         ar: {
           'Customer Invoices': 'فواتير العميل',
@@ -514,7 +629,11 @@ export default {
           'This will show how quotes are fetched and filtered for the same customer.': 'هذا سيُظهر كيفية جلب وتصفية عروض السعر لنفس العميل.',
           'Displaying': 'يتم عرض',
           'sales invoices': 'فواتير مبيعات',
-          'Check browser console and Laravel logs for debug information.': 'تحقق من console المتصفح وسجلات Laravel لمعلومات التشخيص.'
+          'Error viewing invoice PDF. Please try again.': 'خطأ في عرض PDF الفاتورة. يرجى المحاولة مرة أخرى.',
+          'Error downloading invoice PDF. Please try again.': 'خطأ في تحميل PDF الفاتورة. يرجى المحاولة مرة أخرى.',
+          'Error deleting invoice. Please try again.': 'خطأ في حذف الفاتورة. يرجى المحاولة مرة أخرى.',
+          'Invoice deleted successfully': 'تم حذف الفاتورة بنجاح',
+          'Error opening edit page. Please try again.': 'خطأ في فتح صفحة التعديل. يرجى المحاولة مرة أخرى.',
         }
       };
 

@@ -45,6 +45,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/customers/{customer}/create-invoice', [DashboardController::class, 'showCreateInvoice'])->name('dashboard.customers.create-invoice');
     Route::post('/dashboard/customers/{customer}/store-invoice', [DashboardController::class, 'storeInvoice'])->name('dashboard.customers.store-invoice');
     Route::get('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'showInvoice'])->name('dashboard.customers.invoices.show');
+    Route::get('/dashboard/customers/{customer}/invoices/{invoice}/edit', [DashboardController::class, 'editInvoice'])->name('dashboard.customers.invoices.edit');
     Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
     Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
     
@@ -101,6 +102,35 @@ Route::middleware(['auth'])->group(function () {
             ]);
         }
     })->name('debug.test.quotes');
+    
+    // Qoyod API routes for invoice operations
+    Route::get('/api/qoyod/invoices/{id}/pdf', function($id) {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            $pdfData = $qoyodService->getInvoicePdf($id);
+            
+            return response()->json($pdfData);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'status' => 'error'
+            ], 500);
+        }
+    })->name('api.qoyod.invoices.pdf');
+    
+    Route::delete('/api/qoyod/invoices/{id}', function($id) {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            $result = $qoyodService->deleteInvoice($id);
+            
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'status' => 'error'
+            ], 500);
+        }
+    })->name('api.qoyod.invoices.delete');
     
     Route::get('/dashboard/customers/{customer}', [DashboardController::class, 'showCustomer'])->name('dashboard.customers.show');
     Route::put('/dashboard/customers/{customer}', [DashboardController::class, 'updateCustomer'])->name('dashboard.customers.update');

@@ -2553,4 +2553,60 @@ class DashboardController extends Controller
             return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the invoice.']);
         }
     }
+
+    /**
+     * Edit invoice
+     */
+    public function editInvoice($customerId, $invoiceId)
+    {
+        try {
+            \Log::info('Editing invoice', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId
+            ]);
+
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Get invoice details
+            $invoice = $qoyodService->getInvoice($invoiceId);
+            
+            if (!$invoice || !isset($invoice['invoice'])) {
+                return redirect()->back()->withErrors(['error' => 'Invoice not found.']);
+            }
+
+            // Get customer details
+            $customer = $qoyodService->getCustomer($customerId);
+            
+            if (!$customer) {
+                return redirect()->back()->withErrors(['error' => 'Customer not found.']);
+            }
+
+            // Get products for line items
+            $products = $qoyodService->getProducts();
+            
+            // Get locations/warehouses
+            $locations = $qoyodService->getLocations();
+
+            return Inertia::render('Dashboard/Customers/EditInvoice', [
+                'customer' => $customer,
+                'invoice' => $invoice['invoice'],
+                'products' => $products['products'] ?? [],
+                'locations' => $locations,
+                'meta' => [
+                    'customer_id' => $customerId,
+                    'invoice_id' => $invoiceId
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error editing invoice', [
+                'customer_id' => $customerId,
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->withErrors(['error' => 'An error occurred while loading the invoice for editing.']);
+        }
+    }
 }
