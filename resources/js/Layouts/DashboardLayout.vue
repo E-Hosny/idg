@@ -76,24 +76,12 @@
               <Link 
                 :href="$route('dashboard.customers')" 
                 class="sidebar-link"
-                :class="{ 'active': $page.component.startsWith('Dashboard/Customers') && !$page.component.includes('Invoice') }"
+                :class="{ 'active': $page.component.startsWith('Dashboard/Customers') }"
               >
                 <i class="fas fa-users w-5 h-5 ml-3"></i>
                 <span class="ml-3">{{ __('Customers') }}</span>
               </Link>
 
-              <Link 
-                href="#"
-                @click.prevent="showHelpTooltip"
-                class="sidebar-link flex items-center justify-between"
-                :class="{ 'active': $page.component.includes('Invoice') }"
-              >
-                <div class="flex items-center">
-                  <i class="fas fa-file-alt w-5 h-5 ml-3"></i>
-                  <span class="ml-3">{{ __('Invoices') }}</span>
-                </div>
-                <i class="fas fa-info-circle w-4 h-4 mr-3 text-green-300" title="View invoices for specific customers"></i>
-              </Link>
             </div>
           </nav>
 
@@ -273,9 +261,6 @@ export default {
       });
     },
     
-    showHelpTooltip() {
-      alert(this.__('To view invoices, first go to Customers page and select a customer.'));
-    },
     __(key, replace = {}) {
       // Simple translation function
       const translations = {
@@ -288,11 +273,9 @@ export default {
           'Analytics': 'Analytics',
           'Reception': 'Reception',
           'Customers': 'Customers',
-          'Invoices': 'Invoices',
           'Profile': 'Profile',
           'Settings': 'Settings',
           'Logout': 'Logout',
-          'To view invoices, first go to Customers page and select a customer.': 'To view invoices, first go to Customers page and select a customer.'
         },
         ar: {
           'Items Dashboard': 'لوحة تحكم العناصر',
@@ -303,11 +286,9 @@ export default {
           'Analytics': 'التحليلات',
           'Reception': 'الاستقبال',
           'Customers': 'العملاء',
-          'Invoices': 'الفواتير',
           'Profile': 'الملف الشخصي',
           'Settings': 'الإعدادات',
           'Logout': 'تسجيل الخروج',
-          'To view invoices, first go to Customers page and select a customer.': 'لعرض الفواتير، يرجى أولاً الذهاب إلى صفحة العملاء واختيار عميل معين.'
         }
       }
 
