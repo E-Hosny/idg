@@ -12,34 +12,13 @@
               {{ __('View all artifacts added for this customer from Qoyod') }}
             </p>
           </div>
-          <div class="flex space-x-3">
+          <div class="flex space-x-4">
             <button
-              @click="goBack"
-              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              @click="createInvoice"
+              class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
-              <i class="fas fa-arrow-left mr-2"></i>
-              {{ __('Back to Customers') }}
-            </button>
-            <button
-              @click="addArtifact"
-              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <i class="fas fa-plus mr-2"></i>
-              {{ __('Add Artifact') }}
-            </button>
-            <button
-              @click="viewQuotes"
-              class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mr-3"
-            >
-              <i class="fas fa-list mr-2"></i>
-              {{ __('View Quotes') }}
-            </button>
-            <button
-              @click="createQuote"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <i class="fas fa-file-invoice mr-2"></i>
-              {{ __('Create Quote') }}
+              <i class="fas fa-file-alt mr-2"></i>
+              {{ __('Create Invoice') }}
             </button>
             <button
               @click="viewInvoices"
@@ -49,11 +28,32 @@
               {{ __('View Invoices') }}
             </button>
             <button
-              @click="createInvoice"
-              class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              @click="createQuote"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <i class="fas fa-file-alt mr-2"></i>
-              {{ __('Create Invoice') }}
+              <i class="fas fa-file-invoice mr-2"></i>
+              {{ __('Create Quote') }}
+            </button>
+            <button
+              @click="viewQuotes"
+              class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mr-3"
+            >
+              <i class="fas fa-list mr-2"></i>
+              {{ __('View Quotes') }}
+            </button>
+            <button
+              @click="addArtifact"
+              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              {{ __('Add Artifact') }}
+            </button>
+            <button
+              @click="goBack"
+              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <i class="fas fa-arrow-left mr-2"></i>
+              {{ __('Back to Customers') }}
             </button>
           </div>
         </div>
