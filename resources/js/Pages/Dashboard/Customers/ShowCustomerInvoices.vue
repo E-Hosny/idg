@@ -187,7 +187,7 @@
 
                 <!-- Actions -->
                 <td class="px-6 py-4 text-center text-sm font-medium">
-                  <div class="flex justify-center space-x-3">
+                  <div class="flex justify-center space-x-4">
                     <!-- View -->
                     <button 
                       @click="viewInvoice(invoice)" 
@@ -202,7 +202,7 @@
                     <!-- Edit -->
                     <button 
                       @click="editInvoice(invoice)" 
-                      class="text-green-600 hover:text-green-800 transition-colors duration-200" 
+                      class="text-green-600 hover:text-green-800 transition-colors duration-200 mr-2" 
                       :title="__('Edit')"
                       :disabled="isActionLoading(invoice.id, 'edit')"
                     >
@@ -396,13 +396,23 @@ export default {
         const data = await response.json();
         
         if (data.pdf_file) {
-          // Create download link
+          // Fetch the PDF file as blob to force download
+          const pdfResponse = await fetch(data.pdf_file);
+          const blob = await pdfResponse.blob();
+          
+          // Create object URL and download
+          const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
-          link.href = data.pdf_file;
+          link.href = url;
           link.download = `invoice-${invoice.reference || invoice.id}.pdf`;
+          link.style.display = 'none';
+          
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+          
+          // Clean up the object URL
+          window.URL.revokeObjectURL(url);
         } else {
           throw new Error('PDF file not found in response');
         }
