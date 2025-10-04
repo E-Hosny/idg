@@ -154,20 +154,13 @@
                   {{ formatCurrency(quote.total_amount) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex items-center justify-end space-x-2">
+                  <div class="flex items-center justify-end">
                     <button
                       @click="viewQuote(quote.id)"
                       class="p-1 rounded-md text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors duration-200"
                       :title="__('View Quote')"
                     >
                       <i class="fas fa-eye"></i>
-                    </button>
-                    <button
-                      @click="editQuote(quote.id)"
-                      class="p-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-200"
-                      :title="__('Edit Quote')"
-                    >
-                      <i class="fas fa-edit"></i>
                     </button>
                   </div>
                 </td>
@@ -214,12 +207,6 @@ export default {
 
     viewQuote(quoteId) {
       this.$inertia.visit(`/dashboard/quotes/${quoteId}`);
-    },
-
-
-    editQuote(quoteId) {
-      // Placeholder for edit functionality
-      alert(this.__('Quote editing feature will be implemented soon'));
     },
 
     formatDate(date) {
@@ -301,9 +288,7 @@ export default {
           'Create your first quote for this customer': 'أنشئ عرض السعر الأول لهذا العميل',
           'View Quote': 'عرض عرض السعر',
           'Download PDF': 'تحميل PDF',
-          'Edit Quote': 'تعديل عرض السعر',
-            'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.',
-          'Quote editing feature will be implemented soon': 'ميزة تعديل عرض السعر ستكون متاحة قريباً'
+            'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.'
         }
       };
 

@@ -505,7 +505,7 @@
                           {{ __('Calculated Price') }}:
                         </span>
                         <span class="text-lg font-semibold text-green-600">
-                          {{ newArtifact.price ? newArtifact.price + ' SAR' : 'Please calculate' }}
+                          {{ newArtifact.price ? newArtifact.price + ' SAR' : __('Please calculate') }}
                         </span>
                       </div>
                       <div class="mt-2">
@@ -955,7 +955,20 @@ export default {
           'Evaluated': 'Evaluated',
           'Certified': 'Certified',
           'Rejected': 'Rejected',
-          'Artifact added successfully!': 'Artifact added successfully!'
+          'Artifact added successfully!': 'Artifact added successfully!',
+          'Artifact Information': 'Artifact Information',
+          'Delivery Type': 'Delivery Type',
+          'Select Delivery Type': 'Select Delivery Type',
+          'Notes': 'Notes',
+          'Any additional notes about the artifact...': 'Any additional notes about the artifact...',
+          'Calculated Price': 'Calculated Price',
+          'Please calculate': 'Please calculate',
+          'Calculate': 'Calculate',
+          'Adding...': 'Adding...',
+          'Cancel': 'Cancel',
+          'Add Artifact for Customer': 'Add Artifact for Customer',
+          'Select Type': 'Select Type',
+          'Select Service': 'Select Service'
         },
         ar: {
           'Customer Artifacts': 'قطع العميل',
@@ -1001,7 +1014,20 @@ export default {
           'Evaluated': 'تم التقييم',
           'Certified': 'معتمد',
           'Rejected': 'مرفوض',
-          'Artifact added successfully!': 'تم إضافة القطعة بنجاح!'
+          'Artifact added successfully!': 'تم إضافة القطعة بنجاح!',
+          'Artifact Information': 'معلومات القطعة',
+          'Delivery Type': 'نوع التسليم',
+          'Select Delivery Type': 'اختر نوع التسليم',
+          'Notes': 'ملاحظات',
+          'Any additional notes about the artifact...': 'أي ملاحظات إضافية عن القطعة...',
+          'Calculated Price': 'السعر المحسوب',
+          'Please calculate': 'الرجاء الحساب',
+          'Calculate': 'احسب',
+          'Adding...': 'جاري الإضافة...',
+          'Cancel': 'إلغاء',
+          'Add Artifact for Customer': 'إضافة قطعة للعميل',
+          'Select Type': 'اختر النوع',
+          'Select Service': 'اختر الخدمة'
         }
       }
       

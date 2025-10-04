@@ -1217,7 +1217,7 @@ class DashboardController extends Controller
                     'total_amount' => $response['quote']['total_amount'] ?? 'N/A'
                 ]);
 
-                return redirect()->route('dashboard.customers.artifacts.index', $customerId)
+                return redirect()->route('dashboard.customers.quotes', $customerId)
                     ->with('success', 'Quote created successfully! Quote ID: ' . $response['quote']['id']);
             } else {
                 \Log::error('Failed to create quote', [
@@ -2304,7 +2304,7 @@ class DashboardController extends Controller
                     'reference' => $result['invoice']['reference'] ?? null
                 ]);
 
-                return redirect()->route('dashboard.customers.invoices.show', [$customerId, $result['invoice']['id']])
+                return redirect()->route('dashboard.customers.invoices', $customerId)
                     ->with('success', 'Invoice created successfully!');
             } else {
                 \Log::error('Failed to create invoice', [
