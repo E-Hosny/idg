@@ -30,24 +30,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/evaluations', [DashboardController::class, 'evaluations'])->name('dashboard.evaluations');
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('dashboard.analytics');
-    Route::get('/dashboard/customers', [DashboardController::class, 'customers'])->name('dashboard.customers');
-    Route::post('/dashboard/customers', [DashboardController::class, 'storeCustomer'])->name('dashboard.customers.store');
-    Route::post('/dashboard/customers/artifacts', [DashboardController::class, 'storeCustomerArtifact'])->name('dashboard.customers.artifacts.store');
-    
-    // Customer specific routes (more specific first)
-    Route::get('/dashboard/customers/{customer}/artifacts', [DashboardController::class, 'customerArtifacts'])->name('dashboard.customers.artifacts.index');
-    Route::get('/dashboard/customers/{customer}/add-artifact', [DashboardController::class, 'showAddArtifact'])->name('dashboard.customers.add-artifact');
-    Route::post('/dashboard/customers/{customer}/store-artifact', [DashboardController::class, 'storeArtifactForCustomer'])->name('dashboard.customers.store-artifact');
-    Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
-    Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
-    Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');
-    Route::get('/dashboard/customers/{customer}/invoices', [DashboardController::class, 'listCustomerInvoices'])->name('dashboard.customers.invoices');
-    Route::get('/dashboard/customers/{customer}/create-invoice', [DashboardController::class, 'showCreateInvoice'])->name('dashboard.customers.create-invoice');
-    Route::post('/dashboard/customers/{customer}/store-invoice', [DashboardController::class, 'storeInvoice'])->name('dashboard.customers.store-invoice');
-    Route::get('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'showInvoice'])->name('dashboard.customers.invoices.show');
-    Route::get('/dashboard/customers/{customer}/invoices/{invoice}/edit', [DashboardController::class, 'editInvoice'])->name('dashboard.customers.invoices.edit');
-    Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
-    Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
+    // Customer routes - Restricted for lab role
+    Route::middleware('restrict.lab')->group(function () {
+        Route::get('/dashboard/customers', [DashboardController::class, 'customers'])->name('dashboard.customers');
+        Route::post('/dashboard/customers', [DashboardController::class, 'storeCustomer'])->name('dashboard.customers.store');
+        Route::post('/dashboard/customers/artifacts', [DashboardController::class, 'storeCustomerArtifact'])->name('dashboard.customers.artifacts.store');
+        
+        // Customer specific routes (more specific first)
+        Route::get('/dashboard/customers/{customer}/artifacts', [DashboardController::class, 'customerArtifacts'])->name('dashboard.customers.artifacts.index');
+        Route::get('/dashboard/customers/{customer}/add-artifact', [DashboardController::class, 'showAddArtifact'])->name('dashboard.customers.add-artifact');
+        Route::post('/dashboard/customers/{customer}/store-artifact', [DashboardController::class, 'storeArtifactForCustomer'])->name('dashboard.customers.store-artifact');
+        Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
+        Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
+        Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');
+        Route::get('/dashboard/customers/{customer}/invoices', [DashboardController::class, 'listCustomerInvoices'])->name('dashboard.customers.invoices');
+        Route::get('/dashboard/customers/{customer}/create-invoice', [DashboardController::class, 'showCreateInvoice'])->name('dashboard.customers.create-invoice');
+        Route::post('/dashboard/customers/{customer}/store-invoice', [DashboardController::class, 'storeInvoice'])->name('dashboard.customers.store-invoice');
+        Route::get('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'showInvoice'])->name('dashboard.customers.invoices.show');
+        Route::get('/dashboard/customers/{customer}/invoices/{invoice}/edit', [DashboardController::class, 'editInvoice'])->name('dashboard.customers.invoices.edit');
+        Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
+        Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
+    });
     
     // Debug route for testing Qoyod connection
     Route::get('/dashboard/api/test-qoyod', function(\Illuminate\Http\Request $request) {
@@ -147,21 +150,23 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/dashboard/evaluated-artifacts', [\App\Http\Controllers\DashboardController::class, 'evaluatedArtifacts'])->name('dashboard.evaluated-artifacts');
     
-    // Reception routes
-    Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index');
-    Route::get('/reception/new-client', [ReceptionController::class, 'createClient'])->name('reception.new-client');
-    Route::post('/reception/store-client', [ReceptionController::class, 'storeClient'])->name('reception.store-client');
-    Route::get('/reception/clients/{client}', [ReceptionController::class, 'showClient'])->name('reception.show-client');
-    Route::get('/reception/clients/{client}/add-artifact', [ReceptionController::class, 'createArtifact'])->name('reception.artifact.create');
-    Route::post('/reception/clients/{client}/store-artifact', [ReceptionController::class, 'storeArtifact'])->name('reception.artifact.store');
-    Route::get('/reception/clients/{client}/edit', [ReceptionController::class, 'editClient'])->name('reception.edit-client');
-    Route::put('/reception/clients/{client}', [ReceptionController::class, 'updateClient'])->name('reception.update-client');
-    Route::delete('/reception/clients/{client}', [ReceptionController::class, 'deleteClient'])->name('reception.delete-client');
-    Route::get('/reception/artifacts/{artifact}/edit', [ReceptionController::class, 'editArtifact'])->name('reception.edit-artifact');
-    Route::put('/reception/artifacts/{artifact}', [ReceptionController::class, 'updateArtifact'])->name('reception.update-artifact');
-    Route::delete('/reception/artifacts/{artifact}', [ReceptionController::class, 'deleteArtifact'])->name('reception.delete-artifact');
-    Route::post('/reception/calculate-price', [ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
-    Route::get('/reception/test-pricing', [ReceptionController::class, 'testPricing'])->name('reception.test-pricing');
+    // Reception routes - Restricted for lab role
+    Route::middleware('restrict.lab')->group(function () {
+        Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index');
+        Route::get('/reception/new-client', [ReceptionController::class, 'createClient'])->name('reception.new-client');
+        Route::post('/reception/store-client', [ReceptionController::class, 'storeClient'])->name('reception.store-client');
+        Route::get('/reception/clients/{client}', [ReceptionController::class, 'showClient'])->name('reception.show-client');
+        Route::get('/reception/clients/{client}/add-artifact', [ReceptionController::class, 'createArtifact'])->name('reception.artifact.create');
+        Route::post('/reception/clients/{client}/store-artifact', [ReceptionController::class, 'storeArtifact'])->name('reception.artifact.store');
+        Route::get('/reception/clients/{client}/edit', [ReceptionController::class, 'editClient'])->name('reception.edit-client');
+        Route::put('/reception/clients/{client}', [ReceptionController::class, 'updateClient'])->name('reception.update-client');
+        Route::delete('/reception/clients/{client}', [ReceptionController::class, 'deleteClient'])->name('reception.delete-client');
+        Route::get('/reception/artifacts/{artifact}/edit', [ReceptionController::class, 'editArtifact'])->name('reception.edit-artifact');
+        Route::put('/reception/artifacts/{artifact}', [ReceptionController::class, 'updateArtifact'])->name('reception.update-artifact');
+        Route::delete('/reception/artifacts/{artifact}', [ReceptionController::class, 'deleteArtifact'])->name('reception.delete-artifact');
+        Route::post('/reception/calculate-price', [ReceptionController::class, 'calculatePrice'])->name('reception.calculate-price');
+        Route::get('/reception/test-pricing', [ReceptionController::class, 'testPricing'])->name('reception.test-pricing');
+    });
     
     // Certificate routes
     Route::get('/certificates/{certificate}', [\App\Http\Controllers\CertificateController::class, 'show'])->name('certificates.show');

@@ -65,6 +65,7 @@
               </Link>
 
               <Link 
+                v-if="$page.props.auth.user?.role !== 'lab'"
                 :href="$route('reception.index')" 
                 class="sidebar-link"
                 :class="{ 'active': $page.component.startsWith('Reception') }"
@@ -74,6 +75,7 @@
               </Link>
 
               <Link 
+                v-if="$page.props.auth.user?.role !== 'lab'"
                 :href="$route('dashboard.customers')" 
                 class="sidebar-link"
                 :class="{ 'active': $page.component.startsWith('Dashboard/Customers') }"
