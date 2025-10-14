@@ -54,19 +54,17 @@
           <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('Invoice Information') }}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             
-            <!-- Reference Number -->
+            <!-- Reference Number - Auto Generated -->
             <div class="lg:col-span-1">
               <label for="reference" class="block text-sm font-medium text-gray-700">
                 {{ __('Invoice Reference') }}
               </label>
-              <input
-                type="text"
-                id="reference"
-                v-model="form.reference"
-                :disabled="creating"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                :placeholder="__('Invoice reference number')"
-              />
+              <div class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md shadow-sm px-3 py-2 text-gray-500">
+                {{ __('Will be generated automatically (INVXXXX)') }}
+              </div>
+              <p class="mt-1 text-xs text-gray-500">
+                {{ __('Invoice number will be generated automatically upon creation') }}
+              </p>
             </div>
 
             <!-- Issue Date -->
@@ -555,7 +553,6 @@ export default {
     return {
       creating: false,
       form: {
-        reference: '',
         description: '',
         issue_date: '',
         due_date: '',
@@ -600,9 +597,6 @@ export default {
   },
   
   mounted() {
-    // Generate automatic reference number like Qoyod (INV-2025-001, INV-2025-002, etc.)
-    this.generateReferenceNumber();
-    
     // Set default dates
     const today = new Date();
     this.form.issue_date = today.toISOString().split('T')[0];
@@ -635,7 +629,6 @@ export default {
     
     console.log('Create Invoice Form mounted with auto-filled data', {
       customer: this.customer,
-      reference: this.form.reference,
       issue_date: this.form.issue_date,
       due_date: this.form.due_date,
       artifacts: this.artifacts,
@@ -644,18 +637,6 @@ export default {
   },
   
   methods: {
-    generateReferenceNumber() {
-      // Generate reference number like "INV-2025-001", "INV-2025-002", etc.
-      const today = new Date();
-      const year = today.getFullYear();
-      
-      // Create a timestamp or sequence number (simple version)
-      const timestamp = Date.now().toString().slice(-6);
-      
-      // Format: INV-YYYY-XXXXXX or INV-YYYY-XXX
-      this.form.reference = `INV-${year}-${timestamp}`;
-    },
-    
     goBack() {
       this.$inertia.visit(`/dashboard/customers/${this.customer.id}/artifacts`);
     },
@@ -832,7 +813,6 @@ export default {
       
       try {
         const invoiceData = {
-          reference: this.form.reference,
           description: this.form.description,
           issue_date: this.form.issue_date,
           due_date: this.form.due_date,
@@ -944,7 +924,8 @@ export default {
           'Amount': 'Amount',
           'Enter invoice description': 'Enter invoice description',
           'Invoice for customer': 'Invoice for customer',
-          'Invoice reference number': 'Invoice reference number',
+          'Will be generated automatically (INVXXXX)': 'Will be generated automatically (INVXXXX)',
+          'Invoice number will be generated automatically upon creation': 'Invoice number will be generated automatically upon creation',
           '1': '1',
           '0.01': '0.01',
           '0.00': '0.00',
@@ -1014,7 +995,8 @@ export default {
           'Amount': 'مبلغ',
           'Enter invoice description': 'أدخل وصف الفاتورة',
           'Invoice for customer': 'فاتورة للعميل',
-          'Invoice reference number': 'رقم الفاتورة المرجعي',
+          'Will be generated automatically (INVXXXX)': 'سيتم إنشاؤه تلقائياً (INVXXXX)',
+          'Invoice number will be generated automatically upon creation': 'سيتم إنشاء رقم الفاتورة تلقائياً عند الإنشاء',
           '1': '1',
           '0.01': '0.01',
           '0.00': '0.00',

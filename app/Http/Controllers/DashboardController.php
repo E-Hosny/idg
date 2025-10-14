@@ -2285,8 +2285,15 @@ class DashboardController extends Controller
                 'custom_fields.*.value' => 'required_with:custom_fields|string|max:500',
             ]);
 
+            // Generate automatic invoice number
+            $invoiceNumber = \App\Models\InvoiceNumber::generateNextInvoiceNumber();
+            
+            // Override the reference field with our generated invoice number
+            $validatedData['reference'] = $invoiceNumber;
+
             \Log::info('Creating invoice in Qoyod', [
                 'customer_id' => $customerId,
+                'generated_invoice_number' => $invoiceNumber,
                 'invoice_data' => $validatedData
             ]);
 
