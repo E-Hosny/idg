@@ -518,12 +518,63 @@ class QoyodService
     }
 
     /**
+     * Generate next invoice number based on existing invoices in Qoyod
+     */
+    public function generateNextInvoiceNumber()
+    {
+        try {
+            // Get all invoices to find the highest number
+            $invoices = $this->getInvoices(1, 1000); // Get more invoices to ensure we get all
+            
+            $highestNumber = 0;
+            
+            // Look through all invoices to find the highest INV number
+            foreach ($invoices['invoices'] ?? $invoices['data'] ?? [] as $invoice) {
+                $reference = $invoice['reference'] ?? '';
+                
+                // Match INVXXXX pattern
+                if (preg_match('/^INV(\d{4})$/', $reference, $matches)) {
+                    $number = (int)$matches[1];
+                    $highestNumber = max($highestNumber, $number);
+                }
+            }
+            
+            // Generate next number
+            $nextNumber = $highestNumber + 1;
+            $invoiceNumber = 'INV' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+            
+            Log::info('Generated new invoice number', [
+                'highest_existing' => $highestNumber,
+                'new_number' => $invoiceNumber
+            ]);
+            
+            return $invoiceNumber;
+            
+        } catch (\Exception $e) {
+            Log::error('Error generating invoice number', [
+                'error' => $e->getMessage()
+            ]);
+            
+            // Fallback to timestamp-based number if API fails
+            return 'INV' . str_pad(time() % 10000, 4, '0', STR_PAD_LEFT);
+        }
+    }
+
+    /**
      * Create an invoice in Qoyod
      */
     public function createInvoice($invoiceData)
     {
         try {
-            Log::info('Creating invoice in Qoyod', ['invoice_data' => $invoiceData]);
+            // Generate invoice number if not provided
+            if (empty($invoiceData['invoice']['reference'])) {
+                $invoiceData['invoice']['reference'] = $this->generateNextInvoiceNumber();
+            }
+            
+            Log::info('Creating invoice in Qoyod', [
+                'invoice_data' => $invoiceData,
+                'generated_reference' => $invoiceData['invoice']['reference']
+            ]);
 
             $response = Http::timeout($this->timeout)
                 ->withHeaders([
@@ -537,7 +588,7 @@ class QoyodService
                 $data = $response->json();
                 Log::info('Invoice created successfully in Qoyod', [
                     'invoice_id' => $data['invoice']['id'] ?? null,
-                    'reference' => $invoiceData['invoice']['reference'] ?? null
+                    'reference' => $data['invoice']['reference'] ?? $invoiceData['invoice']['reference']
                 ]);
 
                 return $data;
