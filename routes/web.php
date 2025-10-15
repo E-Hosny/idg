@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\TestRequestController;
 
 // Public routes
 Route::get('/', function () {
@@ -50,6 +51,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/customers/{customer}/invoices/{invoice}/edit', [DashboardController::class, 'editInvoice'])->name('dashboard.customers.invoices.edit');
         Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
         Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
+        
+        // Test Request routes
+        Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'show'])->name('dashboard.customers.test-request');
+        Route::post('/dashboard/customers/{customer}/test-request/artifacts', [TestRequestController::class, 'storeArtifact'])->name('dashboard.customers.test-request.store-artifact');
+        Route::put('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'update'])->name('dashboard.test-requests.update');
     });
     
     // Debug route for testing Qoyod connection

@@ -14,6 +14,7 @@ class Artifact extends Model
     protected $fillable = [
         'client_id',
         'qoyod_customer_id',
+        'test_request_id',
         'artifact_code',
         'type',
         'service',
@@ -100,6 +101,11 @@ class Artifact extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function testRequest()
+    {
+        return $this->belongsTo(TestRequest::class);
     }
 
     // Scopes

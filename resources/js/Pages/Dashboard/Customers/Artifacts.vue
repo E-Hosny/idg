@@ -42,6 +42,13 @@
               {{ __('View Quotes') }}
             </button>
             <button
+              @click="viewTestRequest"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <i class="fas fa-flask mr-2"></i>
+              {{ __('Test Request') }}
+            </button>
+            <button
               @click="addArtifact"
               class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
@@ -658,6 +665,12 @@ export default {
           this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-invoice`)
         }
       },
+
+      viewTestRequest() {
+        if (this.customer?.id) {
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/test-request`)
+        }
+      },
     
     editArtifact(artifact) {
       this.selectedArtifact = artifact
@@ -921,6 +934,7 @@ export default {
           'Create Quote': 'Create Quote',
           'View Invoices': 'View Invoices',
           'Create Invoice': 'Create Invoice',
+          'Test Request': 'Test Request',
           'Customer Information': 'Customer Information',
           'Reference Number': 'Reference Number',
           'Customer Name': 'Customer Name',
@@ -980,6 +994,7 @@ export default {
           'Create Quote': 'إنشاء عرض سعر',
           'View Invoices': 'عرض الفواتير',
           'Create Invoice': 'إنشاء فاتورة',
+          'Test Request': 'طلب اختبار',
           'Customer Information': 'معلومات العميل',
           'Reference Number': 'الرقم المرجعي',
           'Customer Name': 'اسم العميل',
