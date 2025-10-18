@@ -409,6 +409,70 @@
         </div>
       </div>
     </div>
+
+    <!-- Success Modal -->
+    <div v-if="showSuccessModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeSuccessModal"></div>
+        
+        <!-- Modal content -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <!-- Success Icon and Content -->
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                <i class="fas fa-check text-green-600 text-xl"></i>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-right">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-2">
+                  تم رفع المستند بنجاح!
+                </h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  Document Uploaded Successfully!
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500 mb-4">
+                    تم رفع المستند الموقع بنجاح. سيتم تحويلك إلى صفحة طلبات الاختبار خلال ثوانٍ قليلة.
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    The signed document has been uploaded successfully. You will be redirected to the test requests page in a few seconds.
+                  </p>
+                </div>
+                
+                <!-- Countdown Timer -->
+                <div class="mt-4 flex items-center justify-center">
+                  <div class="bg-green-100 rounded-full p-3">
+                    <div class="flex items-center justify-center w-8 h-8 bg-green-600 rounded-full countdown-circle">
+                      <span class="text-white font-bold text-sm" id="countdown">3</span>
+                    </div>
+                  </div>
+                  <span class="ml-3 text-sm text-gray-600">ثوانٍ | seconds</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button
+              @click="redirectToTestRequestsList"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              <i class="fas fa-arrow-right mr-2"></i>
+              الانتقال الآن | Go Now
+            </button>
+            <button
+              @click="closeSuccessModal"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              <i class="fas fa-times mr-2"></i>
+              إغلاق | Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -434,7 +498,8 @@ export default {
         status: 'pending',
         notes: ''
       },
-      uploadingFile: false
+      uploadingFile: false,
+      showSuccessModal: false
     }
   },
   methods: {
@@ -639,12 +704,8 @@ export default {
             if (this.$refs.fileInput) {
               this.$refs.fileInput.value = '';
             }
-            // Show success message if present
-            if (page.props.flash && page.props.flash.success) {
-              alert(page.props.flash.success);
-            } else {
-              alert('تم رفع المستند الموقع بنجاح! | Signed document uploaded successfully!');
-            }
+            // Show beautiful success popup
+            this.showSuccessPopup();
           },
           onError: (errors) => {
             this.uploadingFile = false;
@@ -673,12 +734,81 @@ export default {
           }
         }
       );
+    },
+    
+    showSuccessPopup() {
+      this.showSuccessModal = true;
+      
+      // Countdown timer
+      let countdown = 3;
+      const countdownElement = document.getElementById('countdown');
+      
+      const updateCountdown = () => {
+        if (countdownElement) {
+          countdownElement.textContent = countdown;
+        }
+        countdown--;
+        
+        if (countdown >= 0) {
+          setTimeout(updateCountdown, 1000);
+        } else {
+          this.redirectToTestRequestsList();
+        }
+      };
+      
+      // Start countdown
+      updateCountdown();
+    },
+    
+    redirectToTestRequestsList() {
+      this.showSuccessModal = false;
+      // Navigate to test requests list page
+      this.$inertia.visit(`/dashboard/customers/${this.customer.qoyod_customer_id}/test-requests`);
+    },
+    
+    closeSuccessModal() {
+      this.showSuccessModal = false;
     }
   }
 }
 </script> 
 
 <style>
+/* Success Modal Animation */
+.success-modal-enter-active, .success-modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.success-modal-enter-from, .success-modal-leave-to {
+  opacity: 0;
+}
+
+.success-modal-content-enter-active, .success-modal-content-leave-active {
+  transition: all 0.3s ease;
+}
+
+.success-modal-content-enter-from, .success-modal-content-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* Countdown Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.countdown-circle {
+  animation: pulse 1s infinite;
+}
+
 /* Print-specific styles */
 @media print {
   /* Hide unwanted elements */
