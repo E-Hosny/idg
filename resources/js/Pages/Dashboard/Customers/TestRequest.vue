@@ -197,13 +197,32 @@
 
         <!-- Action Buttons - Hidden when printing -->
         <div class="text-center border-t-2 border-gray-300 pt-6 print:hidden">
-          <div class="flex justify-center gap-4">
+          <div class="flex justify-center gap-4 flex-wrap">
+            <button @click="downloadPdf" class="inline-flex items-center px-8 py-3 bg-red-700 text-white text-lg font-semibold hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 shadow-md hover:shadow-lg">
+              <i class="fas fa-file-pdf mr-3 text-xl"></i>
+              <span>Download PDF</span>
+              <span class="mx-3">|</span>
+              <span>تحميل PDF</span>
+            </button>
             <button @click="printPage" class="inline-flex items-center px-8 py-3 bg-green-700 text-white text-lg font-semibold hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 shadow-md hover:shadow-lg">
               <i class="fas fa-print mr-3 text-xl"></i>
               <span>Print Document</span>
               <span class="mx-3">|</span>
               <span>طباعة المستند</span>
             </button>
+            <button @click="triggerFileUpload" class="inline-flex items-center px-8 py-3 bg-purple-700 text-white text-lg font-semibold hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-200 shadow-md hover:shadow-lg">
+              <i class="fas fa-upload mr-3 text-xl"></i>
+              <span>Upload Signed Document</span>
+              <span class="mx-3">|</span>
+              <span>رفع المستند الموقع</span>
+            </button>
+            <input 
+              ref="fileInput" 
+              type="file" 
+              accept=".pdf" 
+              @change="handleFileUpload" 
+              style="display: none;"
+            />
             <button 
               v-if="!editingTestRequest" 
               @click="startEditingTestRequest" 
@@ -414,7 +433,8 @@ export default {
         received_date: '',
         status: 'pending',
         notes: ''
-      }
+      },
+      uploadingFile: false
     }
   },
   methods: {
@@ -553,30 +573,106 @@ export default {
       return `${day}/${month}/${year}`
     },
     printPage() {
-      // Hide navigation and other elements before printing
-      const navigation = document.querySelector('nav');
-      const sidebar = document.querySelector('.sidebar');
+      // Open dedicated print page in new tab
+      const printUrl = `/dashboard/test-requests/${this.testRequest.id}/print`;
+      window.open(printUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    },
+    
+    downloadPdf() {
+      // Open print page with auto-download in new window
+      const printUrl = `/dashboard/test-requests/${this.testRequest.id}/download-pdf`;
+      window.open(printUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    },
+    
+    triggerFileUpload() {
+      // Trigger the hidden file input
+      this.$refs.fileInput.click();
+    },
+    
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
       
-      // Store original display values
-      const originalNavDisplay = navigation ? navigation.style.display : '';
-      const originalSidebarDisplay = sidebar ? sidebar.style.display : '';
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        alert('يرجى اختيار ملف PDF فقط | Please select a PDF file only.');
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = '';
+        }
+        return;
+      }
       
-      // Hide elements
-      if (navigation) navigation.style.display = 'none';
-      if (sidebar) sidebar.style.display = 'none';
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('حجم الملف يجب أن يكون أقل من 10 ميجابايت | File size must be less than 10MB.');
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = '';
+        }
+        return;
+      }
       
-      // Add print-specific styles
-      document.body.classList.add('printing');
+      // Show confirmation
+      if (!confirm(`هل أنت متأكد من رفع هذا الملف؟\nاسم الملف: ${file.name}\nحجم الملف: ${(file.size / 1024 / 1024).toFixed(2)} MB\n\nAre you sure you want to upload this file?\nFilename: ${file.name}\nFile size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)) {
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = '';
+        }
+        return;
+      }
       
-      // Trigger print
-      window.print();
+      this.uploadingFile = true;
       
-      // Restore original display values after printing
-      setTimeout(() => {
-        if (navigation) navigation.style.display = originalNavDisplay;
-        if (sidebar) sidebar.style.display = originalSidebarDisplay;
-        document.body.classList.remove('printing');
-      }, 1000);
+      // Use Inertia's post method with FormData
+      const formData = new FormData();
+      formData.append('signed_document', file);
+      
+      this.$inertia.post(
+        `/dashboard/test-requests/${this.testRequest.id}/upload-signed`,
+        formData,
+        {
+          forceFormData: true,
+          preserveState: false,
+          preserveScroll: true,
+          onSuccess: (page) => {
+            this.uploadingFile = false;
+            if (this.$refs.fileInput) {
+              this.$refs.fileInput.value = '';
+            }
+            // Show success message if present
+            if (page.props.flash && page.props.flash.success) {
+              alert(page.props.flash.success);
+            } else {
+              alert('تم رفع المستند الموقع بنجاح! | Signed document uploaded successfully!');
+            }
+          },
+          onError: (errors) => {
+            this.uploadingFile = false;
+            if (this.$refs.fileInput) {
+              this.$refs.fileInput.value = '';
+            }
+            console.error('Upload errors:', errors);
+            
+            // Show specific error message
+            let errorMessage = 'فشل في رفع الملف | Failed to upload file';
+            
+            if (errors.signed_document) {
+              errorMessage = Array.isArray(errors.signed_document) 
+                ? errors.signed_document[0] 
+                : errors.signed_document;
+            } else if (errors.error) {
+              errorMessage = errors.error;
+            } else if (typeof errors === 'string') {
+              errorMessage = errors;
+            }
+            
+            alert(errorMessage);
+          },
+          onFinish: () => {
+            this.uploadingFile = false;
+          }
+        }
+      );
     }
   }
 }

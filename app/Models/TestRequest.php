@@ -17,7 +17,8 @@ class TestRequest extends Model
         'delivery_date',
         'received_by',
         'status',
-        'notes'
+        'notes',
+        'signed_document_path'
     ];
 
     protected $casts = [

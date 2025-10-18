@@ -53,9 +53,17 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
         
         // Test Request routes
-        Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'show'])->name('dashboard.customers.test-request');
-        Route::post('/dashboard/customers/{customer}/test-request/artifacts', [TestRequestController::class, 'storeArtifact'])->name('dashboard.customers.test-request.store-artifact');
+        Route::get('/dashboard/customers/{customer}/test-requests', [TestRequestController::class, 'listAllRequests'])->name('dashboard.customers.test-requests.index');
+        Route::get('/dashboard/customers/{customer}/test-requests/create', [TestRequestController::class, 'createNew'])->name('dashboard.customers.test-requests.create');
+        Route::get('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'show'])->name('dashboard.test-requests.show');
+        Route::post('/dashboard/test-requests/{testRequest}/artifacts', [TestRequestController::class, 'storeArtifact'])->name('dashboard.test-requests.store-artifact');
         Route::put('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'update'])->name('dashboard.test-requests.update');
+        Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
+        Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
+        Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
+        
+        // Legacy routes for backward compatibility
+        Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');
     });
     
     // Debug route for testing Qoyod connection

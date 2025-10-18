@@ -42,11 +42,18 @@
               {{ __('View Quotes') }}
             </button>
             <button
-              @click="viewTestRequest"
+              @click="createNewTestRequest"
               class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <i class="fas fa-flask mr-2"></i>
-              {{ __('Test Request') }}
+              <i class="fas fa-plus-circle mr-2"></i>
+              {{ __('New Test Request') }}
+            </button>
+            <button
+              @click="viewAllTestRequests"
+              class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            >
+              <i class="fas fa-list-alt mr-2"></i>
+              طلبات الاختبار
             </button>
             <button
               @click="addArtifact"
@@ -666,9 +673,15 @@ export default {
         }
       },
 
-      viewTestRequest() {
+      createNewTestRequest() {
         if (this.customer?.id) {
-          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/test-request`)
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/test-requests/create`)
+        }
+      },
+
+      viewAllTestRequests() {
+        if (this.customer?.id) {
+          this.$inertia.visit(`/dashboard/customers/${this.customer.id}/test-requests`)
         }
       },
     
@@ -934,7 +947,8 @@ export default {
           'Create Quote': 'Create Quote',
           'View Invoices': 'View Invoices',
           'Create Invoice': 'Create Invoice',
-          'Test Request': 'Test Request',
+          'New Test Request': 'New Test Request',
+          'Signed Test Requests': 'Signed Test Requests',
           'Customer Information': 'Customer Information',
           'Reference Number': 'Reference Number',
           'Customer Name': 'Customer Name',
@@ -994,7 +1008,8 @@ export default {
           'Create Quote': 'إنشاء عرض سعر',
           'View Invoices': 'عرض الفواتير',
           'Create Invoice': 'إنشاء فاتورة',
-          'Test Request': 'طلب اختبار',
+          'New Test Request': 'طلب اختبار جديد',
+          'Signed Test Requests': 'طلبات الاختبار',
           'Customer Information': 'معلومات العميل',
           'Reference Number': 'الرقم المرجعي',
           'Customer Name': 'اسم العميل',
