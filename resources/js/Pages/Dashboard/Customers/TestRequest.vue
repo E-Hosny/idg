@@ -339,6 +339,112 @@
           </div>
         </div>
 
+        <!-- Terms and Conditions Section -->
+        <div class="bg-white shadow-lg print:shadow-none border-2 border-gray-300 p-6 print:p-3 mb-6 print:mb-3">
+          <div class="mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
+            <h3 class="text-xl print:text-lg font-semibold text-black flex items-center">
+              <i class="fas fa-file-contract mr-3 text-gray-600 text-xl print:hidden"></i>
+              <span>Terms and Conditions | الشروط والأحكام</span>
+            </h3>
+          </div>
+          
+          <div class="overflow-x-auto print:overflow-visible">
+            <table class="w-full border-collapse border-2 border-gray-400">
+              <thead>
+                <tr class="bg-gray-100 print:bg-gray-200">
+                  <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-bold text-sm print:text-xs text-left w-1/2">
+                    Terms and Conditions:
+                  </th>
+                  <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-bold text-sm print:text-xs text-right w-1/2" dir="rtl">
+                    :الشروط والأحكام
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Term 1 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    IDG Lab(herein after the laboratory) shall not be held responsible for any damage to the above listed Stone(s)/Diamond(s)/Jewellery or part of item, or loss of the stone(s)/ Diamond(s)/Jewellery or part of them while the relevant stone(s)/Diamond(s)/Jewellery are held by the laboratory, unless such damage is caused by IDG Lab or any of its employees
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    لا يتحمل مختبر IDG (ويشار إليه فيما بعد بـ "المختبر") أي مسؤولية عن أي ضرر يلحق بالأحجار/الألماس/المجوهرات المذكورة أعلاه أو أي جزء منها، أو عن فقدانها كلياً أو جزئياً أثناء تواجدها في حيازة المختبر، ما لم يكن الضرر ناتجاً عن المختبر أو أحد موظفيه.
+                  </td>
+                </tr>
+                
+                <!-- Term 2 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    IDG Lab is committed to issue Certificate Report(s) if the customer requests that, in one condition only: if the result of stone(s)/diamond(s)/ jewellery tested is natural, but if the testing results prove that stone is not natural, IDG Lab will only give an oral clarification if requested by customer and does not give any paper(s) document(s).
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    يلتزم مختبر IDG بإصدار شهادة/تقرير بناءً على طلب العميل، وذلك بشرط واحد فقط: إذا كانت نتيجة الاختبار للحجر/الألماس/المجوهرات طبيعية، أما إذا أثبتت النتائج أن الحجر غير طبيعي، فسيكتفي فقط بتقديم توضيح شفهي بناءً على طلب العميل، ولن يتم إصدار أي مستندات خطية.
+                  </td>
+                </tr>
+                
+                <!-- Term 3 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    - I/We are aware and agree to the special terms of the laboratory examination and certification of diamond(s), coloured stone(s), Jewelery, and Precious Metal(s). We confirm deposition of the above-mentioned stone(s)/diamond(s)/jewellery subject to the above-mentioned condition, and on that I/We signed.
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    أنا/ نقر بأننا على علم ونوافق على الشروط الخاصة بفحص واعتماد الألماس/الأحجار الكريمة/المجوهرات/المعادن الثمينة في المختبر، ونؤكد إيداعنا لما يتبع الأحجار/الألماس/المجوهرات المذكورة أعلاه وفقاً للشروط المذكورة، وقد أقدمنا على ذلك.
+                  </td>
+                </tr>
+                
+                <!-- Term 4 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    The stone(s)/diamond(s)/jewellery represents only itself and will be delivered to customer with Certificate/Report(s) issue, unless return is being requested. The laboratory is not responsible for the source of stone(s)/diamond(s)/jewellery.
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    تمثل الأحجار/الألماس/المجوهرات نفسها فقط وسيتم تسليمها للعميل مع الشهادة/التقرير، ما لم يطلب إرجاعها. ولا يتحمل المختبر أي مسؤولية تجاه مصدر الأحجار/الألماس/المجوهرات.
+                  </td>
+                </tr>
+                
+                <!-- Term 5 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    Any information provided to the laboratory, which has been obtained from sources other than the customer, is confidential and remains the exclusive property of the original source unless prior consent has been obtained from the original source.
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    جميع المعلومات المقدمة للمختبر والتي تم الحصول عليها من مصادر غير العميل تعتبر معلومات سرية وتبقى ملكية حصرية للمصدر الأصلي ما لم يتم الحصول على موافقة مسبقة من ذلك المصدر الأصلي.
+                  </td>
+                </tr>
+                
+                <!-- Term 6 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    Tested items are returned to the customer along with the final report and it will be collected within 90 days. the right laboratory reserves the right to dispose of the item, retain it for research purposes, charge a storage fee without further and any liability to the customer
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    تعاد العناصر المختبرة إلى العميل مع التقرير النهائي، ويجب استلامها خلال 90 يوماً. يحتفظ المختبر بحقه في التخلص من العينة، أو الاحتفاظ بها لأغراض البحث، أو فرض رسوم تخزين دون أي تحمل إضافي أو مسؤولية.
+                  </td>
+                </tr>
+                
+                <!-- Term 7 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    Delivery time is estimated if there is any delay we will inform you
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    وقت التسليم تقديري، وفي حال حدوث أي تأخير سنقوم بإبلاغكم
+                  </td>
+                </tr>
+                
+                <!-- Term 8 -->
+                <tr>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top">
+                    For more about IDGL's terms and conditions, please visit our website. https://idg-lab.com.sa/
+                  </td>
+                  <td class="border border-gray-400 px-3 py-3 print:px-2 print:py-2 text-black text-xs print:text-[10px] align-top text-right" dir="rtl">
+                    للمزيد من المعلومات حول الشروط والأحكام الخاصة بمختبر IDG، يرجى زيارة موقعنا الإلكتروني https://idg-lab.com.sa/
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Delivery Documentation Section -->
         <div class="bg-white shadow-lg print:shadow-none border-2 border-gray-300 p-6 print:p-3 mb-6 print:mb-3">
           <div class="mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
@@ -406,6 +512,159 @@
             <i class="fas fa-arrow-left mr-2"></i>
             العودة للعملاء
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Artifact Modal -->
+    <div v-if="showAddArtifactModal" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeAddArtifactModal"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <form @submit.prevent="submitArtifact">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="w-full">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    Add New Artifact | إضافة قطعة جديدة
+                  </h3>
+                  
+                  <div class="space-y-6">
+                    <!-- Artifact Information -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">Artifact Information | معلومات القطعة</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            Type | النوع *
+                          </label>
+                          <select
+                            v-model="newArtifact.type"
+                            @change="resetServiceWhenTypeChanges"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>Select Type | اختر النوع</option>
+                            <option v-for="option in typeOptions" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            Service | الخدمة *
+                          </label>
+                          <select
+                            v-model="newArtifact.service"
+                            required
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>Select Service | اختر الخدمة</option>
+                            <option v-for="option in getServiceOptions(newArtifact.type)" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            Weight | الوزن *
+                          </label>
+                          <div class="flex space-x-2">
+                            <input
+                              v-model="newArtifact.weight"
+                              type="number"
+                              step="0.01"
+                              required
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                              placeholder="0.00"
+                            />
+                            <select
+                              v-model="newArtifact.weight_unit"
+                              class="mt-1 block w-32 border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            >
+                              <option v-for="option in weightUnitOptions" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            Delivery Type | نوع التسليم
+                          </label>
+                          <select
+                            v-model="newArtifact.delivery_type"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="" disabled>Select Delivery Type | اختر نوع التسليم</option>
+                            <option v-for="option in deliveryOptions" :key="option.value" :value="option.value">
+                              {{ option.label }}
+                            </option>
+                          </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                          <label class="block text-sm font-medium text-gray-700">
+                            Notes | ملاحظات
+                          </label>
+                          <textarea
+                            v-model="newArtifact.notes"
+                            rows="3"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            placeholder="Any additional notes | أي ملاحظات إضافية..."
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Price Calculation -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700">
+                          Calculated Price | السعر المحسوب:
+                        </span>
+                        <span class="text-lg font-semibold text-green-600">
+                          {{ newArtifact.price ? newArtifact.price + ' SAR' : 'Please calculate | يرجى الحساب' }}
+                        </span>
+                      </div>
+                      <div class="mt-2">
+                        <button
+                          @click="calculatePrice"
+                          type="button"
+                          :disabled="addingArtifact || !newArtifact.type || !newArtifact.service || !newArtifact.weight"
+                          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Calculate | احسب
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                type="submit"
+                :disabled="addingArtifact || !newArtifact.type || !newArtifact.service || !newArtifact.weight"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                <i v-if="addingArtifact" class="fas fa-spinner fa-spin mr-2"></i>
+                {{ addingArtifact ? 'Adding... | جاري الإضافة...' : 'Add Artifact | إضافة قطعة' }}
+              </button>
+              <button
+                @click="closeAddArtifactModal"
+                type="button"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                Cancel | إلغاء
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -499,7 +758,36 @@ export default {
         notes: ''
       },
       uploadingFile: false,
-      showSuccessModal: false
+      showSuccessModal: false,
+      showAddArtifactModal: false,
+      addingArtifact: false,
+      newArtifact: {
+        type: '',
+        service: '',
+        weight: '',
+        weight_unit: 'ct',
+        delivery_type: '',
+        notes: '',
+        price: ''
+      },
+      typeOptions: [
+        { value: 'Colored Gemstones', label: 'Colored Gemstones | أحجار كريمة ملونة' },
+        { value: 'Other Colored Gemstones', label: 'Other Colored Gemstones | أحجار كريمة ملونة أخرى' },
+        { value: 'Colorless Diamonds', label: 'Colorless Diamonds | ألماس عديم اللون' },
+        { value: 'Jewellery', label: 'Jewellery | مجوهرات' }
+      ],
+      weightUnitOptions: [
+        { value: 'ct', label: 'قيراط | ct' },
+        { value: 'gm', label: 'جرام | gm' }
+      ],
+      deliveryOptions: [
+        { value: 'Regular', label: 'عادي | Regular' },
+        { value: 'Express Service', label: 'خدمة سريعة | Express Service' },
+        { value: 'Same Day', label: 'نفس اليوم | Same Day' },
+        { value: '24 hours', label: '24 ساعة | 24 hours' },
+        { value: '48 hours', label: '48 ساعة | 48 hours' },
+        { value: '72 hours', label: '72 ساعة | 72 hours' }
+      ]
     }
   },
   methods: {
@@ -535,8 +823,150 @@ export default {
     },
     
     addArtifact() {
-      // Navigate to add artifact page
-      this.$inertia.visit(`/dashboard/customers/${this.customer.qoyod_customer_id}/add-artifact`)
+      // Open modal to add artifact
+      this.showAddArtifactModal = true
+    },
+    
+    closeAddArtifactModal() {
+      this.showAddArtifactModal = false
+      this.newArtifact = {
+        type: '',
+        service: '',
+        weight: '',
+        weight_unit: 'ct',
+        delivery_type: '',
+        notes: '',
+        price: ''
+      }
+    },
+    
+    getServiceOptions(type) {
+      const serviceOptions = {
+        'Colored Gemstones': [
+          { value: 'Regular - ID Report', label: 'Regular - ID Report | تقرير معرف عادي' },
+          { value: 'Regular - ID + Origin', label: 'Regular - ID + Origin | عادي - هوية + أصل' },
+          { value: 'Mini Card Report - ID Report', label: 'Mini Card Report - ID Report | تقرير بطاقة مصغرة' },
+          { value: 'Mini Card Report - ID + Origin', label: 'Mini Card Report - ID + Origin | تقرير بطاقة - هوية + أصل' }
+        ],
+        'Other Colored Gemstones': [
+          { value: 'Regular - ID Report', label: 'Regular - ID Report | تقرير معرف عادي' },
+          { value: 'Mini Card Report - ID Report', label: 'Mini Card Report - ID Report | تقرير بطاقة مصغرة' }
+        ],
+        'Colorless Diamonds': [
+          { value: 'Regular - Diamond Grading Report', label: 'Regular - Diamond Grading Report | تقرير تصنيف الألماس' },
+          { value: 'Mini Card Report - Mini Report', label: 'Mini Card Report - Mini Report | تقرير بطاقة مصغرة' }
+        ],
+        'Jewellery': [
+          { value: 'Regular - Jewellery Report', label: 'Regular - Jewellery Report | تقرير المجوهرات' },
+          { value: 'Mini Card Report - Mini Jewellery Report', label: 'Mini Card Report - Mini Jewellery Report | تقرير مجوهرات مصغر' }
+        ]
+      }
+      
+      return serviceOptions[type] || []
+    },
+    
+    resetServiceWhenTypeChanges() {
+      this.newArtifact.service = ''
+      if (this.newArtifact.type === 'Jewellery') {
+        this.newArtifact.weight_unit = 'gm'
+      } else {
+        this.newArtifact.weight_unit = 'ct'
+      }
+    },
+    
+    async calculatePrice() {
+      try {
+        const response = await fetch('/reception/calculate-price', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({
+            type: this.newArtifact.type,
+            service: this.newArtifact.service,
+            weight: parseFloat(this.newArtifact.weight) || 0,
+            weight_unit: this.newArtifact.weight_unit
+          })
+        })
+        
+        const data = await response.json()
+        
+        if (data.price) {
+          const priceValue = parseFloat(data.price)
+          
+          if (!isNaN(priceValue)) {
+            let finalPrice = priceValue
+
+            // Calculate price based on delivery type
+            if (this.newArtifact.delivery_type === 'Same Day') {
+              finalPrice = priceValue * 2
+            } else if (this.newArtifact.delivery_type === '48 hours') {
+              finalPrice = priceValue * 0.7
+            } else if (this.newArtifact.delivery_type === '72 hours') {
+              finalPrice = priceValue * 0.5
+            }
+
+            this.newArtifact.price = finalPrice.toFixed(2)
+          } else {
+            this.newArtifact.price = 'N/A'
+          }
+        } else {
+          this.newArtifact.price = 'N/A'
+          alert('Error calculating price. Please try again.')
+        }
+      } catch (error) {
+        console.error('Error calculating price:', error)
+        alert('Error calculating price. Please try again.')
+      }
+    },
+    
+    async submitArtifact() {
+      // Validate required fields
+      if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
+        alert('Please fill in all required fields (Type, Service, Weight)')
+        return
+      }
+
+      this.addingArtifact = true
+      
+      try {
+        // Submit artifact to Laravel backend - same route as Artifacts.vue
+        this.$inertia.post('/dashboard/customers/artifacts', {
+          client_id: this.customer.id,
+          test_request_id: this.testRequest.id,
+          type: this.newArtifact.type,
+          service: this.newArtifact.service,
+          weight: this.newArtifact.weight,
+          weight_unit: this.newArtifact.weight_unit,
+          delivery_type: this.newArtifact.delivery_type,
+          notes: this.newArtifact.notes,
+          price: this.newArtifact.price
+        }, {
+          onSuccess: (page) => {
+            this.showAddArtifactModal = false
+            // Reset form
+            this.newArtifact = {
+              type: '',
+              service: '',
+              weight: '',
+              weight_unit: 'ct',
+              delivery_type: '',
+              notes: '',
+              price: ''
+            }
+            // No need for manual reload, Inertia will handle the redirect
+          },
+          onError: (errors) => {
+            console.error('Error adding artifact:', errors)
+            alert('Error adding artifact. Please try again.')
+          }
+        })
+      } catch (error) {
+        console.error('Error adding artifact:', error)
+      } finally {
+        this.addingArtifact = false
+      }
     },
     __(key) {
       const translations = {

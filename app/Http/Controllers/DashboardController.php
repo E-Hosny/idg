@@ -907,6 +907,7 @@ class DashboardController extends Controller
         try {
             $validatedData = $request->validate([
                 'client_id' => 'required|integer',
+                'test_request_id' => 'nullable|integer|exists:test_requests,id',
                 'type' => 'required|string|max:100',
                 'service' => 'nullable|string|max:100',
                 'weight' => 'nullable|numeric',
@@ -917,6 +918,7 @@ class DashboardController extends Controller
 
             \Log::info('Creating artifact for Qoyod customer', [
                 'client_id' => $validatedData['client_id'],
+                'test_request_id' => $validatedData['test_request_id'] ?? null,
                 'type' => $validatedData['type']
             ]);
 
@@ -938,6 +940,7 @@ class DashboardController extends Controller
             $artifact = \App\Models\Artifact::create([
                 'client_id' => null, // Qoyod customers are not in local clients table
                 'qoyod_customer_id' => $validatedData['client_id'], // Store Qoyod customer ID
+                'test_request_id' => $validatedData['test_request_id'] ?? null, // Link to test request if provided
                 'artifact_code' => $artifactCode,
                 'type' => $validatedData['type'],
                 'service' => $validatedData['service'] ?? null,
@@ -955,8 +958,15 @@ class DashboardController extends Controller
             \Log::info('Artifact created successfully for Qoyod customer', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifact->artifact_code,
-                'qoyod_customer_id' => $artifact->qoyod_customer_id
+                'qoyod_customer_id' => $artifact->qoyod_customer_id,
+                'test_request_id' => $artifact->test_request_id
             ]);
+
+            // Redirect back to test request if it was created from there, otherwise to artifacts page
+            if (!empty($validatedData['test_request_id'])) {
+                return redirect()->route('dashboard.test-requests.show', ['testRequest' => $validatedData['test_request_id']])
+                    ->with('success', 'Artifact added successfully to test request!');
+            }
 
             return redirect()->route('dashboard.customers.artifacts.index', ['customer' => $validatedData['client_id']])
                 ->with('success', 'Artifact added successfully for customer!');

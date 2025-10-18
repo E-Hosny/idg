@@ -427,6 +427,100 @@
             </tbody>
         </table>
 
+        <!-- Terms and Conditions -->
+        <div style="margin-top: 15px;">
+            <div class="section-title">الشروط والأحكام | Terms and Conditions</div>
+            <table class="items-table" style="font-size: 8px;">
+                <thead>
+                    <tr style="background-color: #f3f4f6;">
+                        <th style="width: 50%; text-align: left; padding: 8px;">Terms and Conditions:</th>
+                        <th style="width: 50%; text-align: right; padding: 8px;" dir="rtl">:الشروط والأحكام</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Term 1 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            IDG Lab(herein after the laboratory) shall not be held responsible for any damage to the above listed Stone(s)/Diamond(s)/Jewellery or part of item, or loss of the stone(s)/ Diamond(s)/Jewellery or part of them while the relevant stone(s)/Diamond(s)/Jewellery are held by the laboratory, unless such damage is caused by IDG Lab or any of its employees
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            لا يتحمل مختبر IDG (ويشار إليه فيما بعد بـ "المختبر") أي مسؤولية عن أي ضرر يلحق بالأحجار/الألماس/المجوهرات المذكورة أعلاه أو أي جزء منها، أو عن فقدانها كلياً أو جزئياً أثناء تواجدها في حيازة المختبر، ما لم يكن الضرر ناتجاً عن المختبر أو أحد موظفيه.
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 2 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            IDG Lab is committed to issue Certificate Report(s) if the customer requests that, in one condition only: if the result of stone(s)/diamond(s)/ jewellery tested is natural, but if the testing results prove that stone is not natural, IDG Lab will only give an oral clarification if requested by customer and does not give any paper(s) document(s).
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            يلتزم مختبر IDG بإصدار شهادة/تقرير بناءً على طلب العميل، وذلك بشرط واحد فقط: إذا كانت نتيجة الاختبار للحجر/الألماس/المجوهرات طبيعية، أما إذا أثبتت النتائج أن الحجر غير طبيعي، فسيكتفي فقط بتقديم توضيح شفهي بناءً على طلب العميل، ولن يتم إصدار أي مستندات خطية.
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 3 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            - I/We are aware and agree to the special terms of the laboratory examination and certification of diamond(s), coloured stone(s), Jewelery, and Precious Metal(s). We confirm deposition of the above-mentioned stone(s)/diamond(s)/jewellery subject to the above-mentioned condition, and on that I/We signed.
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            أنا/ نقر بأننا على علم ونوافق على الشروط الخاصة بفحص واعتماد الألماس/الأحجار الكريمة/المجوهرات/المعادن الثمينة في المختبر، ونؤكد إيداعنا لما يتبع الأحجار/الألماس/المجوهرات المذكورة أعلاه وفقاً للشروط المذكورة، وقد أقدمنا على ذلك.
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 4 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            The stone(s)/diamond(s)/jewellery represents only itself and will be delivered to customer with Certificate/Report(s) issue, unless return is being requested. The laboratory is not responsible for the source of stone(s)/diamond(s)/jewellery.
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            تمثل الأحجار/الألماس/المجوهرات نفسها فقط وسيتم تسليمها للعميل مع الشهادة/التقرير، ما لم يطلب إرجاعها. ولا يتحمل المختبر أي مسؤولية تجاه مصدر الأحجار/الألماس/المجوهرات.
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 5 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            Any information provided to the laboratory, which has been obtained from sources other than the customer, is confidential and remains the exclusive property of the original source unless prior consent has been obtained from the original source.
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            جميع المعلومات المقدمة للمختبر والتي تم الحصول عليها من مصادر غير العميل تعتبر معلومات سرية وتبقى ملكية حصرية للمصدر الأصلي ما لم يتم الحصول على موافقة مسبقة من ذلك المصدر الأصلي.
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 6 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            Tested items are returned to the customer along with the final report and it will be collected within 90 days. the right laboratory reserves the right to dispose of the item, retain it for research purposes, charge a storage fee without further and any liability to the customer
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            تعاد العناصر المختبرة إلى العميل مع التقرير النهائي، ويجب استلامها خلال 90 يوماً. يحتفظ المختبر بحقه في التخلص من العينة، أو الاحتفاظ بها لأغراض البحث، أو فرض رسوم تخزين دون أي تحمل إضافي أو مسؤولية.
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 7 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            Delivery time is estimated if there is any delay we will inform you
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            وقت التسليم تقديري، وفي حال حدوث أي تأخير سنقوم بإبلاغكم
+                        </td>
+                    </tr>
+                    
+                    <!-- Term 8 -->
+                    <tr>
+                        <td style="padding: 6px; vertical-align: top; text-align: left; line-height: 1.3;">
+                            For more about IDGL's terms and conditions, please visit our website. https://idg-lab.com.sa/
+                        </td>
+                        <td style="padding: 6px; vertical-align: top; text-align: right; line-height: 1.3;" dir="rtl">
+                            للمزيد من المعلومات حول الشروط والأحكام الخاصة بمختبر IDG، يرجى زيارة موقعنا الإلكتروني https://idg-lab.com.sa/
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- Delivery Documentation -->
         <div class="delivery-section">
             <div class="section-title">توثيق التسليم | Delivery Documentation</div>

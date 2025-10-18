@@ -237,11 +237,18 @@ class TestRequestController extends Controller
                 'type' => 'required|string|max:255',
                 'service' => 'nullable|string|max:255',
                 'weight' => 'nullable|numeric|min:0',
+                'weight_unit' => 'nullable|in:ct,gm',
                 'unit_type' => 'nullable|in:carat,gram',
                 'price' => 'nullable|numeric|min:0',
                 'notes' => 'nullable|string',
                 'delivery_type' => 'nullable|string|max:255'
             ]);
+
+            // Convert weight_unit to unit_type if provided
+            if (isset($validated['weight_unit'])) {
+                $validated['unit_type'] = $validated['weight_unit'] === 'ct' ? 'carat' : 'gram';
+                unset($validated['weight_unit']);
+            }
 
             // Add required fields
             $validated['qoyod_customer_id'] = $testRequest->qoyod_customer_id;
