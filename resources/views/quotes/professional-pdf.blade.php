@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عرض السعر - {{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}</title>
+    <title>عرض سعر - {{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}</title>
     
     <style>
         @page {
@@ -19,437 +19,282 @@
         
         body {
             font-family: 'Times New Roman', 'serif', sans-serif;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #000;
             direction: rtl;
             background: #fff;
             margin: 0;
             padding: 0;
         }
         
-        .pdf-container {
+        .document-container {
             width: 100%;
             max-width: 100%;
-            padding: 10px;
             background: #fff;
-            overflow: visible;
         }
         
         /* Header Section */
         .header {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000;
             padding-bottom: 15px;
-            border-bottom: 3px solid #333;
-            position: relative;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
         }
         
         .logo-section {
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .logo-with-text {
-            display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
-            background: linear-gradient(135deg, #fffef8 0%, #f7f6f0 100%);
-            border: 3px solid #d4af37;
-            border-radius: 20px;
-            padding: 15px 25px;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-            max-width: 400px;
+            gap: 10px;
         }
         
-        .logo-image, .logo-placeholder {
-            width: 60px;
-            height: 60px;
+        .logo-image {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: 2px solid #d4af37;
+            border: 2px solid #000;
             object-fit: cover;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-        }
-        
-        .logo-placeholder {
-            background: linear-gradient(135deg, #fffef8 0%, #f7f6f0 100%);
         }
         
         .logo-text {
-            text-align: center;
+            text-align: right;
         }
         
         .logo-title {
-            font-size: 20px;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-            font-weight: 900;
-            color: #d4af37;
-            font-family: 'Times New Roman', 'serif', sans-serif;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 2px;
         }
         
         .logo-subtitle {
-            font-size: 12px;
-            line-height: 1.2;
-            margin-bottom: 3px;
+            font-size: 10px;
+            color: #000;
             font-weight: bold;
-            color: #8b4513;
         }
         
-        
-        .quote-main-title {
+        .document-title {
             text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border: 3px solid #333;
-            border-radius: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
         }
         
-        .quote-title {
-            font-size: 36px;
+        .title-main {
+            font-size: 28px;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            letter-spacing: 2px;
+            color: #000;
+            margin-bottom: 5px;
         }
         
-        .quote-subtitle {
-            font-size: 14px;
-            color: #666;
+        .title-sub {
+            font-size: 16px;
+            color: #000;
             font-weight: bold;
-            margin-top: 5px;
         }
         
         .quote-number {
-            font-size: 18px;
-            color: #333;
+            font-size: 16px;
+            color: #000;
             font-weight: bold;
             margin-top: 5px;
         }
         
-        .company-info {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .company-details {
-            background: #f8f9fa;
-            padding: 25px;
-            border-left: 6px solid #333;
-            border-radius: 10px;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.08);
-        }
-        
-        .company-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        .company-address {
-            font-size: 13px;
-            line-height: 1.5;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        .tax-number {
-            font-size: 12px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .customer-details {
-            background: #f8f9fa;
-            padding: 25px;
-            border-left: 6px solid #333;
-            border-radius: 10px;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.08);
-        }
-        
-        .client-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 8px;
-        }
-        
-        .client-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        
-        .quote-details-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-            background: #f8f9fa;
-            padding: 25px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.08);
-        }
-        
-        .detail-item {
-            text-align: center;
-            padding: 10px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
-        }
-        
-        .detail-label {
+        .quote-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
             font-size: 11px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
-        .detail-value {
+        .quote-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .quote-detail-label {
+            font-weight: bold;
+        }
+        
+        .quote-detail-value {
+            color: #000;
+        }
+        
+        /* Information Blocks */
+        .info-blocks {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        
+        .info-block {
+            flex: 1;
+            border: 1px solid #000;
+            padding: 15px;
+            background: #fff;
+        }
+        
+        .info-block-title {
             font-size: 14px;
             font-weight: bold;
-            color: #333;
-        }
-        
-        .quote-reference {
-            color: #333;
-        }
-        
-        .quote-date-issue {
-            color: #666;
-        }
-        
-        .quote-date-expiry {
-            color: #555;
-        }
-        
-        /* Quote Items Section */
-        .items-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.08);
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 18px;
+            color: #000;
+            margin-bottom: 10px;
             text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #333;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            letter-spacing: 1px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+        
+        .info-block-content {
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        
+        .info-item {
+            margin-bottom: 5px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .info-value {
+            color: #000;
+        }
+        
+        /* Items Table */
+        .items-section {
+            margin-bottom: 20px;
         }
         
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            background: #fff;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #000;
+            font-size: 10px;
         }
         
         .items-table th {
-            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-            color: #fff;
-            padding: 15px 10px;
+            background: #f0f0f0;
+            color: #000;
+            padding: 8px 4px;
             font-weight: bold;
             text-align: center;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
-        
-        .items-table th:first-child {
-            border-top-right-radius: 10px;
-        }
-        
-        .items-table th:last-child {
-            border-top-left-radius: 10px;
+            border: 1px solid #000;
+            font-size: 10px;
         }
         
         .items-table td {
-            padding: 12px 10px;
+            padding: 6px 4px;
             text-align: center;
-            border-bottom: 1px solid #ddd;
-            font-size: 12px;
-            background: #fff;
+            border: 1px solid #000;
+            font-size: 10px;
         }
         
         .items-table tr:nth-child(even) {
             background: #f9f9f9;
         }
         
-        .items-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .product-column {
+        .product-description {
             text-align: right;
             max-width: 200px;
         }
         
         .product-name {
             font-weight: bold;
-            color: #333;
-            margin-bottom: 3px;
-        }
-        
-        .product-name-ar {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 3px;
+            color: #000;
         }
         
         .product-id {
-            font-size: 10px;
-            color: #999;
-            font-style: italic;
-        }
-        
-        .quantity-unit {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .unit-price {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .discount {
+            font-size: 9px;
             color: #666;
-        }
-        
-        .vat-percentage {
-            color: #555;
-        }
-        
-        .total-before-vat,
-        .vat-amount,
-        .total-amount {
-            font-weight: bold;
-            color: #333;
+            font-style: italic;
         }
         
         /* Totals Section */
         .totals-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border: 3px solid #333;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         
         .totals-title {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
-            color: #333;
+            color: #000;
+            margin-bottom: 10px;
             text-align: center;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         
         .totals-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
         }
         
         .total-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #000;
             background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #333;
         }
         
         .total-label {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-            text-transform: uppercase;
+            color: #000;
+            margin-bottom: 5px;
         }
         
         .total-value {
-            font-size: 20px;
+            font-size: 14px;
             font-weight: bold;
-            color: #333;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            color: #000;
         }
         
-        /* Quote Status Badge */
-        .quote-status {
-            display: inline-block;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
+        /* Payment Information */
+        .payment-section {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #000;
+            background: #fff;
+        }
+        
+        .payment-title {
+            font-size: 14px;
             font-weight: bold;
-            text-transform: uppercase;
+            color: #000;
+            margin-bottom: 10px;
             text-align: center;
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.1);
         }
         
-        .status-quoted {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .payment-info {
+            font-size: 11px;
+            line-height: 1.5;
         }
         
-        .status-draft {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .payment-item {
+            margin-bottom: 3px;
         }
         
-        .status-invoiced {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .payment-label {
+            font-weight: bold;
+            color: #000;
         }
         
-        .status-sent {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .payment-value {
+            color: #000;
         }
         
-        .status-expired {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        /* Currency formatting */
+        .currency {
+            font-weight: bold;
         }
-        
         
         /* Print Styles */
         @media print {
@@ -458,7 +303,7 @@
                 print-color-adjust: exact;
             }
             
-            .pdf-container {
+            .document-container {
                 margin: 0;
                 width: 100%;
             }
@@ -466,103 +311,141 @@
     </style>
 </head>
 <body>
-    <div class="pdf-container">
+    <div class="document-container">
         <!-- Header Section -->
         <div class="header">
-            <!-- Logo Section -->
-            <div class="logo-section">
-                <div class="logo-with-text">
+            <div class="header-top">
+                <div class="logo-section">
                     @if(file_exists(public_path('images/idg_logo.jpg')))
                         <img class="logo-image" src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('images/idg_logo.jpg'))) }}" alt="IDG Logo" />
                     @else
-                        <div class="logo-image logo-placeholder">
-                            <span style="font-size: 24px; color: #d4af37;">IDG</span>
-                        </div>
+                        <div class="logo-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">IDG</div>
                     @endif
                     <div class="logo-text">
-                        <div class="logo-title">IDG Laboratory</div>
-                        <div class="logo-subtitle">International Diamond & Gemstone</div>
+                        <div class="logo-title">IDG</div>
+                        <div class="logo-subtitle">INTERNATIONAL DIAMOND & GEMSTONE LABORATORY</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Quote Title -->
-            <div class="quote-main-title">
-                <div class="quote-title">عرض سعر</div>
-                <div class="quote-subtitle">Quotation</div>
+            <div class="document-title">
+                <div class="title-main">عرض سعر</div>
+                <div class="title-sub">Quotations</div>
                 <div class="quote-number">#{{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}</div>
             </div>
+            
+            <div class="quote-details">
+                <div class="quote-detail">
+                    <span class="quote-detail-label">رقم المرجع :</span>
+                    <span class="quote-detail-value">{{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}</span>
+                </div>
+                <div class="quote-detail">
+                    <span class="quote-detail-label">تاريخ الاصدار :</span>
+                    <span class="quote-detail-value">{{ \Carbon\Carbon::parse($quote['issue_date'] ?? now())->format('Y-m-d') }}</span>
+                </div>
+                <div class="quote-detail">
+                    <span class="quote-detail-label">تاريخ التوريد :</span>
+                    <span class="quote-detail-value">{{ \Carbon\Carbon::parse($quote['expiry_date'] ?? now()->addDays(30))->format('Y-m-d') }}</span>
+                </div>
+            </div>
         </div>
         
-        <!-- Company Information -->
-        <div class="company-info">
-            <div class="company-details">
-                <div class="company-name">فرع شركة مختبر اي دي جي لتحليل الألماس والأحجار الكريمة ش ذ م م</div>
-                <div class="company-address">العليا, 6776, الرياض، حي الورود, 12215, السعودية</div>
-                <div class="tax-number">الرقم الضريبي: 312404527400003</div>
+        <!-- Information Blocks -->
+        <div class="info-blocks">
+            <div class="info-block">
+                <div class="info-block-title">Lab. Information</div>
+                <div class="info-block-content">
+                    <div class="info-item">
+                        <span class="info-label">شركة فرع شركة مختبر اي دي جي لتحليل الالماس والاحجار الكريمة ش ذ م م</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">عنوان</span><br>
+                        <span class="info-value">Adress : Gate 6, First Floor, Andalus Mall, Olaya Street, 12215. Riyadh, Saudi Arabia</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الجوال</span><br>
+                        <span class="info-value">+966580583000</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">السجل التجاري</span><br>
+                        <span class="info-value">1010984664</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الرقم الضريبي</span><br>
+                        <span class="info-value">312404527400003</span>
+                    </div>
+                </div>
             </div>
             
-            <div class="customer-details">
-                <div class="client-title">تفاصيل بيانات العميل</div>
-                <div class="client-name">
-                    @if($customer)
-                        {{ $customer['display_name'] ?? $customer['name'] ?? 'غير محدد' }}
-                    @else
-                        غير محدد
-                    @endif
+            <div class="info-block">
+                <div class="info-block-title">Customer Information</div>
+                <div class="info-block-content">
+                    <div class="info-item">
+                        <span class="info-label">اسم العميل</span><br>
+                        <span class="info-value">
+                            @if($customer)
+                                {{ $customer['display_name'] ?? $customer['name'] ?? 'غير محدد' }}
+                            @else
+                                غير محدد
+                            @endif
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">العنوان</span><br>
+                        <span class="info-value">
+                            @if($customer && isset($customer['address']) && !empty($customer['address']))
+                                {{ $customer['address'] }}
+                            @else
+                                -
+                            @endif
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الجوال</span><br>
+                        <span class="info-value">
+                            @if($customer && isset($customer['phone']) && !empty($customer['phone']))
+                                {{ $customer['phone'] }}
+                            @else
+                                -
+                            @endif
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الرقم الضريبي</span><br>
+                        <span class="info-value">
+                            @if($customer && isset($customer['tax_number']) && !empty($customer['tax_number']))
+                                {{ $customer['tax_number'] }}
+                            @else
+                                -
+                            @endif
+                        </span>
+                    </div>
                 </div>
-                @if($customer && isset($customer['email']) && !empty($customer['email']))
-                <div style="margin-top: 10px; font-size: 13px; color: #666;">
-                    البريد الإلكتروني: {{ $customer['email'] }}
-                </div>
-                @endif
-                @if($customer && isset($customer['phone']) && !empty($customer['phone']))
-                <div style="font-size: 13px; color: #666;">
-                    الهاتف: {{ $customer['phone'] }}
-                </div>
-                @endif
             </div>
         </div>
         
-        <!-- Quote Details Grid -->
-        <div class="quote-details-grid">
-            <div>
-                <div class="detail-label">المرجع</div>
-                <div class="detail-value quote-reference">{{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}</div>
-            </div>
-            <div>
-                <div class="detail-label">تاريخ الإصدار</div>
-                <div class="detail-value quote-date-issue">{{ \Carbon\Carbon::parse($quote['issue_date'] ?? now())->format('Y-m-d') }}</div>
-            </div>
-            <div>
-                <div class="detail-label">تاريخ الانتهاء</div>
-                <div class="detail-value quote-date-expiry">{{ \Carbon\Carbon::parse($quote['expiry_date'] ?? now()->addDays(30))->format('d-m-Y') }}</div>
-            </div>
-        </div>
-        
-        <!-- Quote Items -->
+        <!-- Items Table -->
         @if(isset($quote['line_items']) && count($quote['line_items']) > 0)
         <div class="items-section">
-            <div class="section-title">بنود عرض السعر</div>
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>المنتج</th>
+                        <th>م</th>
+                        <th>الوصف</th>
                         <th>الكمية</th>
                         <th>سعر الوحدة</th>
                         <th>الخصم</th>
                         <th>الإجمالي قبل الضريبة</th>
-                        <th>% VAT</th>
-                        <th>VAT</th>
-                        <th>المجموع النهائي</th>
+                        <th>الضريبة %</th>
+                        <th>قيمة الضريبة</th>
+                        <th>الإجمالي</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($quote['line_items'] as $index => $item)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td class="product-column"> 
+                        <td class="product-description">
                             @php
                                 $product_name = 'منتج غير محدد';
                                 $product_name_ar = '';
@@ -588,15 +471,15 @@
                             @if(!empty($product_name_ar))
                                 <div class="product-name-ar">{{ $product_name_ar }}</div>
                             @endif
-                            <div class="product-id">#{{ $product_id }}</div>
+                            <div class="product-id">ID: {{ $product_id }}</div>
                         </td>
-                        <td class="quantity-unit">{{ $item['quantity'] }} قطعة</td>
-                        <td class="unit-price">{{ number_format($item['unit_price'], 2) }}</td>
-                        <td class="discount">{{ $item['discount_percentage'] ?? 0 }}% {{ number_format($item['total_discount'] ?? 0, 2) }}</td>
-                        <td class="total-before-vat">{{ number_format(($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0), 2) }}</td>
-                        <td class="vat-percentage">{{ $item['vat_percentage'] ?? 15 }}.0</td>
-                        <td class="vat-amount">{{ number_format(((($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0)) * ($item['vat_percentage'] ?? 15)) / 100, 2) }}</td>
-                        <td class="total-amount">{{ number_format((($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0)) + (((($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0)) * ($item['vat_percentage'] ?? 15)) / 100), 2) }}</td>
+                        <td>{{ $item['quantity'] ?? 1 }}</td>
+                        <td class="currency">{{ number_format($item['unit_price'] ?? 0, 2) }} ريال</td>
+                        <td>{{ $item['discount_percentage'] ?? 0 }}%<br>{{ number_format($item['total_discount'] ?? 0, 2) }} ريال</td>
+                        <td class="currency">{{ number_format(($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0), 2) }} ريال</td>
+                        <td>%{{ $item['vat_percentage'] ?? 15 }}</td>
+                        <td class="currency">{{ number_format(((($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0)) * ($item['vat_percentage'] ?? 15)) / 100, 2) }} ريال</td>
+                        <td class="currency">{{ number_format((($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0)) + (((($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0) - ($item['total_discount'] ?? 0)) * ($item['vat_percentage'] ?? 15)) / 100), 2) }} ريال</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -622,16 +505,39 @@
                 @endphp
                 
                 <div class="total-item">
-                    <div class="total-label">الإجمالي قبل الضريبة</div>
-                    <div class="total-value">{{ number_format($quote['subtotal'] ?? $calculated_subtotal, 2) }}</div>
+                    <div class="total-label">الإجمالي بعد الخصم</div>
+                    <div class="total-value">{{ number_format($quote['subtotal'] ?? $calculated_subtotal, 2) }} ريال</div>
                 </div>
                 <div class="total-item">
-                    <div class="total-label">إجمالي الضريبة</div>
-                    <div class="total-value">{{ number_format($quote['tax_amount'] ?? $tax_amount, 2) }}</div>
+                    <div class="total-label">ضريبة القيمة المضافة 15%</div>
+                    <div class="total-value">{{ number_format($quote['tax_amount'] ?? $tax_amount, 2) }} ريال</div>
                 </div>
                 <div class="total-item">
-                    <div class="total-label">المجموع:</div>
-                    <div class="total-value">{{ number_format($quote['total_amount'] ?? $total_amount, 2) }}</div>
+                    <div class="total-label">الإجمالي شامل ضريبة القيمة المضافة</div>
+                    <div class="total-value">{{ number_format($quote['total_amount'] ?? $total_amount, 2) }} ريال</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Information -->
+        <div class="payment-section">
+            <div class="payment-title">معلومات الدفع</div>
+            <div class="payment-info">
+                <div class="payment-item">
+                    <span class="payment-label">البنك Bank:</span>
+                    <span class="payment-value">بنك الانماء Alinma Bank</span>
+                </div>
+                <div class="payment-item">
+                    <span class="payment-label">رقم الحساب :</span>
+                    <span class="payment-value">68205460090000</span>
+                </div>
+                <div class="payment-item">
+                    <span class="payment-label">الايبان :</span>
+                    <span class="payment-value">SA0805000068205460090000</span>
+                </div>
+                <div class="payment-item">
+                    <span class="payment-label">اسم الحساب:</span>
+                    <span class="payment-value">شركة فرع شركة مختبر أي دي جي لتحليل الألماس والاحجار الكريمة</span>
                 </div>
             </div>
         </div>

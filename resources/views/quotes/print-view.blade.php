@@ -10,7 +10,7 @@
             .no-print { display: none !important; }
             .page-break { page-break-before: always; }
             @page {
-                size: A4 landscape;
+                size: A4 portrait;
                 margin: 10mm;
             }
         }
@@ -88,16 +88,16 @@
     <div class="print-container">
         <div class="print-actions no-print">
             <div class="print-title">
-                {{ __('Print Quote') }} #{{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}
+                {{ app()->getLocale() === 'ar' ? 'طباعة عرض السعر' : __('Print Quote') }} #{{ $quote['reference'] ?? $quote['id'] ?? 'N/A' }}
             </div>
             <div class="print-buttons">
                 <button onclick="window.print()" class="btn btn-primary">
                     <i class="fas fa-print"></i>
-                    {{ __('Print') }}
+                    {{ app()->getLocale() === 'ar' ? 'طباعة' : __('Print') }}
                 </button>
                 <a href="{{ url()->previous() }}" class="btn btn-success">
                     <i class="fas fa-arrow-left"></i>
-                    {{ __('Back') }}
+                    {{ app()->getLocale() === 'ar' ? 'رجوع' : __('Back') }}
                 </a>
             </div>
         </div>
