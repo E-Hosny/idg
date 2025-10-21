@@ -11,6 +11,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from 'ziggy-js';
 import { route } from 'ziggy-js';
 import '../css/app.css';
+import translations from './translations.js';
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -54,6 +55,17 @@ createInertiaApp({
     
     // Make route function available in components
     app.config.globalProperties.$route = route
+    // Simple i18n helper using resources/js/translations.js
+    app.config.globalProperties.$t = (key) => {
+      try {
+        const htmlLang = (document?.documentElement?.lang || 'en').split('-')[0];
+        const locale = ['ar', 'en'].includes(htmlLang) ? htmlLang : 'en';
+        const dict = translations?.[locale] || {};
+        return dict[key] || key;
+      } catch (e) {
+        return key;
+      }
+    }
     
     return app.mount(el)
   },

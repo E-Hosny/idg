@@ -27,7 +27,7 @@
                 class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 <i class="fas fa-plus mr-2"></i>
-                {{ __('Add Customer') }}
+                {{ __('messages.Add Customer') }}
               </button>
             </div>
           </div>
@@ -55,8 +55,8 @@
                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
               >
                 <option value="">{{ __('All Status') }}</option>
-                <option value="active">{{ __('Active') }}</option>
-                <option value="inactive">{{ __('Inactive') }}</option>
+                <option value="active">{{ $t('messages.Active') }}</option>
+                <option value="inactive">{{ $t('messages.Inactive') }}</option>
               </select>
             </div>
           </div>
@@ -68,7 +68,7 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ __('Reference Number') }}
+                  {{ $t('messages.Reference Number') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ __('Customer') }}
@@ -83,7 +83,7 @@
                   {{ __('Phone') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ __('Status') }}
+                  {{ $t('messages.Status') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ __('Created') }}
@@ -241,7 +241,7 @@
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Customer Name') }} *
+                            {{ $t('messages.Customer Name') }} *
                           </label>
                           <input
                             v-model="newCustomer.name"
@@ -253,7 +253,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Organization Name') }}
+                            {{ $t('messages.Organization Name') }}
                           </label>
                           <input
                             v-model="newCustomer.organization"
@@ -266,11 +266,11 @@
 
                     <!-- Contact Information -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Contact Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Contact Information') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Email') }}
+                            {{ $t('messages.Primary Email') }}
                           </label>
                           <input
                             v-model="newCustomer.email"
@@ -281,7 +281,18 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Phone Number') }}
+                            {{ $t('messages.Secondary Email') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.secondary_email"
+                            type="email"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Primary Phone') }}
                           </label>
                           <input
                             v-model="newCustomer.phone_number"
@@ -292,7 +303,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Secondary Phone') }}
+                            {{ $t('messages.Secondary Phone') }}
                           </label>
                           <input
                             v-model="newCustomer.secondary_phone_number"
@@ -303,7 +314,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Website') }}
+                            {{ $t('messages.Website') }}
                           </label>
                           <input
                             v-model="newCustomer.website"
@@ -311,30 +322,44 @@
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Currency') }}
+                          </label>
+                          <select
+                            v-model="newCustomer.currency"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          >
+                            <option value="ر.س">ر.س (SAR)</option>
+                            <option value="$">$ (USD)</option>
+                            <option value="€">€ (EUR)</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
 
-                    <!-- Address Information -->
+                    <!-- Billing Address -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Address Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Billing Address') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Address') }}
+                            {{ $t('messages.Address') }}
                           </label>
                           <textarea
-                            v-model="newCustomer.address"
-                            rows="3"
+                            v-model="newCustomer.billing_address"
+                            rows="2"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           ></textarea>
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('City') }}
+                            {{ $t('messages.City') }}
                           </label>
                           <input
-                            v-model="newCustomer.city"
+                            v-model="newCustomer.billing_city"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
@@ -342,10 +367,10 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('State') }}
+                            {{ $t('messages.State') }}
                           </label>
                           <input
-                            v-model="newCustomer.state"
+                            v-model="newCustomer.billing_state"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
@@ -353,10 +378,10 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Postal Code') }}
+                            {{ $t('messages.Postal Code') }}
                           </label>
                           <input
-                            v-model="newCustomer.postal_code"
+                            v-model="newCustomer.billing_postal_code"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
@@ -364,10 +389,71 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Country') }}
+                            {{ $t('messages.Country') }}
                           </label>
                           <input
-                            v-model="newCustomer.country"
+                            v-model="newCustomer.billing_country"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="border-b border-gray-200 pb-4">
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Shipping Address') }}</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Address') }}
+                          </label>
+                          <textarea
+                            v-model="newCustomer.shipping_address"
+                            rows="2"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          ></textarea>
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.City') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.shipping_city"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.State') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.shipping_state"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Postal Code') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.shipping_postal_code"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Country') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.shipping_country"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
@@ -377,22 +463,25 @@
 
                     <!-- Tax and Legal Information -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Tax and Legal Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Tax and Legal Information') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Tax Number') }}
+                            {{ $t('messages.Tax Number') }}
                           </label>
                           <input
                             v-model="newCustomer.tax_number"
                             type="text"
+                            maxlength="15"
+                            placeholder="15 رقم بالضبط"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
+                          <p class="mt-1 text-xs text-gray-500">يجب أن يكون الرقم الضريبي 15 رقم بالضبط</p>
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Commercial Registration') }}
+                            {{ $t('messages.Commercial Registration') }}
                           </label>
                           <input
                             v-model="newCustomer.commercial_registration_number"
@@ -405,24 +494,24 @@
 
                     <!-- Business Settings -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Business Settings') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Business Settings') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Status') }}
+                            {{ $t('messages.Status') }}
                           </label>
                           <select
                             v-model="newCustomer.status"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           >
-                            <option value="Active">{{ __('Active') }}</option>
-                            <option value="Inactive">{{ __('Inactive') }}</option>
+                            <option value="Active">{{ $t('messages.Active') }}</option>
+                            <option value="Inactive">{{ $t('messages.Inactive') }}</option>
                           </select>
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Credit Limit') }}
+                            {{ $t('messages.Credit Limit') }}
                           </label>
                           <input
                             v-model="newCustomer.credit_limit"
@@ -436,12 +525,45 @@
                       <div class="mt-4 space-y-3">
                         <div class="flex items-center">
                           <input
+                            v-model="newCustomer.tax_subject"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('Tax Subject') }} ({{ __('Is the entity subject to tax?') }})
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
+                            v-model="newCustomer.pos_customer"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('POS Customer') }}
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
+                            v-model="newCustomer.government_entity_customer"
+                            type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          />
+                          <label class="ml-2 block text-sm text-gray-900">
+                            {{ __('Government Entity Customer') }}
+                          </label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                          <input
                             v-model="newCustomer.pos"
                             type="checkbox"
                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                           />
                           <label class="ml-2 block text-sm text-gray-900">
-                            {{ __('POS Enabled') }}
+                            {{ $t('messages.POS Enabled') }}
                           </label>
                         </div>
                         
@@ -452,7 +574,7 @@
                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                           />
                           <label class="ml-2 block text-sm text-gray-900">
-                            {{ __('Government Entity') }}
+                            {{ $t('messages.Government Entity') }}
                           </label>
                         </div>
                         
@@ -463,7 +585,7 @@
                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                           />
                           <label class="ml-2 block text-sm text-gray-900">
-                            {{ __('Allow Credit') }}
+                            {{ $t('messages.Allow Credit') }}
                           </label>
                         </div>
                       </div>
@@ -471,10 +593,10 @@
 
                     <!-- Additional Information -->
                     <div>
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Additional Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Additional Information') }}</h4>
                       <div>
                         <label class="block text-sm font-medium text-gray-700">
-                          {{ __('Notes') }}
+                          {{ $t('messages.Notes') }}
                         </label>
                         <textarea
                           v-model="newCustomer.notes"
@@ -502,7 +624,7 @@
                 @click="showAddCustomerModal = false"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                {{ __('Cancel') }}
+                {{ __('messages.Cancel') }}
               </button>
             </div>
           </form>
@@ -521,7 +643,7 @@
               <div class="sm:flex sm:items-start">
                 <div class="w-full">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                    {{ __('Edit Customer') }}
+                    {{ __('messages.Edit Customer') }}
                   </h3>
                   
                   <div class="space-y-6">
@@ -531,7 +653,7 @@
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Customer Name') }} *
+                            {{ $t('messages.Customer Name') }} *
                           </label>
                           <input
                             v-model="editCustomerData.name"
@@ -543,7 +665,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Organization Name') }}
+                            {{ $t('messages.Organization Name') }}
                           </label>
                           <input
                             v-model="editCustomerData.organization"
@@ -556,7 +678,7 @@
 
                     <!-- Contact Information -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Contact Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Contact Information') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
@@ -582,7 +704,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Secondary Phone') }}
+                            {{ $t('messages.Secondary Phone') }}
                           </label>
                           <input
                             v-model="editCustomerData.secondary_phone_number"
@@ -593,7 +715,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Website') }}
+                            {{ $t('messages.Website') }}
                           </label>
                           <input
                             v-model="editCustomerData.website"
@@ -610,7 +732,7 @@
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Address') }}
+                            {{ $t('messages.Address') }}
                           </label>
                           <textarea
                             v-model="editCustomerData.address"
@@ -621,7 +743,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('City') }}
+                            {{ $t('messages.City') }}
                           </label>
                           <input
                             v-model="editCustomerData.city"
@@ -632,7 +754,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('State') }}
+                            {{ $t('messages.State') }}
                           </label>
                           <input
                             v-model="editCustomerData.state"
@@ -643,7 +765,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Postal Code') }}
+                            {{ $t('messages.Postal Code') }}
                           </label>
                           <input
                             v-model="editCustomerData.postal_code"
@@ -654,7 +776,7 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Country') }}
+                            {{ $t('messages.Country') }}
                           </label>
                           <input
                             v-model="editCustomerData.country"
@@ -667,22 +789,25 @@
 
                     <!-- Tax and Legal Information -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Tax and Legal Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Tax and Legal Information') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Tax Number') }}
+                            {{ $t('messages.Tax Number') }}
                           </label>
                           <input
                             v-model="editCustomerData.tax_number"
                             type="text"
+                            maxlength="15"
+                            placeholder="15 رقم بالضبط"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
+                          <p class="mt-1 text-xs text-gray-500">يجب أن يكون الرقم الضريبي 15 رقم بالضبط</p>
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Commercial Registration') }}
+                            {{ $t('messages.Commercial Registration') }}
                           </label>
                           <input
                             v-model="editCustomerData.commercial_registration_number"
@@ -695,24 +820,24 @@
 
                     <!-- Business Settings -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Business Settings') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Business Settings') }}</h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Status') }}
+                            {{ $t('messages.Status') }}
                           </label>
                           <select
                             v-model="editCustomerData.status"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           >
-                            <option value="Active">{{ __('Active') }}</option>
-                            <option value="Inactive">{{ __('Inactive') }}</option>
+                            <option value="Active">{{ $t('messages.Active') }}</option>
+                            <option value="Inactive">{{ $t('messages.Inactive') }}</option>
                           </select>
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Credit Limit') }}
+                            {{ $t('messages.Credit Limit') }}
                           </label>
                           <input
                             v-model="editCustomerData.credit_limit"
@@ -731,7 +856,7 @@
                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                           />
                           <label class="ml-2 block text-sm text-gray-900">
-                            {{ __('POS Enabled') }}
+                            {{ $t('messages.POS Enabled') }}
                           </label>
                         </div>
                         
@@ -742,7 +867,7 @@
                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                           />
                           <label class="ml-2 block text-sm text-gray-900">
-                            {{ __('Government Entity') }}
+                            {{ $t('messages.Government Entity') }}
                           </label>
                         </div>
                         
@@ -753,7 +878,7 @@
                             class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                           />
                           <label class="ml-2 block text-sm text-gray-900">
-                            {{ __('Allow Credit') }}
+                            {{ $t('messages.Allow Credit') }}
                           </label>
                         </div>
                       </div>
@@ -761,10 +886,10 @@
 
                     <!-- Additional Information -->
                     <div>
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Additional Information') }}</h4>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Additional Information') }}</h4>
                       <div>
                         <label class="block text-sm font-medium text-gray-700">
-                          {{ __('Notes') }}
+                          {{ $t('messages.Notes') }}
                         </label>
                         <textarea
                           v-model="editCustomerData.notes"
@@ -792,7 +917,7 @@
                 @click="showEditCustomerModal = false"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                {{ __('Cancel') }}
+                {{ __('messages.Cancel') }}
               </button>
             </div>
           </form>
@@ -803,167 +928,537 @@
     <!-- View Customer Modal -->
     <div v-if="showViewCustomerModal" class="fixed inset-0 z-50 overflow-y-auto">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showViewCustomerModal = false"></div>
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity" @click="showViewCustomerModal = false"></div>
         
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="w-full">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  {{ __('Customer Details') }}
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <i class="fas fa-user text-white text-lg"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-white">
+                    {{ $t('messages.Customer Details') }}
                 </h3>
-                
+                  <p class="text-blue-100 text-sm">
+                    {{ selectedCustomer?.name || selectedCustomer?.display_name || __('Customer Information') }}
+                  </p>
+                </div>
+              </div>
+              <button
+                @click="showViewCustomerModal = false"
+                class="text-white hover:text-gray-200 transition-colors"
+              >
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-6">
                 <div v-if="selectedCustomer" class="space-y-6">
-                  <!-- Basic Information -->
-                  <div class="border-b border-gray-200 pb-4">
-                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Basic Information') }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Reference Number') }}</label>
-                        <p class="mt-1 text-sm text-gray-900 font-mono">{{ formatQoyodReferenceNumber(selectedCustomer.id) }}</p>
+              <!-- Map customer data to our format -->
+              <div v-if="mappedCustomer" class="space-y-6">
+              <!-- Basic Information Card -->
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-id-card text-green-600"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ $t('messages.Basic Information') }}</h4>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Customer Name') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.name || selectedCustomer.display_name || '-' }}</p>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Organization Name') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.organization || '-' }}</p>
+                <div class="p-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-hashtag text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Reference Number') }}</label>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Status') }}</label>
+                      <p class="text-base font-mono font-semibold text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                        {{ formatQoyodReferenceNumber(mappedCustomer.id) }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-user text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Customer Name') }}</label>
+                      </div>
+                      <p class="text-base font-semibold text-gray-900">
+                        {{ mappedCustomer.name }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-building text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Organization Name') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.organization }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-circle text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Status') }}</label>
+                      </div>
                         <span 
-                          class="inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1"
-                          :class="(selectedCustomer.status && selectedCustomer.status.toLowerCase() === 'active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                        >
-                          {{ (selectedCustomer.status && selectedCustomer.status.toLowerCase() === 'active') ? __('Active') : __('Inactive') }}
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                        :class="(mappedCustomer.status && mappedCustomer.status.toLowerCase() === 'active') 
+                          ? 'bg-green-100 text-green-800 border border-green-200' 
+                          : 'bg-red-100 text-red-800 border border-red-200'"
+                      >
+                        <i 
+                          class="fas fa-circle text-xs mr-2"
+                          :class="(mappedCustomer.status && mappedCustomer.status.toLowerCase() === 'active') ? 'text-green-500' : 'text-red-500'"
+                        ></i>
+                        {{ (mappedCustomer.status && mappedCustomer.status.toLowerCase() === 'active') ? __('Active') : __('Inactive') }}
                         </span>
+                    </div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Contact Information -->
-                  <div class="border-b border-gray-200 pb-4">
-                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Contact Information') }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Email') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.email || selectedCustomer.email_address || '-' }}</p>
+              <!-- Contact Information Card -->
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-address-book text-blue-600"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ $t('messages.Contact Information') }}</h4>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Phone Number') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.phone_number || selectedCustomer.phone || '-' }}</p>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Secondary Phone') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.secondary_phone_number || '-' }}</p>
+                <div class="p-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-envelope text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Primary Email') }}</label>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Website') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.website || '-' }}</p>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.email }}
+                      </p>
                       </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-envelope-open text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Secondary Email') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.secondary_email }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-phone text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Primary Phone') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.phone_number }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-mobile-alt text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Secondary Phone') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.secondary_phone_number }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-globe text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Website') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.website }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-coins text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Currency') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.currency }}
+                      </p>
+                    </div>
+                  </div>
                     </div>
                   </div>
 
-                  <!-- Address Information -->
-                  <div class="border-b border-gray-200 pb-4">
-                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Address Information') }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Address') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.address || '-' }}</p>
+              <!-- Billing & Shipping Address Card -->
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-map-marker-alt text-purple-600"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ $t('messages.Billing & Shipping Addresses') }}</h4>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('City') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.city || '-' }}</p>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('State') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.state || '-' }}</p>
+                <div class="p-6">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Billing Address -->
+                    <div class="space-y-4">
+                      <div class="flex items-center space-x-2 mb-3">
+                        <i class="fas fa-file-invoice text-purple-600"></i>
+                        <h5 class="text-md font-semibold text-gray-800">{{ $t('messages.Billing Address') }}</h5>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Postal Code') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.postal_code || '-' }}</p>
+                      <div class="space-y-3">
+                        <div class="space-y-2">
+                          <div class="flex items-center space-x-2">
+                            <i class="fas fa-home text-gray-400 text-sm"></i>
+                            <label class="text-sm font-medium text-gray-600">{{ $t('messages.Address') }}</label>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Country') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.country || '-' }}</p>
+                          <p class="text-base text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                            {{ formatAddressField(mappedCustomer.billing_address, 'billing_address') || '-' }}
+                          </p>
                       </div>
+                        <div class="grid grid-cols-2 gap-3">
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-city text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.City') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.billing_address, 'billing_city') || '-' }}
+                            </p>
+                          </div>
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-map text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.State') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.billing_address, 'billing_state') || '-' }}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-mail-bulk text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.Postal Code') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.billing_address, 'billing_zip') || '-' }}
+                            </p>
+                          </div>
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-flag text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.Country') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.billing_address, 'billing_country') || '-' }}
+                            </p>
+                          </div>
+                        </div>
                     </div>
                   </div>
 
-                  <!-- Tax and Legal Information -->
-                  <div class="border-b border-gray-200 pb-4">
-                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Tax and Legal Information') }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Tax Number') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.tax_number || '-' }}</p>
+                    <!-- Shipping Address -->
+                    <div class="space-y-4">
+                      <div class="flex items-center space-x-2 mb-3">
+                        <i class="fas fa-shipping-fast text-blue-600"></i>
+                        <h5 class="text-md font-semibold text-gray-800">{{ $t('messages.Shipping Address') }}</h5>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Commercial Registration') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.commercial_registration_number || '-' }}</p>
+                      <div class="space-y-3">
+                        <div class="space-y-2">
+                          <div class="flex items-center space-x-2">
+                            <i class="fas fa-truck text-gray-400 text-sm"></i>
+                            <label class="text-sm font-medium text-gray-600">{{ $t('messages.Address') }}</label>
+                      </div>
+                          <p class="text-base text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                            {{ formatAddressField(mappedCustomer.shipping_address, 'shipping_address') || '-' }}
+                          </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-city text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.City') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.shipping_address, 'shipping_city') || '-' }}
+                            </p>
+                          </div>
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-map text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.State') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.shipping_address, 'shipping_state') || '-' }}
+                            </p>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-mail-bulk text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.Postal Code') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.shipping_address, 'shipping_zip') || '-' }}
+                            </p>
+                          </div>
+                          <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                              <i class="fas fa-flag text-gray-400 text-sm"></i>
+                              <label class="text-sm font-medium text-gray-600">{{ $t('messages.Country') }}</label>
+                            </div>
+                            <p class="text-base text-gray-900">
+                              {{ formatAddressField(mappedCustomer.shipping_address, 'shipping_country') || '-' }}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
+                    </div>
+                  </div>
 
-                  <!-- Business Settings -->
-                  <div class="border-b border-gray-200 pb-4">
-                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Business Settings') }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Credit Limit') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.credit_limit || '-' }}</p>
+              <!-- Tax and Legal Information Card -->
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-50 to-yellow-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-file-invoice text-orange-600"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ $t('messages.Tax and Legal Information') }}</h4>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ __('Created Date') }}</label>
-                        <p class="mt-1 text-sm text-gray-900">{{ formatDate(selectedCustomer.created_at) }}</p>
+                </div>
+                <div class="p-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-receipt text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Tax Number') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded-md">
+                        {{ mappedCustomer.tax_number }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-certificate text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Commercial Registration') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded-md">
+                        {{ mappedCustomer.commercial_registration_number }}
+                      </p>
                       </div>
                     </div>
                     
-                    <div class="mt-4 space-y-2">
-                      <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-700 mr-2">{{ __('POS Enabled') }}:</span>
-                        <span class="text-sm" :class="selectedCustomer.pos ? 'text-green-600' : 'text-gray-500'">
-                          {{ selectedCustomer.pos ? __('Yes') : __('No') }}
+                  <div class="space-y-4">
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">{{ __('Tax & Legal Status') }}</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-percentage text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ __('Tax Subject') }}</span>
+                        </div>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="mappedCustomer.tax_subject ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                        >
+                          <i 
+                            class="fas fa-circle text-xs mr-1"
+                            :class="mappedCustomer.tax_subject ? 'text-green-500' : 'text-gray-400'"
+                          ></i>
+                          {{ mappedCustomer.tax_subject ? __('Yes') : __('No') }}
                         </span>
                       </div>
-                      <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-700 mr-2">{{ __('Government Entity') }}:</span>
-                        <span class="text-sm" :class="selectedCustomer.government_entity ? 'text-green-600' : 'text-gray-500'">
-                          {{ selectedCustomer.government_entity ? __('Yes') : __('No') }}
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-cash-register text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ __('POS Customer') }}</span>
+                        </div>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="mappedCustomer.pos_customer ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                        >
+                          <i 
+                            class="fas fa-circle text-xs mr-1"
+                            :class="mappedCustomer.pos_customer ? 'text-green-500' : 'text-gray-400'"
+                          ></i>
+                          {{ mappedCustomer.pos_customer ? __('Yes') : __('No') }}
                         </span>
                       </div>
-                      <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-700 mr-2">{{ __('Allow Credit') }}:</span>
-                        <span class="text-sm" :class="selectedCustomer.allow_credit ? 'text-green-600' : 'text-gray-500'">
-                          {{ selectedCustomer.allow_credit ? __('Yes') : __('No') }}
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-landmark text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ $t('messages.Government Entity') }}</span>
+                        </div>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="mappedCustomer.government_entity_customer ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                        >
+                          <i 
+                            class="fas fa-circle text-xs mr-1"
+                            :class="mappedCustomer.government_entity_customer ? 'text-green-500' : 'text-gray-400'"
+                          ></i>
+                          {{ mappedCustomer.government_entity_customer ? __('Yes') : __('No') }}
                         </span>
+                      </div>
+                    </div>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Additional Information -->
-                  <div>
-                    <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Additional Information') }}</h4>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700">{{ __('Notes') }}</label>
-                      <p class="mt-1 text-sm text-gray-900">{{ selectedCustomer.notes || '-' }}</p>
+              <!-- Business Settings Card -->
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-cogs text-indigo-600"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ $t('messages.Business Settings') }}</h4>
+                    </div>
+                  </div>
+                <div class="p-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-credit-card text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Credit Limit') }}</label>
+                </div>
+                      <p class="text-base text-gray-900 font-semibold">
+                        {{ mappedCustomer.credit_limit }}
+                      </p>
+              </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-calendar-plus text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ __('Created Date') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ formatDate(mappedCustomer.created_at) }}
+                      </p>
+            </div>
+          </div>
+          
+                  <div class="space-y-4">
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">{{ __('Business Features') }}</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-cash-register text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ $t('messages.POS Enabled') }}</span>
+                        </div>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="mappedCustomer.pos ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                        >
+                          <i 
+                            class="fas fa-circle text-xs mr-1"
+                            :class="mappedCustomer.pos ? 'text-green-500' : 'text-gray-400'"
+                          ></i>
+                          {{ mappedCustomer.pos ? __('Yes') : __('No') }}
+                        </span>
+                      </div>
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-landmark text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ $t('messages.Government Entity') }}</span>
+                        </div>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="mappedCustomer.government_entity ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                        >
+                          <i 
+                            class="fas fa-circle text-xs mr-1"
+                            :class="mappedCustomer.government_entity ? 'text-green-500' : 'text-gray-400'"
+                          ></i>
+                          {{ mappedCustomer.government_entity ? __('Yes') : __('No') }}
+                        </span>
+                      </div>
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-hand-holding-usd text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ $t('messages.Allow Credit') }}</span>
+                        </div>
+                        <span 
+                          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                          :class="mappedCustomer.allow_credit ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                        >
+                          <i 
+                            class="fas fa-circle text-xs mr-1"
+                            :class="mappedCustomer.allow_credit ? 'text-green-500' : 'text-gray-400'"
+                          ></i>
+                          {{ mappedCustomer.allow_credit ? __('Yes') : __('No') }}
+                        </span>
+                      </div>
+                      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                          <i class="fas fa-coins text-gray-400"></i>
+                          <span class="text-sm font-medium text-gray-700">{{ $t('messages.Currency') }}</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">
+                          {{ mappedCustomer.currency }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- Additional Information Card -->
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-slate-50 px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-sticky-note text-gray-600"></i>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ $t('messages.Additional Information') }}</h4>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <div class="space-y-2">
+                    <div class="flex items-center space-x-2">
+                      <i class="fas fa-comment text-gray-400 text-sm"></i>
+                      <label class="text-sm font-medium text-gray-600">{{ $t('messages.Notes') }}</label>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 rounded-lg min-h-[60px]">
+                      <p class="text-base text-gray-900 whitespace-pre-wrap">
+                        {{ mappedCustomer.notes }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
             </div>
           </div>
           
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <!-- Footer with Action Buttons -->
+          <div class="bg-white px-6 py-4 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
             <button
-              type="button"
+                  @click="viewCustomerArtifacts(selectedCustomer)"
+                  class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <i class="fas fa-gem mr-2"></i>
+                  {{ __('View Artifacts') }}
+                </button>
+                <button
+                  @click="viewCustomerQuotes(selectedCustomer)"
+                  class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  <i class="fas fa-file-invoice mr-2"></i>
+                  {{ __('View Quotes') }}
+                </button>
+                <button
+                  @click="viewCustomerInvoices(selectedCustomer)"
+                  class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <i class="fas fa-file-alt mr-2"></i>
+                  {{ __('View Invoices') }}
+                </button>
+              </div>
+              <button
               @click="showViewCustomerModal = false"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                class="inline-flex items-center px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
+                <i class="fas fa-times mr-2"></i>
               {{ __('Close') }}
             </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1062,7 +1557,7 @@
                         
                         <div class="md:col-span-2">
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Notes') }}
+                            {{ $t('messages.Notes') }}
                           </label>
                           <textarea
                             v-model="newArtifact.notes"
@@ -1114,7 +1609,7 @@
                 @click="showAddArtifactModal = false"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
-                {{ __('Cancel') }}
+                {{ __('messages.Cancel') }}
               </button>
             </div>
           </form>
@@ -1164,16 +1659,26 @@ export default {
         name: '',
         organization: '',
         email: '',
+        secondary_email: '',
         phone_number: '',
         secondary_phone_number: '',
         website: '',
-        address: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        country: '',
+        currency: 'ر.س',
+        billing_address: '',
+        billing_city: '',
+        billing_state: '',
+        billing_postal_code: '',
+        billing_country: '',
+        shipping_address: '',
+        shipping_city: '',
+        shipping_state: '',
+        shipping_postal_code: '',
+        shipping_country: '',
         tax_number: '',
         commercial_registration_number: '',
+        tax_subject: false,
+        pos_customer: false,
+        government_entity_customer: false,
         status: 'Active',
         credit_limit: '',
         pos: false,
@@ -1185,16 +1690,26 @@ export default {
         name: '',
         organization: '',
         email: '',
+        secondary_email: '',
         phone_number: '',
         secondary_phone_number: '',
         website: '',
-        address: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        country: '',
+        currency: 'ر.س',
+        billing_address: '',
+        billing_city: '',
+        billing_state: '',
+        billing_postal_code: '',
+        billing_country: '',
+        shipping_address: '',
+        shipping_city: '',
+        shipping_state: '',
+        shipping_postal_code: '',
+        shipping_country: '',
         tax_number: '',
         commercial_registration_number: '',
+        tax_subject: false,
+        pos_customer: false,
+        government_entity_customer: false,
         status: 'Active',
         credit_limit: '',
         pos: false,
@@ -1242,6 +1757,11 @@ export default {
     console.log('Error:', this.error);
   },
   computed: {
+    mappedCustomer() {
+      if (!this.selectedCustomer) return null;
+      return this.mapQoyodCustomerData(this.selectedCustomer);
+    },
+    
     filteredCustomers() {
       let filtered = this.customers
 
@@ -1293,16 +1813,26 @@ export default {
           name: '',
           organization: '',
           email: '',
+          secondary_email: '',
           phone_number: '',
           secondary_phone_number: '',
           website: '',
-          address: '',
-          city: '',
-          state: '',
-          postal_code: '',
-          country: '',
+          currency: 'ر.س',
+          billing_address: '',
+          billing_city: '',
+          billing_state: '',
+          billing_postal_code: '',
+          billing_country: '',
+          shipping_address: '',
+          shipping_city: '',
+          shipping_state: '',
+          shipping_postal_code: '',
+          shipping_country: '',
           tax_number: '',
           commercial_registration_number: '',
+          tax_subject: false,
+          pos_customer: false,
+          government_entity_customer: false,
           status: 'Active',
           credit_limit: '',
           pos: false,
@@ -1395,6 +1925,122 @@ export default {
     formatQoyodReferenceNumber(id) {
       // Format as CUS + padded number (e.g., CUS001, CUS004)
       return `CUS${id.toString().padStart(3, '0')}`
+    },
+
+    formatAddress(addressData) {
+      if (!addressData) return null;
+      
+      // If it's a string, return it as is
+      if (typeof addressData === 'string') {
+        return addressData;
+      }
+      
+      // If it's an object, try to extract address information
+      if (typeof addressData === 'object') {
+        // Handle different possible structures from Qoyod API
+        if (addressData.address) {
+          return addressData.address;
+        }
+        
+        // Try to build address from components
+        const parts = [];
+        if (addressData.street) parts.push(addressData.street);
+        if (addressData.building_number) parts.push(addressData.building_number);
+        if (addressData.additional_number) parts.push(addressData.additional_number);
+        if (addressData.district) parts.push(addressData.district);
+        
+        return parts.length > 0 ? parts.join(', ') : null;
+      }
+      
+      return null;
+    },
+
+    formatAddressField(addressData, field) {
+      if (!addressData) return null;
+      
+      // If it's a string, return null for individual fields
+      if (typeof addressData === 'string') {
+        return null;
+      }
+      
+      // If it's an object, try to extract the specific field
+      if (typeof addressData === 'object') {
+        // Handle different possible field names
+        const fieldMappings = {
+          city: ['city', 'billing_city', 'shipping_city'],
+          state: ['state', 'billing_state', 'shipping_state', 'province'],
+          postal_code: ['postal_code', 'billing_postal_code', 'shipping_postal_code', 'zip', 'zip_code'],
+          country: ['country', 'billing_country', 'shipping_country']
+        };
+        
+        const possibleFields = fieldMappings[field] || [field];
+        
+        for (const possibleField of possibleFields) {
+          if (addressData[possibleField] && addressData[possibleField].trim() !== '') {
+            return addressData[possibleField];
+          }
+        }
+      }
+      
+      return null;
+    },
+
+    extractFromCustomerDetails(customer, label) {
+      if (!customer || !customer.customer_details || !Array.isArray(customer.customer_details)) {
+        return null;
+      }
+      
+      const detail = customer.customer_details.find(detail => detail.label === label);
+      return detail ? detail.value : null;
+    },
+
+    // Map Qoyod data to our display format
+    mapQoyodCustomerData(customer) {
+      if (!customer) return {};
+      
+      return {
+        // Basic Information
+        id: customer.id,
+        name: customer.name || customer.display_name || customer.title || '-',
+        organization: customer.organization || customer.company_name || '-',
+        status: customer.status || 'Active',
+        
+        // Contact Information
+        email: customer.email || customer.email_address || '-',
+        secondary_email: customer.secondary_email || customer.email_secondary || '-',
+        phone_number: customer.phone_number || customer.phone || customer.primary_phone || '-',
+        secondary_phone_number: customer.secondary_phone_number || customer.phone_secondary || customer.secondary_phone || '-',
+        website: customer.website || '-',
+        currency: customer.currency || customer.default_currency || 'ر.س',
+        
+        // Address Information - Extract from customer_details if available
+        billing_address: this.extractFromCustomerDetails(customer, 'عنوان الفوترة') || customer.billing_address || customer.address || '-',
+        billing_city: customer.billing_city || customer.city || '-',
+        billing_state: customer.billing_state || customer.state || customer.province || '-',
+        billing_postal_code: customer.billing_postal_code || customer.postal_code || customer.zip || '-',
+        billing_country: customer.billing_country || customer.country || '-',
+        
+        shipping_address: this.extractFromCustomerDetails(customer, 'عنوان الشحن') || customer.shipping_address || customer.address || '-',
+        shipping_city: customer.shipping_city || customer.city || '-',
+        shipping_state: customer.shipping_state || customer.state || customer.province || '-',
+        shipping_postal_code: customer.shipping_postal_code || customer.postal_code || customer.zip || '-',
+        shipping_country: customer.shipping_country || customer.country || '-',
+        
+        // Tax and Legal Information
+        tax_number: customer.tax_number || customer.vat_number || customer.tax_id || '-',
+        commercial_registration_number: customer.commercial_registration_number || customer.cr_number || customer.commercial_registration || '-',
+        tax_subject: customer.tax_subject || customer.is_tax_subject || false,
+        pos_customer: customer.pos_customer || customer.is_pos_customer || false,
+        government_entity_customer: customer.government_entity_customer || customer.is_government_entity || false,
+        
+        // Business Settings
+        credit_limit: customer.credit_limit || '-',
+        pos: customer.pos || customer.pos_enabled || false,
+        government_entity: customer.government_entity || customer.is_government_entity || false,
+        allow_credit: customer.allow_credit || customer.credit_allowed || false,
+        created_at: customer.created_at || customer.date_created || '-',
+        notes: customer.notes || customer.description || '-'
+      };
     },
     
     formatReferenceNumber(id) {

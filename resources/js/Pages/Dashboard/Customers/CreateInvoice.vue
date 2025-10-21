@@ -199,6 +199,28 @@
               <p v-if="errors.location_id" class="mt-1 text-sm text-red-600">{{ errors.location_id }}</p>
             </div>
 
+            <!-- Payment Method -->
+            <div class="lg:col-span-1">
+              <label for="payment_method" class="block text-sm font-medium text-gray-700">
+                {{ __('Payment Method') }}
+              </label>
+              <select
+                id="payment_method"
+                v-model="form.payment_method"
+                :disabled="creating"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                :class="{ 'bg-gray-50': creating, 'border-red-300': errors.payment_method }"
+              >
+                <option value="">{{ __('Select Payment Method') }}</option>
+                <option value="نقدي">{{ __('Cash') }}</option>
+                <option value="بالآجل">{{ __('On Credit') }}</option>
+                <option value="دفعة لحساب البنك">{{ __('Bank Account Payment') }}</option>
+                <option value="بطاقة بنك">{{ __('Bank Card') }}</option>
+                <option value="غير محدد">{{ __('Unspecified') }}</option>
+              </select>
+              <p v-if="errors.payment_method" class="mt-1 text-sm text-red-600">{{ errors.payment_method }}</p>
+            </div>
+
           </div>
 
           <!-- Description -->
@@ -561,6 +583,7 @@ export default {
         contact_id: null,
         inventory_id: 1,
         location_id: '',
+        payment_method: '',
         draft_if_out_of_stock: false,
         line_items: [
           {
@@ -821,6 +844,7 @@ export default {
           contact_id: parseInt(this.form.contact_id),
           inventory_id: parseInt(this.form.inventory_id),
           location_id: parseInt(this.form.location_id),
+          payment_method: this.form.payment_method || null,
           draft_if_out_of_stock: this.form.draft_if_out_of_stock,
           line_items: this.form.line_items.map(item => ({
             product_id: parseInt(item.product_id),
@@ -883,6 +907,13 @@ export default {
           'Inventory ID': 'Inventory ID',
           'Location': 'Location',
           'Select Location': 'Select Location',
+          'Payment Method': 'Payment Method',
+          'Select Payment Method': 'Please select payment method',
+          'Cash': 'Cash',
+          'On Credit': 'On Credit',
+          'Bank Account Payment': 'Bank Account Payment',
+          'Bank Card': 'Bank Card',
+          'Unspecified': 'Unspecified',
           'Description': 'Description',
           'Create as draft if products are out of stock': 'Create as draft if products are out of stock',
           'Line Items': 'Line Items',
@@ -954,6 +985,13 @@ export default {
           'Inventory ID': 'معرف المخزون',
           'Location': 'الموقع',
           'Select Location': 'اختر الموقع',
+          'Payment Method': 'طريقة الدفع',
+          'Select Payment Method': 'يُرجَى اختيار طريقة الدفع',
+          'Cash': 'نقدي',
+          'On Credit': 'بالآجل',
+          'Bank Account Payment': 'دفعة لحساب البنك',
+          'Bank Card': 'بطاقة بنك',
+          'Unspecified': 'غير محدد',
           'Description': 'الوصف',
           'Create as draft if products are out of stock': 'إنشاء كمسودة إذا كانت المنتجات نافدة من المخزون',
           'Line Items': 'بنود الفاتورة',

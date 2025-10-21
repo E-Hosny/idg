@@ -124,6 +124,9 @@ class DashboardController extends Controller
                 'status' => $eval->is_final ? 'completed' : 'draft',
                 'result' => $eval->result,
                 'comments' => $eval->comments,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         }
 
@@ -137,6 +140,9 @@ class DashboardController extends Controller
                 'status' => $eval->status,
                 'result' => $eval->result,
                 'comments' => $eval->comments,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         }
 
@@ -279,13 +285,19 @@ class DashboardController extends Controller
                     $artifact->update([
                         'status' => 'evaluated',
                         'assigned_to' => auth()->id(),
-                    ]);
+                    ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
                     \Log::info('Diamond artifact status updated to evaluated');
                 } else {
                     $artifact->update([
                         'status' => 'under_evaluation',
                         'assigned_to' => auth()->id(),
-                    ]);
+                    ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
                     \Log::info('Diamond artifact status updated to under_evaluation');
                 }
             } else {
@@ -293,7 +305,10 @@ class DashboardController extends Controller
                 $artifact->update([
                     'status' => 'evaluated',
                     'assigned_to' => auth()->id(),
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
                 \Log::info('General artifact status updated to evaluated');
             }
 
@@ -315,6 +330,9 @@ class DashboardController extends Controller
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             return back()->withErrors(['error' => 'An error occurred while saving the evaluation. Please try again.']);
         }
@@ -342,16 +360,25 @@ class DashboardController extends Controller
                 $artifact->update([
                     'status' => 'evaluated',
                     'assigned_to' => auth()->id(),
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
                 \Log::info('Artifact status updated to evaluated:', [
                     'artifact_id' => $artifact->id,
                     'artifact_code' => $artifact->artifact_code
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
             }
         } catch (\Exception $e) {
             \Log::error('Error updating artifact status:', [
                 'artifact_id' => $artifact->id,
                 'error' => $e->getMessage()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         }
     }
@@ -505,6 +532,9 @@ class DashboardController extends Controller
                 'label_done' => 'nullable|boolean',
                 'checked_by' => 'nullable|string|max:255',
                 'checked_date' => 'nullable|date',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Validation passed, validated data:', $validatedData);
@@ -513,6 +543,9 @@ class DashboardController extends Controller
             \Log::error('Validation failed:', [
                 'errors' => $e->errors(),
                 'request_data' => $request->all()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             throw $e;
         }
@@ -539,6 +572,9 @@ class DashboardController extends Controller
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine(),
                 'data' => $validatedData
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             throw $e;
         }
@@ -634,6 +670,9 @@ class DashboardController extends Controller
             \Log::error('Error creating jewellery evaluation:', [
                 'error' => $e->getMessage(),
                 'data' => $validatedData
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             throw $e;
         }
@@ -701,11 +740,17 @@ class DashboardController extends Controller
                 'customers' => $customers,
                 'meta' => $meta,
                 'currentPage' => $page,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error fetching customers from Qoyod', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             
             // Return empty list on error
@@ -718,6 +763,9 @@ class DashboardController extends Controller
                 ],
                 'currentPage' => 1,
                 'error' => 'Failed to load customers from Qoyod. Please check your API configuration.'
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         }
     }
@@ -758,6 +806,9 @@ class DashboardController extends Controller
                     'quotes_count' => count($customerQuotes),
                     'recent_quotes' => array_slice($customerQuotes, 0, 5)
                 ]
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Customers/Show', [
@@ -767,6 +818,9 @@ class DashboardController extends Controller
                     'quotes_count' => count($customerQuotes),
                     'recent_quotes' => array_slice($customerQuotes, 0, 5) // Last 5 quotes
                 ]
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
         } catch (\Exception $e) {
@@ -774,6 +828,9 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers')
@@ -788,42 +845,61 @@ class DashboardController extends Controller
                 'name' => 'required|string|max:255',
                 'organization' => 'nullable|string|max:255',
                 'email' => 'nullable|email|max:255',
+                'secondary_email' => 'nullable|email|max:255',
                 'phone_number' => 'nullable|string|max:255',
                 'secondary_phone_number' => 'nullable|string|max:255',
                 'website' => 'nullable|url|max:255',
-                'address' => 'nullable|string|max:500',
-                'city' => 'nullable|string|max:255',
-                'state' => 'nullable|string|max:255',
-                'postal_code' => 'nullable|string|max:20',
-                'country' => 'nullable|string|max:255',
-                'tax_number' => 'nullable|string|max:255',
+                'currency' => 'nullable|string|max:10',
+                'billing_address' => 'nullable|string|max:500',
+                'billing_city' => 'nullable|string|max:255',
+                'billing_state' => 'nullable|string|max:255',
+                'billing_postal_code' => 'nullable|string|max:20',
+                'billing_country' => 'nullable|string|max:255',
+                'shipping_address' => 'nullable|string|max:500',
+                'shipping_city' => 'nullable|string|max:255',
+                'shipping_state' => 'nullable|string|max:255',
+                'shipping_postal_code' => 'nullable|string|max:20',
+                'shipping_country' => 'nullable|string|max:255',
+                'tax_number' => 'nullable|string|max:15|min:15',
                 'commercial_registration_number' => 'nullable|string|max:255',
+                'tax_subject' => 'nullable|boolean',
+                'pos_customer' => 'nullable|boolean',
+                'government_entity_customer' => 'nullable|boolean',
                 'status' => 'nullable|string|in:Active,Inactive',
                 'credit_limit' => 'nullable|numeric|min:0',
                 'pos' => 'nullable|boolean',
                 'government_entity' => 'nullable|boolean',
                 'allow_credit' => 'nullable|boolean',
                 'notes' => 'nullable|string|max:1000',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Convert boolean fields
             $validatedData['pos'] = $request->boolean('pos');
             $validatedData['government_entity'] = $request->boolean('government_entity');
             $validatedData['allow_credit'] = $request->boolean('allow_credit');
+            $validatedData['tax_subject'] = $request->boolean('tax_subject');
+            $validatedData['pos_customer'] = $request->boolean('pos_customer');
+            $validatedData['government_entity_customer'] = $request->boolean('government_entity_customer');
 
             $qoyodService = new \App\Services\QoyodService();
             $result = $qoyodService->createCustomer($validatedData);
 
             if ($result) {
                 return redirect()->route('dashboard.customers')
-                    ->with('success', 'Customer created successfully in Qoyod!');
+                    ->with('success', 'تم إنشاء العميل بنجاح في قيود!');
             } else {
-                return back()->withErrors(['error' => 'Failed to create customer in Qoyod. Please try again.']);
+                return back()->withErrors(['error' => 'فشل في إنشاء العميل في قيود. يرجى المحاولة مرة أخرى.']);
             }
         } catch (\Exception $e) {
             \Log::error('Error creating customer', [
                 'error' => $e->getMessage(),
                 'data' => $request->all()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while creating the customer. Please try again.']);
@@ -837,28 +913,44 @@ class DashboardController extends Controller
                 'name' => 'required|string|max:255',
                 'organization' => 'nullable|string|max:255',
                 'email' => 'nullable|email|max:255',
+                'secondary_email' => 'nullable|email|max:255',
                 'phone_number' => 'nullable|string|max:255',
                 'secondary_phone_number' => 'nullable|string|max:255',
                 'website' => 'nullable|url|max:255',
-                'address' => 'nullable|string|max:500',
-                'city' => 'nullable|string|max:255',
-                'state' => 'nullable|string|max:255',
-                'postal_code' => 'nullable|string|max:20',
-                'country' => 'nullable|string|max:255',
-                'tax_number' => 'nullable|string|max:255',
+                'currency' => 'nullable|string|max:10',
+                'billing_address' => 'nullable|string|max:500',
+                'billing_city' => 'nullable|string|max:255',
+                'billing_state' => 'nullable|string|max:255',
+                'billing_postal_code' => 'nullable|string|max:20',
+                'billing_country' => 'nullable|string|max:255',
+                'shipping_address' => 'nullable|string|max:500',
+                'shipping_city' => 'nullable|string|max:255',
+                'shipping_state' => 'nullable|string|max:255',
+                'shipping_postal_code' => 'nullable|string|max:20',
+                'shipping_country' => 'nullable|string|max:255',
+                'tax_number' => 'nullable|string|max:15|min:15',
                 'commercial_registration_number' => 'nullable|string|max:255',
+                'tax_subject' => 'nullable|boolean',
+                'pos_customer' => 'nullable|boolean',
+                'government_entity_customer' => 'nullable|boolean',
                 'status' => 'nullable|string|in:Active,Inactive',
                 'credit_limit' => 'nullable|numeric|min:0',
                 'pos' => 'nullable|boolean',
                 'government_entity' => 'nullable|boolean',
                 'allow_credit' => 'nullable|boolean',
                 'notes' => 'nullable|string|max:1000',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Convert boolean fields
             $validatedData['pos'] = $request->boolean('pos');
             $validatedData['government_entity'] = $request->boolean('government_entity');
             $validatedData['allow_credit'] = $request->boolean('allow_credit');
+            $validatedData['tax_subject'] = $request->boolean('tax_subject');
+            $validatedData['pos_customer'] = $request->boolean('pos_customer');
+            $validatedData['government_entity_customer'] = $request->boolean('government_entity_customer');
 
             $qoyodService = new \App\Services\QoyodService();
             $result = $qoyodService->updateCustomer($customerId, $validatedData);
@@ -874,6 +966,9 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'data' => $request->all()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while updating the customer. Please try again.']);
@@ -896,6 +991,9 @@ class DashboardController extends Controller
             \Log::error('Error deleting customer', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while deleting the customer. Please try again.']);
@@ -914,12 +1012,18 @@ class DashboardController extends Controller
                 'weight_unit' => 'nullable|in:ct,gm',
                 'delivery_type' => 'nullable|string|max:100',
                 'notes' => 'nullable|string|max:1000',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Creating artifact for Qoyod customer', [
                 'client_id' => $validatedData['client_id'],
                 'test_request_id' => $validatedData['test_request_id'] ?? null,
                 'type' => $validatedData['type']
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Generate artifact code
@@ -953,6 +1057,9 @@ class DashboardController extends Controller
                 'title' => ['en' => '', 'ar' => ''],
                 'description' => ['en' => '', 'ar' => ''],
                 'category_id' => null,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Artifact created successfully for Qoyod customer', [
@@ -960,6 +1067,9 @@ class DashboardController extends Controller
                 'artifact_code' => $artifact->artifact_code,
                 'qoyod_customer_id' => $artifact->qoyod_customer_id,
                 'test_request_id' => $artifact->test_request_id
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Redirect back to test request if it was created from there, otherwise to artifacts page
@@ -975,6 +1085,9 @@ class DashboardController extends Controller
             \Log::error('Error creating artifact for Qoyod customer', [
                 'error' => $e->getMessage(),
                 'data' => $request->all()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while adding the artifact. Please try again.']);
@@ -998,12 +1111,18 @@ class DashboardController extends Controller
 
             return Inertia::render('Dashboard/Customers/AddArtifact', [
                 'customer' => $customer,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error showing add artifact form', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers')
@@ -1023,6 +1142,9 @@ class DashboardController extends Controller
                 'weight_unit' => 'required|string|in:ct,g,kg,mg',
                 'delivery_type' => 'required|string|max:255',
                 'notes' => 'nullable|string|max:1000',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Generate artifact code
@@ -1043,12 +1165,18 @@ class DashboardController extends Controller
                 'title' => ['en' => '', 'ar' => ''],
                 'description' => ['en' => '', 'ar' => ''],
                 'category_id' => null,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Artifact created successfully for customer', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifactCode,
                 'customer_id' => $customerId
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers.artifacts.index', ['customer' => $customerId])
@@ -1059,6 +1187,9 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return back()->withErrors(['error' => 'An error occurred while adding the artifact. Please try again.']);
@@ -1092,12 +1223,18 @@ class DashboardController extends Controller
             return Inertia::render('Dashboard/Customers/Artifacts', [
                 'customer' => $customer,
                 'artifacts' => $artifacts,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error fetching customer artifacts', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers')
@@ -1140,6 +1277,9 @@ class DashboardController extends Controller
                 'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
                 'artifacts_count' => $artifacts->count(),
                 'products_count' => count($products)
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Customers/CreateQuote', [
@@ -1147,12 +1287,18 @@ class DashboardController extends Controller
                 'artifacts' => $artifacts,
                 'products' => $products,
                 'locations' => $locations,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error showing create quote form', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers.artifacts.index', $customerId)
@@ -1186,12 +1332,18 @@ class DashboardController extends Controller
                 'line_items.*.tax_percent' => 'nullable|numeric|min:0|max:100',
                 'line_items.*.is_inclusive' => 'nullable|boolean',
                 'custom_fields' => 'nullable|array',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Creating quote in Qoyod', [
                 'customer_id' => $customerId,
                 'quotation_number' => $validatedData['quotation_number'],
                 'line_items_count' => count($validatedData['line_items'])
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $qoyodService = new \App\Services\QoyodService();
@@ -1225,7 +1377,10 @@ class DashboardController extends Controller
                     'quote_id' => $response['quote']['id'],
                     'quotation_number' => $validatedData['quotation_number'],
                     'total_amount' => $response['quote']['total_amount'] ?? 'N/A'
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->route('dashboard.customers.quotes', $customerId)
                     ->with('success', 'Quote created successfully! Quote ID: ' . $response['quote']['id']);
@@ -1233,7 +1388,10 @@ class DashboardController extends Controller
                 \Log::error('Failed to create quote', [
                     'customer_id' => $customerId,
                     'response' => $response
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->back()
                     ->withErrors(['error' => 'Failed to create quote: ' . ($response['message'] ?? 'Unknown error')])
@@ -1244,6 +1402,9 @@ class DashboardController extends Controller
             \Log::error('Validation error when creating quote', [
                 'customer_id' => $customerId,
                 'errors' => $e->errors()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()
@@ -1254,6 +1415,9 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()
@@ -1277,12 +1441,18 @@ class DashboardController extends Controller
                 'price' => 'nullable|numeric',
                 'status' => 'required|string|in:pending,under_evaluation,evaluated,certified,rejected',
                 'notes' => 'nullable|string|max:1000',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Updating artifact', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifact->artifact_code,
                 'data' => $validatedData
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Update artifact
@@ -1295,11 +1465,17 @@ class DashboardController extends Controller
                 'price' => $validatedData['price'] ?? null,
                 'status' => $validatedData['status'],
                 'notes' => $validatedData['notes'] ?? null,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Artifact updated successfully', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifact->artifact_code
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->with('success', 'Artifact updated successfully');
@@ -1309,6 +1485,9 @@ class DashboardController extends Controller
                 'artifact_id' => $artifact->id,
                 'error' => $e->getMessage(),
                 'data' => $request->all()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while updating the artifact. Please try again.']);
@@ -1324,6 +1503,9 @@ class DashboardController extends Controller
             \Log::info('Deleting artifact', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifact->artifact_code
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $artifact->delete();
@@ -1331,6 +1513,9 @@ class DashboardController extends Controller
             \Log::info('Artifact deleted successfully', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifact->artifact_code
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->with('success', 'Artifact deleted successfully');
@@ -1339,6 +1524,9 @@ class DashboardController extends Controller
             \Log::error('Error deleting artifact', [
                 'artifact_id' => $artifact->id,
                 'error' => $e->getMessage()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the artifact. Please try again.']);
@@ -1748,6 +1936,9 @@ class DashboardController extends Controller
                 'columns' => $columnNames,
                 'artifact_exists' => $artifact ? true : false,
                 'message' => 'All tests passed'
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
         } catch (\Exception $e) {
@@ -1757,6 +1948,9 @@ class DashboardController extends Controller
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return response()->json([
@@ -1816,18 +2010,27 @@ class DashboardController extends Controller
                 'status' => $quote['status'] ?? 'Unknown',
                 'line_items_count' => count($quote['line_items'] ?? []),
                 'products_count' => count($products)
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Quotes/ShowQuote', [
                 'quote' => $quote,
                 'customer' => $customer,
                 'products' => array_values($products), // Re-index array
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error showing quote', [
                 'quote_id' => $quoteId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers')
@@ -1866,17 +2069,26 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'customer_name' => $customer['name'] ?? $customer['display_name'] ?? 'Unknown',
                 'quotes_count' => count($customerQuotes)
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Customers/CustomerQuotes', [
                 'customer' => $customer,
                 'quotes' => array_values($customerQuotes), // Re-index array
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error showing customer quotes', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers.artifacts.index', $customerId)
@@ -1937,7 +2149,10 @@ class DashboardController extends Controller
             } catch (\Exception $viewError) {
                 \Log::warning('Fallback to simplified PDF template', [
                     'error' => $viewError->getMessage()
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
                 // Use simplified template as fallback
                 $html = view('quotes.pdf-simple', [
                     'quote' => $quote,
@@ -1953,11 +2168,17 @@ class DashboardController extends Controller
                 'defaultMediaType' => 'screen',
                 'defaultPaperSize' => 'a4',
                 'defaultPaperOrientation' => 'portrait',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             
             \Log::info('Dompdf configuration', [
                 'html_length' => strlen($html),
                 'quote_id' => $quote['id'] ?? 'unknown'
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             
             $dompdf->loadHtml($html, 'UTF-8');
@@ -1972,13 +2193,19 @@ class DashboardController extends Controller
                 'quote_id' => $quote['id'] ?? 'unknown',
                 'filename' => $filename,
                 'output_size' => strlen($output)
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
             
             if (empty($output)) {
                 \Log::error('Generated PDF output is empty', [
                     'quote_id' => $quote['id'] ?? 'unknown',
                     'html_length' => strlen($html)
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
                 
                 // Log the HTML content for debugging
                 \Log::debug('HTML content for debugging', ['html' => $html]);
@@ -1994,6 +2221,9 @@ class DashboardController extends Controller
             \Log::error('Error generating local PDF', [
                 'quote_id' => $quote['id'] ?? 'unknown',
                 'error' => $e->getMessage()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'Failed to generate PDF. Please try again later.']);
@@ -2179,6 +2409,9 @@ class DashboardController extends Controller
                 'total_amount' => $quote['total_amount'] ?? 'N/A',
                 'line_items_count' => count($quote['line_items']),
                 'products_count' => count($products)
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             // Generate base64 encoded logo for PDF
@@ -2196,6 +2429,9 @@ class DashboardController extends Controller
                 'customer' => $customer,
                 'products' => $products,
                 'logoDataUri' => $logoDataUri,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
         } catch (\Exception $e) {
@@ -2203,6 +2439,9 @@ class DashboardController extends Controller
                 'quote_id' => $quoteId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while preparing the quote for printing.']);
@@ -2243,6 +2482,9 @@ class DashboardController extends Controller
                 'customer_name' => $customer['name'] || $customer['display_name'] || 'Unknown',
                 'artifacts_count' => $artifacts->count(),
                 'products_count' => count($productsResponse['products'] ?? [])
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Customers/CreateInvoice', [
@@ -2250,12 +2492,18 @@ class DashboardController extends Controller
                 'artifacts' => $artifacts,
                 'products' => $productsResponse['products'] ?? [],
                 'locations' => $locations,
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         } catch (\Exception $e) {
             \Log::error('Error showing create invoice form', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->route('dashboard.customers.artifacts.index', $customerId)
@@ -2272,6 +2520,7 @@ class DashboardController extends Controller
             $validatedData = $request->validate([
                 'reference' => 'nullable|string|max:255',
                 'description' => 'nullable|string|max:500',
+                'notes' => 'nullable|string|max:1000',
                 'issue_date' => 'required|date',
                 'due_date' => 'required|date|after:issue_date',
                 'delivery_date' => 'required|date',
@@ -2279,6 +2528,7 @@ class DashboardController extends Controller
                 'contact_id' => 'required|integer',
                 'inventory_id' => 'required|integer',
                 'location_id' => 'required|integer',
+                'payment_method' => 'nullable|string|max:100',
                 'draft_if_out_of_stock' => 'boolean',
                 'line_items' => 'required|array|min:1',
                 'line_items.*.product_id' => 'required|integer',
@@ -2293,17 +2543,49 @@ class DashboardController extends Controller
                 'custom_fields' => 'nullable|array',
                 'custom_fields.*.name' => 'required_with:custom_fields|string|max:255',
                 'custom_fields.*.value' => 'required_with:custom_fields|string|max:500',
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             \Log::info('Creating invoice in Qoyod', [
                 'customer_id' => $customerId,
                 'invoice_data' => $validatedData
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $qoyodService = new \App\Services\QoyodService();
             
             // Remove reference from validated data - let Qoyod service generate it
             unset($validatedData['reference']);
+            
+            // Handle payment_method - convert Arabic text to numeric values for Qoyod
+            $paymentMethod = $validatedData['payment_method'] ?? null;
+            if ($paymentMethod) {
+                \Log::info('Payment method provided', ['payment_method' => $paymentMethod]);
+                
+                // Map Arabic payment methods to numeric values - ALL CONFIRMED WITH MANUAL TESTING
+                $paymentMethodMap = [
+                    'نقدي' => 10,  // ✅ CONFIRMED - Invoice 60
+                    'بطاقة بنك' => 48,  // ✅ CONFIRMED - Manual testing Invoice 80
+                    'بالآجل' => 30,  // ✅ CONFIRMED - Manual testing Invoice 77
+                    'دفعة لحساب البنك' => 42,  // ✅ CONFIRMED - Manual testing Invoice 79
+                    'غير محدد' => 1  // ✅ CONFIRMED - Manual testing Invoice 81
+                ];
+                
+                // Convert Arabic text to numeric value
+                $numericPaymentMethod = $paymentMethodMap[$paymentMethod] ?? 0; // Default to 0
+                
+                // Update the payment_method with numeric value
+                $validatedData['payment_method'] = $numericPaymentMethod;
+                
+                \Log::info('Payment method converted to numeric value', [
+                    'original' => $paymentMethod,
+                    'numeric' => $numericPaymentMethod
+                ]);
+            }
             
             $invoiceData = [
                 'invoice' => $validatedData
@@ -2316,7 +2598,10 @@ class DashboardController extends Controller
                     'customer_id' => $customerId,
                     'invoice_id' => $result['invoice']['id'],
                     'reference' => $result['invoice']['reference'] ?? null
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->route('dashboard.customers.invoices', $customerId)
                     ->with('success', 'Invoice created successfully!');
@@ -2324,7 +2609,10 @@ class DashboardController extends Controller
                 \Log::error('Failed to create invoice', [
                     'customer_id' => $customerId,
                     'response' => $result
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 $errorMessage = $result['message'] ?? 'Failed to create invoice';
                 return redirect()->back()
@@ -2336,6 +2624,9 @@ class DashboardController extends Controller
             \Log::error('Validation error while creating invoice', [
                 'customer_id' => $customerId,
                 'errors' => $e->errors()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()
@@ -2347,6 +2638,9 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()
@@ -2376,9 +2670,10 @@ class DashboardController extends Controller
 
             // Clear invoice cache first
             Cache::forget("qoyod_invoices_page_1_per_50");
+            Cache::forget("qoyod_invoices_page_1_per_1000");
             
             // Get all invoices from Qoyod (exactly same logic as quotes)
-            $invoicesResponse = $qoyodService->getInvoices();
+            $invoicesResponse = $qoyodService->getInvoices(1, 1000); // Get more invoices
             $allInvoices = $invoicesResponse['invoices'] ?? $invoicesResponse['data'] ?? [];
             
             // Filter invoices for this customer and add customer info
@@ -2401,12 +2696,18 @@ class DashboardController extends Controller
                 'customer_invoices_count' => count($customerInvoices),
                 'response_structure' => array_keys($invoicesResponse),
                 'sample_invoice' => isset($customerInvoices[0]) ? $customerInvoices[0] : null
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Customers/ShowCustomerInvoices', [
                 'customer' => $customer,
                 'invoices' => $customerInvoices,
                 'meta' => $invoicesResponse['meta'] ?? []
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
         } catch (\Exception $e) {
@@ -2414,6 +2715,9 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while fetching invoices.']);
@@ -2429,6 +2733,9 @@ class DashboardController extends Controller
             \Log::info('Showing invoice details', [
                 'customer_id' => $customerId,
                 'invoice_id' => $invoiceId
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $qoyodService = new \App\Services\QoyodService();
@@ -2450,7 +2757,10 @@ class DashboardController extends Controller
                     'customer_id' => $customerId,
                     'invoice_id' => $invoiceId,
                     'response' => $invoiceResponse
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->route('dashboard.customers.invoices', $customerId)
                     ->withErrors(['error' => $invoiceResponse['message'] ?? 'Invoice not found.']);
@@ -2460,11 +2770,17 @@ class DashboardController extends Controller
                 'customer_id' => $customerId,
                 'invoice_id' => $invoiceId,
                 'reference' => $invoiceResponse['invoice']['reference'] ?? null
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return Inertia::render('Dashboard/Customers/ShowInvoice', [
                 'customer' => $customer,
                 'invoice' => $invoiceResponse['invoice'],
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
         } catch (\Exception $e) {
@@ -2473,6 +2789,9 @@ class DashboardController extends Controller
                 'invoice_id' => $invoiceId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while fetching invoice details.']);
@@ -2488,6 +2807,9 @@ class DashboardController extends Controller
             \Log::info('Downloading invoice PDF', [
                 'customer_id' => $customerId,
                 'invoice_id' => $invoiceId
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $qoyodService = new \App\Services\QoyodService();
@@ -2498,7 +2820,10 @@ class DashboardController extends Controller
                     'customer_id' => $customerId,
                     'invoice_id' => $invoiceId,
                     'pdf_url' => $pdfResponse['pdf_file']
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 // Redirect to PDF URL
                 return redirect($pdfResponse['pdf_file']);
@@ -2507,7 +2832,10 @@ class DashboardController extends Controller
                     'customer_id' => $customerId,
                     'invoice_id' => $invoiceId,
                     'response' => $pdfResponse
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->back()->withErrors(['error' => 'Failed to generate PDF. Please try again.']);
             }
@@ -2518,6 +2846,9 @@ class DashboardController extends Controller
                 'invoice_id' => $invoiceId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while generating PDF.']);
@@ -2533,6 +2864,9 @@ class DashboardController extends Controller
             \Log::info('Deleting invoice', [
                 'customer_id' => $customerId,
                 'invoice_id' => $invoiceId
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $qoyodService = new \App\Services\QoyodService();
@@ -2542,7 +2876,10 @@ class DashboardController extends Controller
                 \Log::info('Invoice deleted successfully', [
                     'customer_id' => $customerId,
                     'invoice_id' => $invoiceId
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->route('dashboard.customers.invoices', $customerId)
                     ->with('success', 'Invoice deleted successfully!');
@@ -2551,7 +2888,10 @@ class DashboardController extends Controller
                     'customer_id' => $customerId,
                     'invoice_id' => $invoiceId,
                     'response' => $result
-                ]);
+                ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            ]);
 
                 return redirect()->back()->withErrors(['error' => $result['message'] ?? 'Failed to delete invoice.']);
             }
@@ -2562,6 +2902,9 @@ class DashboardController extends Controller
                 'invoice_id' => $invoiceId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while deleting the invoice.']);
@@ -2577,6 +2920,9 @@ class DashboardController extends Controller
             \Log::info('Editing invoice', [
                 'customer_id' => $customerId,
                 'invoice_id' => $invoiceId
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             $qoyodService = new \App\Services\QoyodService();
@@ -2610,6 +2956,9 @@ class DashboardController extends Controller
                     'customer_id' => $customerId,
                     'invoice_id' => $invoiceId
                 ]
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
         } catch (\Exception $e) {
@@ -2618,6 +2967,9 @@ class DashboardController extends Controller
                 'invoice_id' => $invoiceId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ], [
+                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while loading the invoice for editing.']);
