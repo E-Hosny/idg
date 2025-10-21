@@ -34,6 +34,7 @@ export default {
     'messages.Additional Information': 'Additional Information',
     'messages.Notes': 'Notes',
     'messages.Customer Details': 'Customer Details',
+    'Add Customer': 'Add Customer',
     // Artifact Types
     'Colored Gemstones': 'Colored Gemstones',
     'Other Colored Gemstones': 'Other Colored Gemstones',
@@ -110,6 +111,7 @@ export default {
     'messages.Additional Information': 'معلومات إضافية',
     'messages.Notes': 'ملاحظات',
     'messages.Customer Details': 'تفاصيل العميل',
+    'Add Customer': 'إضافة عميل',
     // Artifact Types
     'Colored Gemstones': 'أحجار كريمة ملونة',
     'Other Colored Gemstones': 'أحجار كريمة ملونة أخرى',
