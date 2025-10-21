@@ -370,107 +370,44 @@ class QoyodService
             'notes' => $customerData['notes'] ?? null,
         ];
 
-        // Send ALL plausible shapes for address fields to maximize compatibility
-        $hasBilling = !empty($customerData['billing_address']) || !empty($customerData['billing_city']) || !empty($customerData['billing_state']) || !empty($customerData['billing_postal_code']) || !empty($customerData['billing_country']);
-        $hasShipping = !empty($customerData['shipping_address']) || !empty($customerData['shipping_city']) || !empty($customerData['shipping_state']) || !empty($customerData['shipping_postal_code']) || !empty($customerData['shipping_country']);
-
-        if ($hasBilling) {
-            // 1) Nested object with generic keys
-            $formatted['billing_address'] = [
-                'address' => $customerData['billing_address'] ?? null,
-                'city' => $customerData['billing_city'] ?? null,
-                'state' => $customerData['billing_state'] ?? null,
-                'zip' => $customerData['billing_postal_code'] ?? null,
-                'country' => $customerData['billing_country'] ?? null,
-            ];
-            // 2) Nested object using billing_* keys
-            $formatted['billing_address_alt'] = [
+        // Use the correct format from Qoyod support: billing_address_attributes and shipping_address_attributes
+        if (!empty($customerData['billing_address']) || !empty($customerData['billing_city']) || !empty($customerData['billing_state']) || !empty($customerData['billing_postal_code']) || !empty($customerData['billing_country'])) {
+            $formatted['billing_address_attributes'] = [
                 'billing_address' => $customerData['billing_address'] ?? null,
                 'billing_city' => $customerData['billing_city'] ?? null,
                 'billing_state' => $customerData['billing_state'] ?? null,
                 'billing_zip' => $customerData['billing_postal_code'] ?? null,
                 'billing_country' => $customerData['billing_country'] ?? null,
             ];
-            // 3) Flat fields often used by some APIs
-            $formatted['address'] = $customerData['billing_address'] ?? null;
-            $formatted['city'] = $customerData['billing_city'] ?? null;
-            $formatted['state'] = $customerData['billing_state'] ?? null;
-            $formatted['postal_code'] = $customerData['billing_postal_code'] ?? null;
-            $formatted['country'] = $customerData['billing_country'] ?? null;
         }
 
-        if ($hasShipping) {
-            // 1) Nested object with generic keys
-            $formatted['shipping_address'] = [
-                'address' => $customerData['shipping_address'] ?? null,
-                'city' => $customerData['shipping_city'] ?? null,
-                'state' => $customerData['shipping_state'] ?? null,
-                'zip' => $customerData['shipping_postal_code'] ?? null,
-                'country' => $customerData['shipping_country'] ?? null,
+        if (!empty($customerData['shipping_address']) || !empty($customerData['shipping_city']) || !empty($customerData['shipping_state']) || !empty($customerData['shipping_postal_code']) || !empty($customerData['shipping_country'])) {
+            $formatted['shipping_address_attributes'] = [
+                'shipping_address' => $customerData['shipping_address'] ?? null,
+                'shipping_city' => $customerData['shipping_city'] ?? null,
+                'shipping_state' => $customerData['shipping_state'] ?? null,
+                'shipping_zip' => $customerData['shipping_postal_code'] ?? null,
+                'shipping_country' => $customerData['shipping_country'] ?? null,
             ];
-            // 2) Flat fields
-            $formatted['shipping_city'] = $customerData['shipping_city'] ?? null;
-            $formatted['shipping_state'] = $customerData['shipping_state'] ?? null;
-            $formatted['shipping_postal_code'] = $customerData['shipping_postal_code'] ?? null;
-            $formatted['shipping_country'] = $customerData['shipping_country'] ?? null;
         }
 
-        // Also include a condensed view inside customer_details for UI display compatibility
+        // Use the correct format from Qoyod support: customer_details as indexed array
+        // Only send numeric fields in customer_details, addresses go in address_attributes
         $customerDetails = [];
-        $customFields = [];
         
-        // Add billing address details
-        if (!empty($customerData['billing_address']) || !empty($customerData['billing_city'])) {
-            $billingAddress = [];
-            if (!empty($customerData['billing_address'])) $billingAddress[] = $customerData['billing_address'];
-            if (!empty($customerData['billing_city'])) $billingAddress[] = $customerData['billing_city'];
-            if (!empty($customerData['billing_state'])) $billingAddress[] = $customerData['billing_state'];
-            if (!empty($customerData['billing_postal_code'])) $billingAddress[] = $customerData['billing_postal_code'];
-            if (!empty($customerData['billing_country'])) $billingAddress[] = $customerData['billing_country'];
-            
-            if (!empty($billingAddress)) {
-                $customerDetails[] = [
-                    'label' => 'عنوان الفوترة',
-                    'value' => implode(', ', $billingAddress)
-                ];
-                // Also send as custom field if Qoyod has a matching field name
-                $customFields['عنوان الفوترة'] = implode(', ', $billingAddress);
-            }
+        // Add commercial registration number (numeric only, max 10 digits)
+        if (!empty($customerData['commercial_registration_number'])) {
+            $customerDetails[] = [
+                'name' => 'cr_number',
+                'value' => $customerData['commercial_registration_number']
+            ];
         }
         
-        // Add shipping address details
-        if (!empty($customerData['shipping_address']) || !empty($customerData['shipping_city'])) {
-            $shippingAddress = [];
-            if (!empty($customerData['shipping_address'])) $shippingAddress[] = $customerData['shipping_address'];
-            if (!empty($customerData['shipping_city'])) $shippingAddress[] = $customerData['shipping_city'];
-            if (!empty($customerData['shipping_state'])) $shippingAddress[] = $customerData['shipping_state'];
-            if (!empty($customerData['shipping_postal_code'])) $shippingAddress[] = $customerData['shipping_postal_code'];
-            if (!empty($customerData['shipping_country'])) $shippingAddress[] = $customerData['shipping_country'];
-            
-            if (!empty($shippingAddress)) {
-                $customerDetails[] = [
-                    'label' => 'عنوان الشحن',
-                    'value' => implode(', ', $shippingAddress)
-                ];
-                // Also send as custom field if Qoyod has a matching field name
-                $customFields['عنوان الشحن'] = implode(', ', $shippingAddress);
-            }
-        }
+        // Note: tax_number should be sent as a direct field, not in customer_details
+        // because customer_details only accepts up to 10 digits, but tax_number requires 15 digits
         
         if (!empty($customerDetails)) {
             $formatted['customer_details'] = $customerDetails;
-        }
-
-        // Map tax and CR into custom fields as per Qoyod support guidance
-        if (!empty($customerData['commercial_registration_number'])) {
-            $customFields['السجل التجاري'] = $customerData['commercial_registration_number'];
-        }
-        if (!empty($customerData['tax_number'])) {
-            $customFields['الرقم الضريبي'] = $customerData['tax_number'];
-        }
-
-        if (!empty($customFields)) {
-            $formatted['custom_fields'] = $customFields;
         }
 
         return $formatted;
