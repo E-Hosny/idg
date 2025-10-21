@@ -747,12 +747,8 @@ export default {
     },
     
     formatCurrency(amount) {
-      return new Intl.NumberFormat(this.$page.props.locale === 'ar' ? 'ar-SA' : 'en-US', {
-        style: 'currency',
-        currency: 'SAR',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount);
+      if (amount === null || amount === undefined) return '0.00 ريال';
+      return parseFloat(amount).toFixed(2) + ' ريال';
     },
     
     // Product filtering functions
