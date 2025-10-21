@@ -1808,47 +1808,53 @@ export default {
         // Submit form to Laravel backend
         this.$inertia.post('/dashboard/customers', this.newCustomer, {
           onSuccess: () => {
-        // Reset form
-        this.newCustomer = {
-          name: '',
-          organization: '',
-          email: '',
-          secondary_email: '',
-          phone_number: '',
-          secondary_phone_number: '',
-          website: '',
-          currency: 'ر.س',
-          billing_address: '',
-          billing_city: '',
-          billing_state: '',
-          billing_postal_code: '',
-          billing_country: '',
-          shipping_address: '',
-          shipping_city: '',
-          shipping_state: '',
-          shipping_postal_code: '',
-          shipping_country: '',
-          tax_number: '',
-          commercial_registration_number: '',
-          tax_subject: false,
-          pos_customer: false,
-          government_entity_customer: false,
-          status: 'Active',
-          credit_limit: '',
-          pos: false,
-          government_entity: false,
-          allow_credit: false,
-          notes: ''
-        }
+            // Reset form
+            this.newCustomer = {
+              name: '',
+              organization: '',
+              email: '',
+              secondary_email: '',
+              phone_number: '',
+              secondary_phone_number: '',
+              website: '',
+              currency: 'ر.س',
+              billing_address: '',
+              billing_city: '',
+              billing_state: '',
+              billing_postal_code: '',
+              billing_country: '',
+              shipping_address: '',
+              shipping_city: '',
+              shipping_state: '',
+              shipping_postal_code: '',
+              shipping_country: '',
+              tax_number: '',
+              commercial_registration_number: '',
+              tax_subject: false,
+              pos_customer: false,
+              government_entity_customer: false,
+              status: 'Active',
+              credit_limit: '',
+              pos: false,
+              government_entity: false,
+              allow_credit: false,
+              notes: ''
+            }
+            // Close modal
             this.showAddCustomerModal = false
+            this.addingCustomer = false
           },
           onError: (errors) => {
             console.error('Error adding customer:', errors)
+            this.addingCustomer = false
+          },
+          onFinish: () => {
+            // Ensure the flag is reset even if onSuccess/onError don't fire
+            this.addingCustomer = false
           }
         })
       } catch (error) {
         console.error('Error adding customer:', error)
-      } finally {
         this.addingCustomer = false
       }
     },
