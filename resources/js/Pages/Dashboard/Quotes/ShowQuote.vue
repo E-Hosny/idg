@@ -27,15 +27,13 @@
             </span>
             <!-- Action Buttons -->
             <button 
-              @click="printQuote"
-              class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 mr-3"
+              @click="viewQoyodQuote"
+              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mr-3"
+              :disabled="isLoadingQoyod"
             >
-              <i class="fas fa-print mr-2"></i>
-              {{ __('Print Quote') }}
-            </button>
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mr-3">
-              <i class="fas fa-edit mr-2"></i>
-              {{ __('Edit Quote') }}
+              <i class="fas fa-eye mr-2" v-if="!isLoadingQoyod"></i>
+              <i class="fas fa-spinner fa-spin mr-2" v-if="isLoadingQoyod"></i>
+              {{ isLoadingQoyod ? __('Loading...') : __('View') }}
             </button>
             <button 
               @click="backToQuotes"
@@ -276,6 +274,7 @@ export default {
 
   data() {
     return {
+      isLoadingQoyod: false
     }
   },
 
@@ -293,9 +292,48 @@ export default {
       }
     },
 
-    printQuote() {
-      const url = `/dashboard/quotes/${this.quote.id}/print`;
-      window.open(url, '_blank');
+    async viewQoyodQuote() {
+      // Check if quote has an ID (either local or qoyod_id)
+      if (!this.quote.id) {
+        alert(this.__('Quote not found in Qoyod'));
+        return;
+      }
+
+      this.isLoadingQoyod = true;
+      
+      try {
+        // Call our backend endpoint to get the PDF from Qoyod
+        const response = await fetch(`/dashboard/quotes/${this.quote.id}/qoyod-pdf`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/pdf',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Get the PDF blob
+        const blob = await response.blob();
+        
+        // Create a URL for the blob and open it in a new tab
+        const url = window.URL.createObjectURL(blob);
+        const newTab = window.open(url, '_blank');
+        
+        // Clean up the URL after a short delay
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+
+      } catch (error) {
+        console.error('Error fetching Qoyod PDF:', error);
+        alert(this.__('Failed to load PDF from Qoyod. Please try again.'));
+      } finally {
+        this.isLoadingQoyod = false;
+      }
     },
 
     formatDate(date) {
@@ -370,12 +408,11 @@ export default {
           'Quote Details': 'Quote Details',
           'Quote ID': 'Quote ID',
           'Draft': 'Draft',
-          'Edit Quote': 'Edit Quote',
           'Back to Quotes': 'Back to Quotes',
-          'Download PDF': 'Download PDF',
-          'Downloading...': 'Downloading...',
-          'Download failed. Please try again.': 'Download failed. Please try again.',
-          'Print Quote': 'Print Quote',
+          'View': 'View',
+          'Loading...': 'Loading...',
+          'Quote not found in Qoyod': 'Quote not found in Qoyod',
+          'Failed to load PDF from Qoyod. Please try again.': 'Failed to load PDF from Qoyod. Please try again.',
           'Quote Information': 'Quote Information',
           'Quote Number': 'Quote Number',
           'Issue Date': 'Issue Date',
@@ -404,12 +441,11 @@ export default {
           'Quote Details': 'تفاصيل عرض السعر',
           'Quote ID': 'رقم عرض السعر',
           'Draft': 'مسودة',
-          'Edit Quote': 'تعديل عرض السعر',
           'Back to Quotes': 'العودة لعروض السعر',
-          'Download PDF': 'تحميل PDF',
-          'Downloading...': 'جاري التحميل...',
-          'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.',
-          'Print Quote': 'طباعة عرض السعر',
+          'View': 'عرض',
+          'Loading...': 'جاري التحميل...',
+          'Quote not found in Qoyod': 'عرض السعر غير موجود في قيود',
+          'Failed to load PDF from Qoyod. Please try again.': 'فشل في تحميل PDF من قيود. يرجى المحاولة مرة أخرى.',
           'Quote Information': 'معلومات عرض السعر',
           'Quote Number': 'رقم عرض السعر',
           'Issue Date': 'تاريخ الإصدار',

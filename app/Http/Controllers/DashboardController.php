@@ -1973,7 +1973,26 @@ class DashboardController extends Controller
 
             // Get quote from Qoyod
             $qoyodService = new \App\Services\QoyodService();
+            
+            // Try to get quote by local ID first, then by qoyod_id if needed
             $quote = $qoyodService->getQuote($quoteId);
+            
+            // If not found by local ID, try to find it in all quotes
+            if (!$quote) {
+                \Log::info('Quote not found by local ID, searching in all quotes', ['quote_id' => $quoteId]);
+                $allQuotes = $qoyodService->getQuotes();
+                
+                if (isset($allQuotes['quotes'])) {
+                    // Look for quote with matching reference or ID
+                    foreach ($allQuotes['quotes'] as $qoyodQuote) {
+                        if ($qoyodQuote['id'] == $quoteId || 
+                            (isset($qoyodQuote['reference']) && $qoyodQuote['reference'] == $quoteId)) {
+                            $quote = $qoyodQuote;
+                            break;
+                        }
+                    }
+                }
+            }
 
             if (!$quote) {
                 \Log::warning('Quote not found in Qoyod', ['quote_id' => $quoteId]);
@@ -2367,7 +2386,26 @@ class DashboardController extends Controller
 
             // Get quote from Qoyod first to check if it exists
             $qoyodService = new \App\Services\QoyodService();
+            
+            // Try to get quote by local ID first, then by qoyod_id if needed
             $quote = $qoyodService->getQuote($quoteId);
+            
+            // If not found by local ID, try to find it in all quotes
+            if (!$quote) {
+                \Log::info('Quote not found by local ID, searching in all quotes', ['quote_id' => $quoteId]);
+                $allQuotes = $qoyodService->getQuotes();
+                
+                if (isset($allQuotes['quotes'])) {
+                    // Look for quote with matching reference or ID
+                    foreach ($allQuotes['quotes'] as $qoyodQuote) {
+                        if ($qoyodQuote['id'] == $quoteId || 
+                            (isset($qoyodQuote['reference']) && $qoyodQuote['reference'] == $quoteId)) {
+                            $quote = $qoyodQuote;
+                            break;
+                        }
+                    }
+                }
+            }
 
             if (!$quote) {
                 \Log::warning('Quote not found for printing', ['quote_id' => $quoteId]);
@@ -2445,6 +2483,91 @@ class DashboardController extends Controller
             ]);
 
             return redirect()->back()->withErrors(['error' => 'An error occurred while preparing the quote for printing.']);
+        }
+    }
+
+    /**
+     * Get Qoyod quote PDF
+     */
+    public function getQoyodQuotePdf($quoteId)
+    {
+        try {
+            \Log::info('Getting Qoyod quote PDF', ['quote_id' => $quoteId]);
+
+            // Get quote from Qoyod first to check if it exists and get qoyod_id
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Try to get quote by local ID first, then by qoyod_id if needed
+            $quote = $qoyodService->getQuote($quoteId);
+            \Log::info('First attempt to get quote for PDF', ['quote_id' => $quoteId, 'found' => $quote ? 'yes' : 'no']);
+            
+            // If not found by local ID, try to find it in all quotes
+            if (!$quote) {
+                \Log::info('Quote not found by local ID, searching in all quotes', ['quote_id' => $quoteId]);
+                $allQuotes = $qoyodService->getQuotes();
+                
+                if (isset($allQuotes['quotes'])) {
+                    \Log::info('Searching through quotes for PDF', ['total_quotes' => count($allQuotes['quotes'])]);
+                    // Look for quote with matching reference or ID
+                    foreach ($allQuotes['quotes'] as $qoyodQuote) {
+                        \Log::info('Checking quote for PDF', [
+                            'qoyod_id' => $qoyodQuote['id'] ?? 'N/A',
+                            'reference' => $qoyodQuote['reference'] ?? 'N/A',
+                            'searching_for' => $quoteId
+                        ]);
+                        if ($qoyodQuote['id'] == $quoteId || 
+                            (isset($qoyodQuote['reference']) && $qoyodQuote['reference'] == $quoteId)) {
+                            $quote = $qoyodQuote;
+                            \Log::info('Found matching quote for PDF', ['quote' => $quote]);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!$quote) {
+                \Log::warning('Quote not found for PDF download', ['quote_id' => $quoteId]);
+                return response()->json(['error' => 'Quote not found.'], 404);
+            }
+
+            // Check if quote has qoyod_id
+            if (!isset($quote['id'])) {
+                \Log::warning('Quote does not have Qoyod ID', ['quote_id' => $quoteId]);
+                return response()->json(['error' => 'Quote not found in Qoyod.'], 404);
+            }
+
+            $qoyodQuoteId = $quote['id'];
+            \Log::info('Using Qoyod ID for PDF', ['qoyod_quote_id' => $qoyodQuoteId]);
+
+            // Get PDF from Qoyod
+            $pdfData = $qoyodService->getQuotePdf($qoyodQuoteId);
+
+            if (!$pdfData) {
+                \Log::error('Failed to get PDF from Qoyod', ['qoyod_quote_id' => $qoyodQuoteId]);
+                return response()->json(['error' => 'Failed to get PDF from Qoyod.'], 500);
+            }
+
+            \Log::info('PDF fetched successfully from Qoyod', [
+                'qoyod_quote_id' => $qoyodQuoteId,
+                'pdf_size' => strlen($pdfData)
+            ]);
+
+            // Return PDF response
+            return response($pdfData)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="quote-' . $qoyodQuoteId . '.pdf"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+
+        } catch (\Exception $e) {
+            \Log::error('Error getting Qoyod quote PDF', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(['error' => 'An error occurred while getting the PDF from Qoyod.'], 500);
         }
     }
 

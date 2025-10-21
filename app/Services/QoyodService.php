@@ -1401,4 +1401,77 @@ class QoyodService
             ];
         }
     }
+
+    /**
+     * Get quote PDF from Qoyod
+     */
+    public function getQuotePdf($quoteId)
+    {
+        try {
+            Log::info('Fetching quote PDF from Qoyod', [
+                'quote_id' => $quoteId
+            ]);
+
+            $response = Http::timeout($this->timeout)
+                ->withHeaders([
+                    'API-KEY' => $this->apiKey,
+                    'Accept' => 'application/json',
+                ])
+                ->get("{$this->baseUrl}/quotes/{$quoteId}/pdf");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                Log::info('Quote PDF response from Qoyod', [
+                    'quote_id' => $quoteId,
+                    'response_data' => $data
+                ]);
+                
+                // Check if response contains PDF URL
+                if (isset($data['pdf_file'])) {
+                    $pdfUrl = $data['pdf_file'];
+                    Log::info('PDF URL found, fetching PDF content', ['pdf_url' => $pdfUrl]);
+                    
+                    // Fetch PDF content from the URL
+                    $pdfResponse = Http::timeout($this->timeout)->get($pdfUrl);
+                    
+                    if ($pdfResponse->successful()) {
+                        Log::info('PDF content fetched successfully', [
+                            'quote_id' => $quoteId,
+                            'content_length' => strlen($pdfResponse->body())
+                        ]);
+                        return $pdfResponse->body();
+                    } else {
+                        Log::error('Failed to fetch PDF content from URL', [
+                            'quote_id' => $quoteId,
+                            'pdf_url' => $pdfUrl,
+                            'status' => $pdfResponse->status()
+                        ]);
+                        return null;
+                    }
+                } else {
+                    // If no PDF URL, return the response body directly
+                    Log::info('No PDF URL found, returning response body directly', [
+                        'quote_id' => $quoteId,
+                        'content_length' => strlen($response->body())
+                    ]);
+                    return $response->body();
+                }
+            }
+
+            Log::error('Failed to fetch quote PDF from Qoyod', [
+                'quote_id' => $quoteId,
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error('Exception while fetching quote PDF from Qoyod', [
+                'quote_id' => $quoteId,
+                'error' => $e->getMessage()
+            ]);
+
+            return null;
+        }
+    }
 }

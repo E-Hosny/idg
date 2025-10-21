@@ -156,6 +156,7 @@ Route::middleware(['auth'])->group(function () {
     // Quote viewing routes
     Route::get('/dashboard/quotes/{quote}', [DashboardController::class, 'showQuote'])->name('dashboard.quotes.show');
     Route::get('/dashboard/quotes/{quote}/print', [DashboardController::class, 'printQuote'])->name('dashboard.quotes.print');
+    Route::get('/dashboard/quotes/{quote}/qoyod-pdf', [DashboardController::class, 'getQoyodQuotePdf'])->name('dashboard.quotes.qoyod-pdf');
     Route::put('/dashboard/artifacts/{artifact}', [DashboardController::class, 'updateArtifact'])->name('dashboard.artifacts.update');
     Route::delete('/dashboard/artifacts/{artifact}', [DashboardController::class, 'deleteArtifact'])->name('dashboard.artifacts.delete');
     Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
