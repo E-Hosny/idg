@@ -195,8 +195,18 @@ class QoyodService
     public function updateCustomer($customerId, $customerData)
     {
         try {
+            Log::info('Updating customer in Qoyod', [
+                'customer_id' => $customerId,
+                'data' => $customerData
+            ]);
+
             // Format address data for Qoyod
             $formattedData = $this->formatCustomerDataForQoyod($customerData);
+            
+            Log::info('Formatted customer data for update', [
+                'customer_id' => $customerId,
+                'formatted_data' => $formattedData
+            ]);
             
             $response = Http::timeout($this->timeout)
                 ->withHeaders([
@@ -208,10 +218,17 @@ class QoyodService
                     'contact' => $formattedData
                 ]);
 
+            Log::info('Qoyod update response', [
+                'customer_id' => $customerId,
+                'status' => $response->status(),
+                'response_body' => $response->body()
+            ]);
+
             if ($response->successful()) {
                 $data = $response->json();
                 Log::info('Customer updated successfully in Qoyod', [
-                    'customer_id' => $customerId
+                    'customer_id' => $customerId,
+                    'response_data' => $data
                 ]);
 
                 // Clear cache

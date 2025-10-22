@@ -682,10 +682,21 @@
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Email') }}
+                            {{ $t('messages.Primary Email') }}
                           </label>
                           <input
                             v-model="editCustomerData.email"
+                            type="email"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Secondary Email') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.secondary_email"
                             type="email"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
@@ -723,66 +734,143 @@
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Currency') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.currency"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <!-- Address Information -->
+                    <!-- Billing & Shipping Addresses -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ __('Address Information') }}</h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
-                          <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Address') }}
-                          </label>
-                          <textarea
-                            v-model="editCustomerData.address"
-                            rows="3"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          ></textarea>
+                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Billing & Shipping Addresses') }}</h4>
+                      
+                      <!-- Billing Address -->
+                      <div class="mb-6">
+                        <h5 class="text-sm font-medium text-gray-700 mb-3">{{ $t('messages.Billing Address') }}</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.Address') }}
+                            </label>
+                            <textarea
+                              v-model="editCustomerData.billing_address"
+                              rows="3"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            ></textarea>
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.City') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.billing_city"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.State') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.billing_state"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.Postal Code') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.billing_postal_code"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.Country') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.billing_country"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
                         </div>
-                        
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.City') }}
-                          </label>
-                          <input
-                            v-model="editCustomerData.city"
-                            type="text"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.State') }}
-                          </label>
-                          <input
-                            v-model="editCustomerData.state"
-                            type="text"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Postal Code') }}
-                          </label>
-                          <input
-                            v-model="editCustomerData.postal_code"
-                            type="text"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Country') }}
-                          </label>
-                          <input
-                            v-model="editCustomerData.country"
-                            type="text"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          />
+                      </div>
+
+                      <!-- Shipping Address -->
+                      <div>
+                        <h5 class="text-sm font-medium text-gray-700 mb-3">{{ $t('messages.Shipping Address') }}</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.Address') }}
+                            </label>
+                            <textarea
+                              v-model="editCustomerData.shipping_address"
+                              rows="3"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            ></textarea>
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.City') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.shipping_city"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.State') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.shipping_state"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.Postal Code') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.shipping_postal_code"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                              {{ $t('messages.Country') }}
+                            </label>
+                            <input
+                              v-model="editCustomerData.shipping_country"
+                              type="text"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1871,16 +1959,30 @@ export default {
         name: customer.name || customer.display_name || '',
         organization: customer.organization || '',
         email: customer.email || customer.email_address || '',
+        secondary_email: customer.secondary_email || '',
         phone_number: customer.phone_number || customer.phone || '',
         secondary_phone_number: customer.secondary_phone_number || '',
         website: customer.website || '',
-        address: customer.address || '',
-        city: customer.city || '',
-        state: customer.state || '',
-        postal_code: customer.postal_code || '',
-        country: customer.country || '',
+        currency: customer.currency || 'ر.س',
+        // Billing address - handle both string and object formats
+        billing_address: this.extractAddressField(customer.billing_address, 'billing_address') || '',
+        billing_city: this.extractAddressField(customer.billing_address, 'billing_city') || customer.billing_city || '',
+        billing_state: this.extractAddressField(customer.billing_address, 'billing_state') || customer.billing_state || '',
+        billing_postal_code: this.extractAddressField(customer.billing_address, 'billing_zip') || customer.billing_postal_code || '',
+        billing_country: this.extractAddressField(customer.billing_address, 'billing_country') || customer.billing_country || '',
+        // Shipping address - handle both string and object formats
+        shipping_address: this.extractAddressField(customer.shipping_address, 'shipping_address') || '',
+        shipping_city: this.extractAddressField(customer.shipping_address, 'shipping_city') || customer.shipping_city || '',
+        shipping_state: this.extractAddressField(customer.shipping_address, 'shipping_state') || customer.shipping_state || '',
+        shipping_postal_code: this.extractAddressField(customer.shipping_address, 'shipping_zip') || customer.shipping_postal_code || '',
+        shipping_country: this.extractAddressField(customer.shipping_address, 'shipping_country') || customer.shipping_country || '',
+        // Tax and legal
         tax_number: customer.tax_number || '',
         commercial_registration_number: customer.commercial_registration_number || '',
+        tax_subject: customer.tax_subject || false,
+        pos_customer: customer.pos_customer || false,
+        government_entity_customer: customer.government_entity_customer || false,
+        // Business settings
         status: customer.status || 'Active',
         credit_limit: customer.credit_limit || '',
         pos: customer.pos || false,
@@ -1977,6 +2079,43 @@ export default {
           state: ['state', 'billing_state', 'shipping_state', 'province'],
           postal_code: ['postal_code', 'billing_postal_code', 'shipping_postal_code', 'zip', 'zip_code'],
           country: ['country', 'billing_country', 'shipping_country']
+        };
+        
+        const possibleFields = fieldMappings[field] || [field];
+        
+        for (const possibleField of possibleFields) {
+          if (addressData[possibleField] && addressData[possibleField].trim() !== '') {
+            return addressData[possibleField];
+          }
+        }
+      }
+      
+      return null;
+    },
+
+    // Extract address field for edit form - handles both string and object
+    extractAddressField(addressData, field) {
+      if (!addressData) return null;
+      
+      // If it's a string, return it directly for address field
+      if (typeof addressData === 'string') {
+        return field.includes('address') ? addressData : null;
+      }
+      
+      // If it's an object, extract the specific field
+      if (typeof addressData === 'object') {
+        // Handle different possible field names
+        const fieldMappings = {
+          billing_address: ['billing_address', 'address'],
+          billing_city: ['billing_city', 'city'],
+          billing_state: ['billing_state', 'state', 'province'],
+          billing_zip: ['billing_zip', 'billing_postal_code', 'zip', 'postal_code'],
+          billing_country: ['billing_country', 'country'],
+          shipping_address: ['shipping_address', 'address'],
+          shipping_city: ['shipping_city', 'city'],
+          shipping_state: ['shipping_state', 'state', 'province'],
+          shipping_zip: ['shipping_zip', 'shipping_postal_code', 'zip', 'postal_code'],
+          shipping_country: ['shipping_country', 'country']
         };
         
         const possibleFields = fieldMappings[field] || [field];
