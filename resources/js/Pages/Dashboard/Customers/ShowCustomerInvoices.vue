@@ -149,7 +149,7 @@
               <tr v-for="invoice in customerInvoices" :key="invoice.id" class="hover:bg-green-50 transition-colors duration-200 border-b border-green-100">
                 <!-- Invoice Reference -->
                 <td class="px-6 py-4 text-center text-sm text-gray-900 font-medium">
-                  {{ invoice.reference || `INV${invoice.id}` }}
+                  {{ invoice.reference || '-' }}
                 </td>
 
                 <!-- Client Name -->
