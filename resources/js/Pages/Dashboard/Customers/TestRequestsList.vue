@@ -141,6 +141,14 @@
                     <i class="fas fa-file-pdf mr-1"></i>
                     PDF
                   </button>
+                  <button
+                    @click="deleteRequest(request.id)"
+                    class="inline-flex items-center px-3 py-1.5 bg-red-700 text-white text-xs font-semibold rounded hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    title="Delete | حذف"
+                  >
+                    <i class="fas fa-trash mr-1"></i>
+                    Delete | حذف
+                  </button>
                   <a
                     v-if="request.signed_document_path"
                     :href="`/storage/${request.signed_document_path}`"
@@ -183,6 +191,19 @@ export default {
     },
     downloadPdf(requestId) {
       window.open(`/dashboard/test-requests/${requestId}/download-pdf`, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes')
+    },
+    deleteRequest(requestId) {
+      if (confirm('Are you sure you want to delete this test request? | هل أنت متأكد من حذف طلب الاختبار هذا؟')) {
+        this.$inertia.delete(`/dashboard/test-requests/${requestId}`, {
+          onSuccess: () => {
+            console.log('Test request deleted successfully')
+          },
+          onError: (errors) => {
+            console.error('Error deleting test request:', errors)
+            alert('Failed to delete test request. | فشل حذف طلب الاختبار.')
+          }
+        })
+      }
     },
     goBack() {
       this.$inertia.visit(`/dashboard/customers/${this.customer.id}/artifacts`)

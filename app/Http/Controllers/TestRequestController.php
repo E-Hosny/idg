@@ -426,4 +426,32 @@ class TestRequestController extends Controller
         }
     }
 
+    /**
+     * Delete a test request
+     */
+    public function destroy(TestRequest $testRequest)
+    {
+        try {
+            \Log::info('Deleting test request', ['test_request_id' => $testRequest->id]);
+            
+            // Delete associated artifacts
+            $testRequest->artifacts()->delete();
+            
+            // Delete test request
+            $testRequest->delete();
+            
+            \Log::info('Test request deleted successfully', ['test_request_id' => $testRequest->id]);
+            
+            return redirect()->back()->with('success', 'Test request deleted successfully. | تم حذف طلب الاختبار بنجاح.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting test request', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()->withErrors(['error' => 'Failed to delete test request. | فشل حذف طلب الاختبار.']);
+        }
+    }
+
 }

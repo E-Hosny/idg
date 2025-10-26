@@ -58,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'show'])->name('dashboard.test-requests.show');
         Route::post('/dashboard/test-requests/{testRequest}/artifacts', [TestRequestController::class, 'storeArtifact'])->name('dashboard.test-requests.store-artifact');
         Route::put('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'update'])->name('dashboard.test-requests.update');
+        Route::delete('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'destroy'])->name('dashboard.test-requests.destroy');
         Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');

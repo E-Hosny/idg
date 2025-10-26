@@ -239,25 +239,16 @@
                 class="inline-flex items-center px-6 py-3 bg-green-700 text-white text-lg font-semibold hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200 shadow-md hover:shadow-lg"
               >
                 <i class="fas fa-save mr-2 text-xl"></i>
-                <span>Save</span>
+                <span>Save | حفظ</span>
               </button>
               <button 
                 @click="cancelEditingTestRequest" 
                 class="inline-flex items-center px-6 py-3 bg-gray-700 text-white text-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200 shadow-md hover:shadow-lg"
               >
                 <i class="fas fa-times mr-2 text-xl"></i>
-                <span>Cancel</span>
+                <span>Cancel | إلغاء</span>
               </button>
             </div>
-            <button 
-              @click="redirectToTestRequestsList" 
-              class="inline-flex items-center px-8 py-3 bg-indigo-700 text-white text-lg font-semibold hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200 shadow-md hover:shadow-lg"
-            >
-              <i class="fas fa-save mr-3 text-xl"></i>
-              <span>Save</span>
-              <span class="mx-3">|</span>
-              <span>حفظ</span>
-            </button>
           </div>
         </div>
 
