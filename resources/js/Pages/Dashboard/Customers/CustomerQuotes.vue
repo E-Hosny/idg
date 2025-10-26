@@ -154,13 +154,24 @@
                   {{ formatCurrency(quote.total_amount) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex items-center justify-end">
+                  <div class="flex items-center justify-end space-x-2">
                     <button
-                      @click="viewQuote(quote.id)"
-                      class="p-1 rounded-md text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors duration-200"
-                      :title="__('View Quote')"
+                      @click="viewQuotePdf(quote.id)"
+                      class="p-2 rounded-md text-green-600 hover:text-green-900 hover:bg-green-50 transition-colors duration-200"
+                      :title="__('View PDF')"
+                      :disabled="isLoadingPdf(quote.id, 'view')"
                     >
-                      <i class="fas fa-eye"></i>
+                      <i v-if="!isLoadingPdf(quote.id, 'view')" class="fas fa-eye"></i>
+                      <i v-else class="fas fa-spinner fa-spin"></i>
+                    </button>
+                    <button
+                      @click="downloadQuotePdf(quote.id)"
+                      class="p-2 rounded-md text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors duration-200"
+                      :title="__('Download PDF')"
+                      :disabled="isLoadingPdf(quote.id, 'download')"
+                    >
+                      <i v-if="!isLoadingPdf(quote.id, 'download')" class="fas fa-download"></i>
+                      <i v-else class="fas fa-spinner fa-spin"></i>
                     </button>
                   </div>
                 </td>
@@ -192,7 +203,91 @@ export default {
     }
   },
 
+  data() {
+    return {
+      loadingQuotes: {} // Track loading state for each quote
+    }
+  },
+
   methods: {
+    isLoadingPdf(quoteId, action) {
+      return this.loadingQuotes[`${quoteId}-${action}`] || false;
+    },
+
+    setLoadingPdf(quoteId, action, loading) {
+      this.loadingQuotes[`${quoteId}-${action}`] = loading;
+    },
+
+    async viewQuotePdf(quoteId) {
+      this.setLoadingPdf(quoteId, 'view', true);
+      
+      try {
+        const response = await fetch(`/dashboard/quotes/${quoteId}/qoyod-pdf`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/pdf',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+
+      } catch (error) {
+        console.error('Error viewing quote PDF:', error);
+        alert(this.__('Failed to view PDF. Please try again.'));
+      } finally {
+        this.setLoadingPdf(quoteId, 'view', false);
+      }
+    },
+
+    async downloadQuotePdf(quoteId) {
+      this.setLoadingPdf(quoteId, 'download', true);
+      
+      try {
+        const response = await fetch(`/dashboard/quotes/${quoteId}/qoyod-pdf`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/pdf',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `quote-${quoteId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+
+      } catch (error) {
+        console.error('Error downloading quote PDF:', error);
+        alert(this.__('Failed to download PDF. Please try again.'));
+      } finally {
+        this.setLoadingPdf(quoteId, 'download', false);
+      }
+    },
     goBack() {
       this.$inertia.visit(`/dashboard/customers/${this.customer.id}/artifacts`);
     },
@@ -203,10 +298,6 @@ export default {
 
     createNewQuote() {
       this.$inertia.visit(`/dashboard/customers/${this.customer.id}/create-quote`);
-    },
-
-    viewQuote(quoteId) {
-      this.$inertia.visit(`/dashboard/quotes/${quoteId}`);
     },
 
     formatDate(date) {
@@ -264,9 +355,12 @@ export default {
           'No quotes found': 'No quotes found',
           'Create your first quote for this customer': 'Create your first quote for this customer',
           'View Quote': 'View Quote',
+          'View PDF': 'View PDF',
           'Download PDF': 'Download PDF',
           'Edit Quote': 'Edit Quote',
-            'Download failed. Please try again.': 'Download failed. Please try again.',
+          'Download failed. Please try again.': 'Download failed. Please try again.',
+          'Failed to view PDF. Please try again.': 'Failed to view PDF. Please try again.',
+          'Failed to download PDF. Please try again.': 'Failed to download PDF. Please try again.',
           'Quote editing feature will be implemented soon': 'Quote editing feature will be implemented soon'
         },
         ar: {
@@ -289,8 +383,11 @@ export default {
           'No quotes found': 'لم يتم العثور على عروض أسعار',
           'Create your first quote for this customer': 'أنشئ عرض السعر الأول لهذا العميل',
           'View Quote': 'عرض عرض السعر',
+          'View PDF': 'عرض PDF',
           'Download PDF': 'تحميل PDF',
-            'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.'
+          'Download failed. Please try again.': 'فشل التحميل. يرجى المحاولة مرة أخرى.',
+          'Failed to view PDF. Please try again.': 'فشل في عرض PDF. يرجى المحاولة مرة أخرى.',
+          'Failed to download PDF. Please try again.': 'فشل في تحميل PDF. يرجى المحاولة مرة أخرى.'
         }
       };
 
