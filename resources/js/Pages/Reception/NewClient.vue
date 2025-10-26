@@ -188,7 +188,7 @@ export default {
       email: '',
       city: '',
       delivery_date: '',
-      received_in: '',
+      received_in: 'الرياض',
       // Artifact data
       artifacts: []
     })

@@ -74,7 +74,7 @@ class ReceptionController extends Controller
                 'address' => $data['city'] ?? null,
                 'received_date' => $receivedDate,
                 'delivery_date' => $data['delivery_date'] ?? null,
-                'received_in' => $data['received_in'] ?? null,
+                'received_in' => $data['received_in'] ?? 'الرياض',
                 'created_by' => auth()->id(),
             ]);
 
@@ -338,7 +338,7 @@ class ReceptionController extends Controller
                 'email' => $data['email'] ?? null,
                 'address' => $data['city'] ?? null,
                 'delivery_date' => $data['delivery_date'] ?? null,
-                'received_in' => $data['received_in'] ?? null,
+                'received_in' => $data['received_in'] ?? 'الرياض',
             ]);
 
             return redirect()->route('reception.show-client', $client->id)->with('success', 'Client information updated successfully.');

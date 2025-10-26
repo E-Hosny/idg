@@ -113,7 +113,7 @@ export default {
       email: props.client.email || '',
       city: props.client.address || '',
       delivery_date: props.client.delivery_date || '',
-      received_in: props.client.received_in || ''
+      received_in: props.client.received_in || 'الرياض'
     })
 
     return { form }

@@ -249,6 +249,15 @@
                 <span>Cancel</span>
               </button>
             </div>
+            <button 
+              @click="redirectToTestRequestsList" 
+              class="inline-flex items-center px-8 py-3 bg-indigo-700 text-white text-lg font-semibold hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200 shadow-md hover:shadow-lg"
+            >
+              <i class="fas fa-save mr-3 text-xl"></i>
+              <span>Save</span>
+              <span class="mx-3">|</span>
+              <span>حفظ</span>
+            </button>
           </div>
         </div>
 

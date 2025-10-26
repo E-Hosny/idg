@@ -83,7 +83,7 @@ class TestRequestController extends Controller
                 'qoyod_customer_id' => $customerId,
                 'receiving_record_no' => TestRequest::generateReceivingRecordNo(),
                 'received_date' => now()->toDateString(),
-                'received_in' => 'Dashboard',
+                'received_in' => 'الرياض',
                 'received_by' => auth()->user() ? auth()->user()->name : null,
                 'status' => 'pending'
             ]);
@@ -153,7 +153,7 @@ class TestRequestController extends Controller
                 'customer_code' => 'CUS' . str_pad($testRequest->qoyod_customer_id, 3, '0', STR_PAD_LEFT),
                 'phone' => $customer['phone_number'] ?? $customer['phone'] ?? null,
                 'email' => $customer['email'] ?? $customer['email_address'] ?? null,
-                'address' => $customer['address'] ?? null,
+                'address' => 'الرياض',
                 'qoyod_customer_id' => $testRequest->qoyod_customer_id,
                 'status' => $customer['status'] ?? 'active'
             ];
@@ -304,7 +304,7 @@ class TestRequestController extends Controller
                 'customer_code' => 'CUS' . str_pad($testRequest->qoyod_customer_id, 3, '0', STR_PAD_LEFT),
                 'phone' => $customer['phone_number'] ?? $customer['phone'] ?? null,
                 'email' => $customer['email'] ?? $customer['email_address'] ?? null,
-                'address' => $customer['address'] ?? null,
+                'address' => 'الرياض',
                 'qoyod_customer_id' => $testRequest->qoyod_customer_id,
                 'status' => $customer['status'] ?? 'active'
             ];
