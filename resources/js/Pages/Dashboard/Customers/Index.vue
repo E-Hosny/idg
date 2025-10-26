@@ -1257,7 +1257,7 @@
                         <div class="space-y-2">
                           <div class="flex items-center space-x-2">
                             <i class="fas fa-home text-gray-400 text-sm"></i>
-                            <label class="text-sm font-medium text-gray-600">{{ $t('messages.Address') }}</label>
+                            <label class="text-sm font-medium text-gray-600">اسم الشارع</label>
                       </div>
                           <p class="text-base text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                             {{ formatAddressField(mappedCustomer.billing_address, 'billing_address') || '-' }}
@@ -1316,7 +1316,7 @@
                         <div class="space-y-2">
                           <div class="flex items-center space-x-2">
                             <i class="fas fa-truck text-gray-400 text-sm"></i>
-                            <label class="text-sm font-medium text-gray-600">{{ $t('messages.Address') }}</label>
+                            <label class="text-sm font-medium text-gray-600">اسم الشارع</label>
                       </div>
                           <p class="text-base text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                             {{ formatAddressField(mappedCustomer.shipping_address, 'shipping_address') || '-' }}
@@ -1814,12 +1814,12 @@ export default {
         secondary_phone_number: '',
         website: '',
         currency: 'ر.س',
-        billing_address: '',
-        billing_city: '',
-        billing_state: '',
-        billing_postal_code: '',
-        billing_country: '',
-        billing_building_number: '',
+        billing_address: 'العليا',
+        billing_city: 'الرياض',
+        billing_state: 'حي الورود',
+        billing_postal_code: '12215',
+        billing_country: 'السعودية',
+        billing_building_number: '6776',
         shipping_address: '',
         shipping_city: '',
         shipping_state: '',
@@ -1979,12 +1979,12 @@ export default {
               secondary_phone_number: '',
               website: '',
               currency: 'ر.س',
-              billing_address: '',
-              billing_city: '',
-              billing_state: '',
-              billing_postal_code: '',
-              billing_country: '',
-              billing_building_number: '',
+              billing_address: 'العليا',
+              billing_city: 'الرياض',
+              billing_state: 'حي الورود',
+              billing_postal_code: '12215',
+              billing_country: 'السعودية',
+              billing_building_number: '6776',
               shipping_address: '',
               shipping_city: '',
               shipping_state: '',
