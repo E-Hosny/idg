@@ -44,6 +44,19 @@ class QoyodService
                         'total' => count($data['customers'] ?? [])
                     ]);
                     
+                    // Log sample customer data to debug commercial registration
+                    if (!empty($data['customers'])) {
+                        $sampleCustomer = $data['customers'][0];
+                        Log::info('Sample customer data structure', [
+                            'customer_id' => $sampleCustomer['id'] ?? null,
+                            'customer_details' => $sampleCustomer['customer_details'] ?? null,
+                            'commercial_registration_number' => $sampleCustomer['commercial_registration_number'] ?? null,
+                            'cr_number' => $sampleCustomer['cr_number'] ?? null,
+                            'commercial_registration' => $sampleCustomer['commercial_registration'] ?? null,
+                            'full_sample' => $sampleCustomer
+                        ]);
+                    }
+                    
                     // Transform the response to match our expected format
                     return [
                         'data' => $data['customers'] ?? [],

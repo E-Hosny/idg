@@ -2139,6 +2139,44 @@ export default {
       return detail ? detail.value : null;
     },
 
+    extractCommercialRegistration(customer) {
+      // First try to extract from customer_details object (cr_number key)
+      if (customer.customer_details && customer.customer_details.cr_number) {
+        return customer.customer_details.cr_number;
+      }
+      
+      // Try to extract from customer_details array if it's an array
+      if (customer.customer_details && Array.isArray(customer.customer_details)) {
+        const crDetail = customer.customer_details.find(detail => 
+          detail.name === 'cr_number' || 
+          detail.name === 'commercial_registration_number' ||
+          detail.label === 'رقم السجل التجاري' ||
+          detail.label === 'Commercial Registration Number'
+        );
+        if (crDetail && crDetail.value) {
+          return crDetail.value;
+        }
+      }
+      
+      // Try multiple possible direct fields
+      if (customer.commercial_registration_number) {
+        return customer.commercial_registration_number;
+      }
+      
+      if (customer.cr_number) {
+        return customer.cr_number;
+      }
+      
+      if (customer.commercial_registration) {
+        return customer.commercial_registration;
+      }
+      
+      // Log for debugging
+      console.log('Commercial registration not found for customer:', customer.id, customer);
+      
+      return '-';
+    },
+
     // Map Qoyod data to our display format
     mapQoyodCustomerData(customer) {
       if (!customer) return {};
@@ -2173,7 +2211,7 @@ export default {
         
         // Tax and Legal Information
         tax_number: customer.tax_number || customer.vat_number || customer.tax_id || '-',
-        commercial_registration_number: customer.commercial_registration_number || customer.cr_number || customer.commercial_registration || '-',
+        commercial_registration_number: this.extractCommercialRegistration(customer),
         tax_subject: customer.tax_subject || customer.is_tax_subject || false,
         pos_customer: customer.pos_customer || customer.is_pos_customer || false,
         government_entity_customer: customer.government_entity_customer || customer.is_government_entity || false,
