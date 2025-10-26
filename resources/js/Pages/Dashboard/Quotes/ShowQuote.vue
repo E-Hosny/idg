@@ -36,6 +36,15 @@
               {{ isLoadingQoyod ? __('Loading...') : __('View') }}
             </button>
             <button 
+              @click="downloadQoyodQuote"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-3"
+              :disabled="isLoadingDownload"
+            >
+              <i class="fas fa-download mr-2" v-if="!isLoadingDownload"></i>
+              <i class="fas fa-spinner fa-spin mr-2" v-if="isLoadingDownload"></i>
+              {{ isLoadingDownload ? __('Loading...') : __('Download') }}
+            </button>
+            <button 
               @click="backToQuotes"
               class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
@@ -274,7 +283,8 @@ export default {
 
   data() {
     return {
-      isLoadingQoyod: false
+      isLoadingQoyod: false,
+      isLoadingDownload: false
     }
   },
 
@@ -333,6 +343,55 @@ export default {
         alert(this.__('Failed to load PDF from Qoyod. Please try again.'));
       } finally {
         this.isLoadingQoyod = false;
+      }
+    },
+
+    async downloadQoyodQuote() {
+      // Check if quote has an ID (either local or qoyod_id)
+      if (!this.quote.id) {
+        alert(this.__('Quote not found in Qoyod'));
+        return;
+      }
+
+      this.isLoadingDownload = true;
+      
+      try {
+        // Call our backend endpoint to get the PDF from Qoyod
+        const response = await fetch(`/dashboard/quotes/${this.quote.id}/qoyod-pdf`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/pdf',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Get the PDF blob
+        const blob = await response.blob();
+        
+        // Create a download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `quote-${this.quote.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the URL after a short delay
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+
+      } catch (error) {
+        console.error('Error downloading Qoyod PDF:', error);
+        alert(this.__('Failed to download PDF from Qoyod. Please try again.'));
+      } finally {
+        this.isLoadingDownload = false;
       }
     },
 
@@ -410,9 +469,11 @@ export default {
           'Draft': 'Draft',
           'Back to Quotes': 'Back to Quotes',
           'View': 'View',
+          'Download': 'Download',
           'Loading...': 'Loading...',
           'Quote not found in Qoyod': 'Quote not found in Qoyod',
           'Failed to load PDF from Qoyod. Please try again.': 'Failed to load PDF from Qoyod. Please try again.',
+          'Failed to download PDF from Qoyod. Please try again.': 'Failed to download PDF from Qoyod. Please try again.',
           'Quote Information': 'Quote Information',
           'Quote Number': 'Quote Number',
           'Issue Date': 'Issue Date',
@@ -443,9 +504,11 @@ export default {
           'Draft': 'مسودة',
           'Back to Quotes': 'العودة لعروض السعر',
           'View': 'عرض',
+          'Download': 'تحميل',
           'Loading...': 'جاري التحميل...',
           'Quote not found in Qoyod': 'عرض السعر غير موجود في قيود',
           'Failed to load PDF from Qoyod. Please try again.': 'فشل في تحميل PDF من قيود. يرجى المحاولة مرة أخرى.',
+          'Failed to download PDF from Qoyod. Please try again.': 'فشل في تحميل PDF من قيود. يرجى المحاولة مرة أخرى.',
           'Quote Information': 'معلومات عرض السعر',
           'Quote Number': 'رقم عرض السعر',
           'Issue Date': 'تاريخ الإصدار',
