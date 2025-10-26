@@ -225,7 +225,7 @@
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showAddCustomerModal = false"></div>
         
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
           <form @submit.prevent="addCustomer">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
@@ -342,121 +342,183 @@
                     <!-- Billing Address -->
                     <div class="border-b border-gray-200 pb-4">
                       <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Billing Address') }}</h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
+                      <div class="grid grid-cols-2 gap-4">
+                        <!-- Row 1: اسم الشارع | المدينة -->
+                        <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Address') }}
+                            اسم الشارع
                           </label>
-                          <textarea
+                          <input
                             v-model="newCustomer.billing_address"
-                            rows="2"
+                            type="text"
+                            placeholder="اسم الشارع"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          ></textarea>
+                          />
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.City') }}
+                            المدينة
                           </label>
                           <input
                             v-model="newCustomer.billing_city"
                             type="text"
+                            placeholder="المدينة"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
                         
+                        <!-- Row 2: المنطقة | الرمز البريدي -->
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.State') }}
+                            المنطقة
                           </label>
                           <input
                             v-model="newCustomer.billing_state"
                             type="text"
+                            placeholder="المنطقة"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Postal Code') }}
+                            الرمز البريدي
                           </label>
                           <input
                             v-model="newCustomer.billing_postal_code"
                             type="text"
+                            placeholder="الرمز البريدي"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <!-- Row 3: رقم المبنى | الدولة -->
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            رقم المبنى
+                          </label>
+                          <input
+                            v-model="newCustomer.billing_building_number"
+                            type="text"
+                            placeholder="رقم المبنى"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Country') }}
+                            الدولة
                           </label>
-                          <input
+                          <select
                             v-model="newCustomer.billing_country"
-                            type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          />
+                          >
+                            <option value="">اختر دولة</option>
+                            <option value="السعودية">السعودية</option>
+                            <option value="الإمارات">الإمارات</option>
+                            <option value="الكويت">الكويت</option>
+                            <option value="قطر">قطر</option>
+                            <option value="عُمان">عُمان</option>
+                            <option value="البحرين">البحرين</option>
+                          </select>
                         </div>
                       </div>
                     </div>
 
                     <!-- Shipping Address -->
                     <div class="border-b border-gray-200 pb-4">
-                      <h4 class="text-md font-medium text-gray-900 mb-3">{{ $t('messages.Shipping Address') }}</h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
+                      <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-md font-medium text-gray-900">{{ $t('messages.Shipping Address') }}</h4>
+                        <label class="flex items-center">
+                          <input
+                            type="checkbox"
+                            @change="copyBillingToShipping"
+                            class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
+                          />
+                          <span class="ml-2 text-sm text-gray-700">نسخ عنوان الفوترة</span>
+                        </label>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4">
+                        <!-- Row 1: اسم الشارع | المدينة -->
+                        <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Address') }}
+                            اسم الشارع
                           </label>
-                          <textarea
+                          <input
                             v-model="newCustomer.shipping_address"
-                            rows="2"
+                            type="text"
+                            placeholder="اسم الشارع"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          ></textarea>
+                          />
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.City') }}
+                            المدينة
                           </label>
                           <input
                             v-model="newCustomer.shipping_city"
                             type="text"
+                            placeholder="المدينة"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
                         
+                        <!-- Row 2: المنطقة | الرمز البريدي -->
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.State') }}
+                            المنطقة
                           </label>
                           <input
                             v-model="newCustomer.shipping_state"
                             type="text"
+                            placeholder="المنطقة"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Postal Code') }}
+                            الرمز البريدي
                           </label>
                           <input
                             v-model="newCustomer.shipping_postal_code"
                             type="text"
+                            placeholder="الرمز البريدي"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
+                        <!-- Row 3: رقم المبنى | الدولة -->
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            رقم المبنى
+                          </label>
+                          <input
+                            v-model="newCustomer.shipping_building_number"
+                            type="text"
+                            placeholder="رقم المبنى"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ $t('messages.Country') }}
+                            الدولة
                           </label>
-                          <input
+                          <select
                             v-model="newCustomer.shipping_country"
-                            type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                          />
+                          >
+                            <option value="">اختر دولة</option>
+                            <option value="السعودية">السعودية</option>
+                            <option value="الإمارات">الإمارات</option>
+                            <option value="الكويت">الكويت</option>
+                            <option value="قطر">قطر</option>
+                            <option value="عُمان">عُمان</option>
+                            <option value="البحرين">البحرين</option>
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -1757,11 +1819,13 @@ export default {
         billing_state: '',
         billing_postal_code: '',
         billing_country: '',
+        billing_building_number: '',
         shipping_address: '',
         shipping_city: '',
         shipping_state: '',
         shipping_postal_code: '',
         shipping_country: '',
+        shipping_building_number: '',
         tax_number: '',
         commercial_registration_number: '',
         tax_subject: false,
@@ -1878,6 +1942,15 @@ export default {
     }
   },
   methods: {
+    copyBillingToShipping() {
+      this.newCustomer.shipping_address = this.newCustomer.billing_address;
+      this.newCustomer.shipping_city = this.newCustomer.billing_city;
+      this.newCustomer.shipping_state = this.newCustomer.billing_state;
+      this.newCustomer.shipping_postal_code = this.newCustomer.billing_postal_code;
+      this.newCustomer.shipping_country = this.newCustomer.billing_country;
+      this.newCustomer.shipping_building_number = this.newCustomer.billing_building_number;
+    },
+    
     async refreshCustomers() {
       this.loading = true
       try {
@@ -1911,11 +1984,13 @@ export default {
               billing_state: '',
               billing_postal_code: '',
               billing_country: '',
+              billing_building_number: '',
               shipping_address: '',
               shipping_city: '',
               shipping_state: '',
               shipping_postal_code: '',
               shipping_country: '',
+              shipping_building_number: '',
               tax_number: '',
               commercial_registration_number: '',
               tax_subject: false,
