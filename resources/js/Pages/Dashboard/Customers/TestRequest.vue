@@ -274,7 +274,6 @@
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Service') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">Delivery Type</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Weight') }}</th>
-                  <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Price') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Notes') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Status') }}</th>
                 </tr>
@@ -303,12 +302,6 @@
                     <div v-else class="text-sm print:text-xs text-black">-</div>
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
-                    <div v-if="artifact.price" class="text-sm print:text-xs font-semibold text-black">
-                      SAR {{ artifact.price }}
-                    </div>
-                    <div v-else class="text-sm print:text-xs text-black">-</div>
-                  </td>
-                  <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.notes || '-' }}</div>
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
@@ -318,7 +311,7 @@
                   </td>
                 </tr>
                 <tr v-if="artifacts.length === 0">
-                  <td colspan="9" class="border border-gray-400 px-3 py-8 print:px-1 print:py-4 text-center">
+                  <td colspan="8" class="border border-gray-400 px-3 py-8 print:px-1 print:py-4 text-center">
                     <div class="text-gray-400 text-center">
                       <i class="fas fa-gem text-4xl mb-4 print:hidden"></i>
                       <div class="text-lg font-medium">{{ __('No items found.') }}</div>

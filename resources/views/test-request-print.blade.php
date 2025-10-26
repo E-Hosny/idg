@@ -377,11 +377,10 @@
                     <th style="width: 12%;">الكود<br>Code</th>
                     <th style="width: 15%;">النوع<br>Type</th>
                     <th style="width: 18%;">الخدمة<br>Service</th>
-                    <th style="width: 12%;">نوع التسليم<br>Delivery Type</th>
-                    <th style="width: 10%;">الوزن<br>Weight</th>
-                    <th style="width: 10%;">السعر<br>Price</th>
-                    <th style="width: 13%;">ملاحظات<br>Notes</th>
-                    <th style="width: 5%;">الحالة<br>Status</th>
+                    <th style="width: 15%;">نوع التسليم<br>Delivery Type</th>
+                    <th style="width: 15%;">الوزن<br>Weight</th>
+                    <th style="width: 20%;">ملاحظات<br>Notes</th>
+                    <th style="width: 10%;">الحالة<br>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -389,7 +388,6 @@
                     @foreach($artifacts as $index => $artifact)
                         @php
                             $weight = $artifact->weight ? $artifact->weight . ' ' . ($artifact->unit_type === 'carat' ? 'ct' : 'gm') : '-';
-                            $price = $artifact->price ? 'SAR ' . number_format($artifact->price, 2) : '-';
                             $status = ucfirst($artifact->status ?? 'pending');
                             $statusAr = '';
                             $currentStatus = $artifact->status ?? 'pending';
@@ -410,7 +408,6 @@
                             <td style="font-size: 8px;">{{ $artifact->service ?? '-' }}</td>
                             <td>{{ $artifact->delivery_type ?? '-' }}</td>
                             <td>{{ $weight }}</td>
-                            <td style="font-weight: bold;">{{ $price }}</td>
                             <td style="font-size: 8px;">
                                 {{ strlen($artifact->notes ?? '-') > 30 ? substr($artifact->notes, 0, 30) . '...' : ($artifact->notes ?? '-') }}
                             </td>
@@ -419,7 +416,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 15px; color: #666;">
+                        <td colspan="8" style="text-align: center; padding: 15px; color: #666;">
                             لا توجد عناصر مسجلة<br>No items found
                         </td>
                     </tr>
