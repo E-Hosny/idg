@@ -259,6 +259,7 @@
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Type') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Service') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">Delivery Type</th>
+                  <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">تاريخ الاستلام<br>Expected Date</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Weight') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Notes') }}</th>
                   <th class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-black font-semibold text-sm print:text-xs text-center">{{ __('Status') }}</th>
@@ -280,6 +281,9 @@
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.delivery_type || '-' }}</div>
+                  </td>
+                  <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
+                    <div class="text-sm print:text-xs text-black">{{ artifact.expected_date ? formatDate(artifact.expected_date) : calculateExpectedDate(artifact.delivery_type) }}</div>
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
                     <div v-if="artifact.weight" class="text-sm print:text-xs text-black">
@@ -1161,6 +1165,70 @@ export default {
     
     closeSuccessModal() {
       this.showSuccessModal = false;
+    },
+    
+    calculateExpectedDate(deliveryType) {
+      if (!deliveryType) return '-';
+      
+      const today = new Date();
+      let targetDate = new Date(today);
+      
+      switch (deliveryType) {
+        case 'Regular':
+          // بعد 7 أيام عمل (تجنب الجمعة)
+          targetDate = this.addBusinessDays(today, 7);
+          break;
+        case 'Express Service':
+        case 'Same Day':
+          // نفس اليوم - إذا كان جمعة، اجعله السبت
+          targetDate = this.skipFridayIfNeeded(today);
+          break;
+        case '24 hours':
+          // الغد (تجنب الجمعة)
+          targetDate = this.addBusinessDays(today, 1);
+          break;
+        case '48 hours':
+          // بعد الغد (تجنب الجمعة)
+          targetDate = this.addBusinessDays(today, 2);
+          break;
+        case '72 hours':
+          // بعد 3 أيام عمل (تجنب الجمعة)
+          targetDate = this.addBusinessDays(today, 3);
+          break;
+        default:
+          return '-';
+      }
+      
+      const day = String(targetDate.getDate()).padStart(2, '0');
+      const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+      const year = targetDate.getFullYear();
+      return `${day}/${month}/${year}`;
+    },
+
+    // إضافة أيام عمل (تجنب الجمعة)
+    addBusinessDays(startDate, days) {
+      let date = new Date(startDate);
+      let addedDays = 0;
+      
+      while (addedDays < days) {
+        date.setDate(date.getDate() + 1);
+        // تجنب الجمعة (5 = الجمعة في JavaScript)
+        if (date.getDay() !== 5) {
+          addedDays++;
+        }
+      }
+      
+      return date;
+    },
+
+    // تجنب الجمعة إذا كان التاريخ المحدد جمعة
+    skipFridayIfNeeded(date) {
+      let resultDate = new Date(date);
+      // إذا كان جمعة (5)، انتقل إلى السبت (6)
+      if (resultDate.getDay() === 5) {
+        resultDate.setDate(resultDate.getDate() + 1);
+      }
+      return resultDate;
     }
   }
 }

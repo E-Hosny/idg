@@ -250,6 +250,11 @@ class TestRequestController extends Controller
                 unset($validated['weight_unit']);
             }
 
+            // Calculate expected date based on delivery type
+            if (isset($validated['delivery_type'])) {
+                $validated['expected_date'] = $this->calculateExpectedDate($validated['delivery_type']);
+            }
+
             // Add required fields
             $validated['qoyod_customer_id'] = $testRequest->qoyod_customer_id;
             $validated['test_request_id'] = $testRequest->id;
@@ -452,6 +457,67 @@ class TestRequestController extends Controller
             
             return redirect()->back()->withErrors(['error' => 'Failed to delete test request. | فشل حذف طلب الاختبار.']);
         }
+    }
+
+    /**
+     * Calculate expected delivery date based on delivery type
+     */
+    private function calculateExpectedDate($deliveryType)
+    {
+        $today = \Carbon\Carbon::now();
+        
+        switch ($deliveryType) {
+            case 'Regular':
+                // بعد 7 أيام عمل (تجنب الجمعة)
+                return $this->addBusinessDays($today, 7);
+            case 'Express Service':
+            case 'Same Day':
+                // نفس اليوم - إذا كان جمعة، اجعله السبت
+                return $this->skipFridayIfNeeded($today);
+            case '24 hours':
+                // الغد (تجنب الجمعة)
+                return $this->addBusinessDays($today, 1);
+            case '48 hours':
+                // بعد الغد (تجنب الجمعة)
+                return $this->addBusinessDays($today, 2);
+            case '72 hours':
+                // بعد 3 أيام عمل (تجنب الجمعة)
+                return $this->addBusinessDays($today, 3);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Add business days (skip Fridays)
+     */
+    private function addBusinessDays($startDate, $days)
+    {
+        $date = $startDate->copy();
+        $addedDays = 0;
+        
+        while ($addedDays < $days) {
+            $date->addDay();
+            // Skip Friday (5 = Friday in Carbon)
+            if ($date->dayOfWeek !== 5) {
+                $addedDays++;
+            }
+        }
+        
+        return $date;
+    }
+
+    /**
+     * Skip Friday if the given date is Friday
+     */
+    private function skipFridayIfNeeded($date)
+    {
+        $resultDate = $date->copy();
+        // If it's Friday (5), move to Saturday (6)
+        if ($resultDate->dayOfWeek === 5) {
+            $resultDate->addDay();
+        }
+        return $resultDate;
     }
 
 }

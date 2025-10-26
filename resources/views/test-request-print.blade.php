@@ -368,13 +368,14 @@
             <thead>
                 <tr>
                     <th style="width: 5%;">#</th>
-                    <th style="width: 12%;">الكود<br>Code</th>
-                    <th style="width: 15%;">النوع<br>Type</th>
-                    <th style="width: 18%;">الخدمة<br>Service</th>
-                    <th style="width: 15%;">نوع التسليم<br>Delivery Type</th>
-                    <th style="width: 15%;">الوزن<br>Weight</th>
-                    <th style="width: 20%;">ملاحظات<br>Notes</th>
-                    <th style="width: 10%;">الحالة<br>Status</th>
+                    <th style="width: 10%;">الكود<br>Code</th>
+                    <th style="width: 12%;">النوع<br>Type</th>
+                    <th style="width: 15%;">الخدمة<br>Service</th>
+                    <th style="width: 12%;">نوع التسليم<br>Delivery Type</th>
+                    <th style="width: 12%;">تاريخ الاستلام<br>Expected Date</th>
+                    <th style="width: 12%;">الوزن<br>Weight</th>
+                    <th style="width: 15%;">ملاحظات<br>Notes</th>
+                    <th style="width: 12%;">الحالة<br>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -394,6 +395,73 @@
                                 case 'signed': $statusAr = 'موقع'; break;
                                 default: $statusAr = $status;
                             }
+                            
+                            // حساب تاريخ الاستلام المتوقع
+                            $expectedDate = '-';
+                            if ($artifact->expected_date) {
+                                $expectedDate = \Carbon\Carbon::parse($artifact->expected_date)->format('d/m/Y');
+                            } elseif ($artifact->delivery_type) {
+                                $today = \Carbon\Carbon::now();
+                                switch($artifact->delivery_type) {
+                                    case 'Regular':
+                                        // بعد 7 أيام عمل (تجنب الجمعة)
+                                        $date = $today->copy();
+                                        $addedDays = 0;
+                                        while ($addedDays < 7) {
+                                            $date->addDay();
+                                            if ($date->dayOfWeek !== 5) { // تجنب الجمعة
+                                                $addedDays++;
+                                            }
+                                        }
+                                        $expectedDate = $date->format('d/m/Y');
+                                        break;
+                                    case 'Express Service':
+                                    case 'Same Day':
+                                        // نفس اليوم - إذا كان جمعة، اجعله السبت
+                                        $date = $today->copy();
+                                        if ($date->dayOfWeek === 5) { // إذا كان جمعة
+                                            $date->addDay(); // انتقل إلى السبت
+                                        }
+                                        $expectedDate = $date->format('d/m/Y');
+                                        break;
+                                    case '24 hours':
+                                        // الغد (تجنب الجمعة)
+                                        $date = $today->copy();
+                                        $addedDays = 0;
+                                        while ($addedDays < 1) {
+                                            $date->addDay();
+                                            if ($date->dayOfWeek !== 5) {
+                                                $addedDays++;
+                                            }
+                                        }
+                                        $expectedDate = $date->format('d/m/Y');
+                                        break;
+                                    case '48 hours':
+                                        // بعد الغد (تجنب الجمعة)
+                                        $date = $today->copy();
+                                        $addedDays = 0;
+                                        while ($addedDays < 2) {
+                                            $date->addDay();
+                                            if ($date->dayOfWeek !== 5) {
+                                                $addedDays++;
+                                            }
+                                        }
+                                        $expectedDate = $date->format('d/m/Y');
+                                        break;
+                                    case '72 hours':
+                                        // بعد 3 أيام عمل (تجنب الجمعة)
+                                        $date = $today->copy();
+                                        $addedDays = 0;
+                                        while ($addedDays < 3) {
+                                            $date->addDay();
+                                            if ($date->dayOfWeek !== 5) {
+                                                $addedDays++;
+                                            }
+                                        }
+                                        $expectedDate = $date->format('d/m/Y');
+                                        break;
+                                }
+                            }
                         @endphp
                         <tr>
                             <td>{{ $index + 1 }}</td>
@@ -401,6 +469,7 @@
                             <td>{{ $artifact->type ?? '-' }}</td>
                             <td style="font-size: 8px;">{{ $artifact->service ?? '-' }}</td>
                             <td>{{ $artifact->delivery_type ?? '-' }}</td>
+                            <td style="font-size: 8px;">{{ $expectedDate }}</td>
                             <td>{{ $weight }}</td>
                             <td style="font-size: 8px;">
                                 {{ strlen($artifact->notes ?? '-') > 30 ? substr($artifact->notes, 0, 30) . '...' : ($artifact->notes ?? '-') }}
@@ -410,7 +479,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 15px; color: #666;">
+                        <td colspan="9" style="text-align: center; padding: 15px; color: #666;">
                             لا توجد عناصر مسجلة<br>No items found
                         </td>
                     </tr>
