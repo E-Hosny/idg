@@ -154,20 +154,6 @@
                     </div>
                   </div>
                   
-                  <!-- Delivery Date -->
-                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-bold text-black text-base print:text-sm">{{ __('Delivery Date') }}</span>
-                      <span v-if="!editingTestRequest" class="text-black text-lg print:text-sm font-medium">{{ testRequest?.delivery_date ? formatDate(testRequest.delivery_date) : '-' }}</span>
-                      <input 
-                        v-else 
-                        v-model="editTestRequestData.delivery_date" 
-                        type="date" 
-                        class="text-black text-lg print:text-sm font-medium bg-white border border-gray-300 px-2 py-1 rounded"
-                      />
-                    </div>
-                  </div>
-                  
                   <!-- Received By -->
                   <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
                     <div class="flex items-center justify-between">
@@ -450,22 +436,6 @@
           <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6 print:gap-2">
             <!-- Column 1: Delivery Information -->
             <div class="space-y-4 print:space-y-2">
-              <!-- Delivery Date -->
-              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-black text-base print:text-sm">{{ __('Delivery Date') }}</span>
-                  <span class="text-black text-lg print:text-sm font-medium">{{ testRequest?.delivery_date ? formatDate(testRequest.delivery_date) : '-' }}</span>
-                </div>
-              </div>
-              
-              <!-- Delivery Method -->
-              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-black text-base print:text-sm">Delivery Method</span>
-                  <span class="text-black text-lg print:text-sm font-medium">-</span>
-                </div>
-              </div>
-              
               <!-- Delivery Signature -->
               <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
                 <div class="flex items-center justify-between">

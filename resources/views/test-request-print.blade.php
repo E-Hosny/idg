@@ -348,12 +348,6 @@
             <tr>
                 <td class="label">رقم الجوال<br>Mobile No</td>
                 <td class="value">{{ $formattedCustomer['phone'] ?? '-' }}</td>
-                <td class="label">تاريخ التسليم<br>Delivery Date</td>
-                <td class="value">
-                    {{ $testRequest->delivery_date ? \Carbon\Carbon::parse($testRequest->delivery_date)->format('d/m/Y') : '-' }}
-                </td>
-            </tr>
-            <tr>
                 <td class="label">البريد الإلكتروني<br>Email</td>
                 <td class="value">{{ $formattedCustomer['email'] ?? '-' }}</td>
                 <td class="label">تم الاستلام بواسطة<br>Received By</td>
@@ -523,20 +517,12 @@
             <div class="section-title">توثيق التسليم | Delivery Documentation</div>
             <table class="delivery-table">
                 <tr>
-                    <td class="label" style="width: 20%;">تاريخ التسليم<br>Delivery Date</td>
-                    <td style="width: 30%; text-align: center; font-weight: bold;">
-                        {{ $testRequest->delivery_date ? \Carbon\Carbon::parse($testRequest->delivery_date)->format('d/m/Y') : '-' }}
-                    </td>
                     <td class="label" style="width: 20%;">تاريخ الاستلام<br>Received Date</td>
                     <td style="width: 30%; text-align: center; font-weight: bold;">
                         {{ $testRequest->received_date ? \Carbon\Carbon::parse($testRequest->received_date)->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
                     </td>
-                </tr>
-                <tr>
-                    <td class="label">طريقة التسليم<br>Delivery Method</td>
-                    <td style="text-align: center;">-</td>
-                    <td class="label">حالة الطلب<br>Request Status</td>
-                    <td style="text-align: center; font-weight: bold;">{{ ucfirst($testRequest->status ?? 'pending') }}</td>
+                    <td class="label" style="width: 20%;">حالة الطلب<br>Request Status</td>
+                    <td style="width: 30%; text-align: center; font-weight: bold;">{{ ucfirst($testRequest->status ?? 'pending') }}</td>
                 </tr>
                 <tr>
                     <td class="label">توقيع التسليم<br>Delivery Signature</td>
