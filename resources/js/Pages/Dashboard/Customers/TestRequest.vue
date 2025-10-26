@@ -492,7 +492,7 @@
                 <div class="flex items-center justify-between">
                   <span class="font-bold text-black text-base print:text-sm">Reception Signature - توقيع الاستلام</span>
                   <div class="bg-white border border-gray-300 w-48 h-16 print:w-36 print:h-12 flex items-center justify-center text-gray-400 text-xs">
-                    <!-- Empty signature space -->
+                    <img src="/maram_sign.png" alt="Signature" class="max-h-full max-w-full object-contain">
                   </div>
                 </div>
               </div>

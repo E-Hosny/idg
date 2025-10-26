@@ -542,7 +542,13 @@
                     <td class="label">توقيع التسليم<br>Delivery Signature</td>
                     <td><div class="signature-box"></div></td>
                     <td class="label">توقيع الاستلام<br>Reception Signature</td>
-                    <td><div class="signature-box"></div></td>
+                    <td>
+                        @if(file_exists(public_path('maram_sign.png')))
+                            <img src="{{ asset('maram_sign.png') }}" alt="Signature" style="max-height: 40px; max-width: 200px; display: block; margin: 0 auto;">
+                        @else
+                            <div class="signature-box"></div>
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <td class="label">ملاحظات إضافية<br>Additional Notes</td>
