@@ -372,7 +372,7 @@
                     <th style="width: 12%;">النوع<br>Type</th>
                     <th style="width: 15%;">الخدمة<br>Service</th>
                     <th style="width: 12%;">نوع التسليم<br>Delivery Type</th>
-                    <th style="width: 12%;">تاريخ الاستلام<br>Expected Date</th>
+                    <th style="width: 12%;">تاريخ التسليم<br>Delivery Date</th>
                     <th style="width: 12%;">الوزن<br>Weight</th>
                     <th style="width: 15%;">ملاحظات<br>Notes</th>
                     <th style="width: 12%;">الحالة<br>Status</th>
