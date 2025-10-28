@@ -320,12 +320,12 @@
                 <td class="info-header">Issue Date<br>تاريخ الإصدار</td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">{{ $testRequest->receiving_record_no ?? 'HOT-F03' }}</td>
+                <td style="font-weight: bold;">HOT-F03</td>
                 <td>Control</td>
                 <td>Document</td>
-                <td>002, 001</td>
+                <td>002, 002</td>
                 <td>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</td>
-                <td>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</td>
+                <td>15/3/2025</td>
             </tr>
         </table>
 

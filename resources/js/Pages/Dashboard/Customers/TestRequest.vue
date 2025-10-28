@@ -58,12 +58,12 @@
                 </td>
               </tr>
               <tr>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">{{ testRequest?.receiving_record_no || 'HOT-F03' }}</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">HOT-F03</td>
                 <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Control</td>
                 <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Document</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">002, 001</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">002, 002</td>
                 <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">{{ getCurrentDate() }}</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black text-center align-middle font-semibold print:text-sm">{{ getCurrentDate() }}</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black text-center align-middle font-semibold print:text-sm">15/3/2025</td>
               </tr>
             </tbody>
           </table>
