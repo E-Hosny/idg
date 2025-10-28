@@ -108,7 +108,7 @@
         
         <div class="flex space-x-4">
           <Link 
-            :href="`/artifacts/${artifact.id}/edit-evaluation`"
+            :href="route('artifacts.edit-evaluation', artifact.id)"
             class="px-6 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
           >
             🖊️ {{ __('Edit Evaluation') }}
@@ -129,6 +129,8 @@
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
+
+const route = window.route
 
 export default {
   components: { DashboardLayout, Link },

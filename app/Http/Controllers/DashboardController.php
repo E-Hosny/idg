@@ -234,6 +234,12 @@ class DashboardController extends Controller
                 ->where('evaluator_id', auth()->id())
                 ->latest()
                 ->first();
+        } elseif ($artifact->type === 'Jewellery') {
+            // للمجوهرات، احمّل من جدول jewellery_evaluations
+            $existingEvaluation = $artifact->jewelleryEvaluations()
+                ->where('evaluator_id', auth()->id())
+                ->latest()
+                ->first();
         }
 
         return Inertia::render($evaluationPage, [
@@ -593,33 +599,52 @@ class DashboardController extends Controller
             'approved_by' => 'nullable|string|max:255',
             
             // Product Information
-            'product_type' => 'nullable|string|max:255',
-            'metal_type' => 'nullable|string|max:255',
-            'stamp' => 'nullable|string|max:255',
-            'weight' => 'nullable|numeric|min:0',
-            'dimensions' => 'nullable|string|max:255',
+            'product_number' => 'nullable|string|max:255',
+            'style_number' => 'nullable|string|max:255',
+            'ref_number' => 'nullable|string|max:255',
+            'gross_weight' => 'nullable|numeric|min:0',
+            'net_weight' => 'nullable|numeric|min:0',
+            'product_types' => 'nullable|array',
+            'metal_types' => 'nullable|array',
+            'stamps' => 'nullable|array',
             
-            // Diamond Information
-            'diamond_count' => 'nullable|string|max:255',
-            'diamond_weight' => 'nullable|numeric|min:0',
-            'diamond_shape' => 'nullable|string|max:255',
-            'diamond_colour' => 'nullable|string|max:255',
-            'diamond_clarity' => 'nullable|string|max:255',
-            'diamond_conclusion' => 'nullable|string|max:255',
-            'diamond_note' => 'nullable|string|max:1000',
+            // Lab-Grown Diamond Screen
+            'hpht_screen' => 'nullable|in:Natural,Lab-Grown',
+            'hpht_diamond_pcs' => 'nullable|integer|min:0',
+            'cvd_check' => 'nullable|in:Natural,Lab-Grown',
+            'cvd_diamond_pcs' => 'nullable|integer|min:0',
+            'need_unmount' => 'nullable|in:Yes,No',
+            'unmount_reason' => 'nullable|string|max:255',
+            
+            // XRF Data
+            'xrf_data' => 'nullable|array',
+            
+            // Diamond/s - Side Stones
+            'side_stones_weight_type' => 'nullable|string|max:255',
+            'side_stones_weight' => 'nullable|numeric|min:0',
+            'side_stones_pieces' => 'nullable|integer|min:0',
+            'side_stones_shapes' => 'nullable|array',
+            'side_stones_colours' => 'nullable|array',
+            'side_stones_clarities' => 'nullable|array',
+            
+            // Diamond/s - Centre Stone
+            'centre_stone_weight' => 'nullable|numeric|min:0',
+            'centre_stone_shape' => 'nullable|string|max:255',
+            'centre_stone_colour' => 'nullable|string|max:255',
+            'centre_stone_clarity' => 'nullable|string|max:255',
             
             // Colored Stones Information
             'coloured_stones_weight' => 'nullable|numeric|min:0',
             'coloured_stones_shape' => 'nullable|string|max:255',
-            'coloured_stones_count' => 'nullable|string|max:255',
+            'coloured_stones_count' => 'nullable|integer|min:0',
             'coloured_stones_group' => 'nullable|string|max:255',
             'coloured_stones_species' => 'nullable|string|max:255',
-            'coloured_stones_conclusion' => 'nullable|string|max:255',
+            'coloured_stones_conclusion' => 'nullable|in:Natural,Synthetic',
             'coloured_stones_note' => 'nullable|string|max:1000',
             
             // Result
             'result' => 'nullable|string|max:255',
-            'comments' => 'nullable|string|max:1000',
+            'comments' => 'nullable|text',
             
             // Grader
             'grader_name' => 'nullable|string|max:255',
@@ -651,19 +676,20 @@ class DashboardController extends Controller
             'report_done_by' => 'nullable|string|max:255',
             'checked_by' => 'nullable|string|max:255',
             'report_number' => 'nullable|string|max:255',
+            
+            // Metal Analysis
+            'metal_analysis' => 'nullable|array',
         ]);
 
         // إضافة البيانات الإضافية
         $validatedData['artifact_id'] = $artifact->id;
         $validatedData['evaluator_id'] = auth()->id();
-        $validatedData['evaluation_date'] = now();
+        $validatedData['status'] = 'draft';
         $validatedData['is_final'] = true;
-        $validatedData['detailed_notes'] = ['en' => '', 'ar' => ''];
-        $validatedData['supporting_documents'] = [];
 
-        // حفظ التقييم
+        // حفظ التقييم في الجدول الجديد
         try {
-            $evaluation = ArtifactEvaluation::create($validatedData);
+            $evaluation = \App\Models\JewelleryEvaluation::create($validatedData);
             \Log::info('Jewellery evaluation saved successfully:', $evaluation->toArray());
             return $evaluation;
         } catch (\Exception $e) {
@@ -690,8 +716,15 @@ class DashboardController extends Controller
                 ->latest()
                 ->first();
             $evaluationPage = 'Dashboard/Artifacts/DiamondEvaluationView';
+        } elseif ($artifact->type === 'Jewellery') {
+            // للمجوهرات، احمّل من جدول jewellery_evaluations
+            $evaluation = $artifact->jewelleryEvaluations()
+                ->with('evaluator')
+                ->latest()
+                ->first();
+            $evaluationPage = 'Dashboard/Artifacts/EvaluationView';
         } else {
-            // للأنواع الأخرى (يمكن إضافة المزيد لاحقاً)
+            // للأنواع الأخرى
             $evaluation = $artifact->evaluations()
                 ->with('evaluator')
                 ->where('is_final', true)
@@ -1553,13 +1586,17 @@ class DashboardController extends Controller
                 ->latest()
                 ->first();
             $evaluationPage = 'Dashboard/Artifacts/EvaluateDiamond';
-        } else if (in_array($artifact->type, ['Colored Gemstones', 'Jewellery'])) {
+        } elseif ($artifact->type === 'Jewellery') {
+            // للمجوهرات، احمّل من جدول jewellery_evaluations
+            $evaluation = $artifact->jewelleryEvaluations()
+                ->latest()
+                ->first();
+            $evaluationPage = 'Dashboard/Artifacts/EvaluateJewellery';
+        } else if (in_array($artifact->type, ['Colored Gemstones'])) {
             $evaluation = $artifact->evaluations()
                 ->latest()
                 ->first();
-            $evaluationPage = $artifact->type === 'Jewellery' ? 
-                'Dashboard/Artifacts/EvaluateJewellery' : 
-                'Dashboard/Artifacts/Evaluate';
+            $evaluationPage = 'Dashboard/Artifacts/Evaluate';
         } else {
             // للأنواع الأخرى
             $evaluation = $artifact->evaluations()
@@ -1594,8 +1631,13 @@ class DashboardController extends Controller
      */
     public function updateEvaluation(Request $request, Artifact $artifact)
     {
-        // Find the existing evaluation
-        $evaluation = $artifact->evaluations()->latest()->first();
+        // Find the existing evaluation based on artifact type
+        $evaluation = null;
+        if ($artifact->type === 'Jewellery') {
+            $evaluation = $artifact->jewelleryEvaluations()->latest()->first();
+        } else {
+            $evaluation = $artifact->evaluations()->latest()->first();
+        }
         
         if (!$evaluation) {
             return back()->withErrors(['error' => 'No evaluation found to update.']);

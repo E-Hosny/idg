@@ -556,6 +556,8 @@ import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted } from 'vue'
 
+const route = window.route
+
 export default {
   components: { DashboardLayout, Link },
   props: {
@@ -569,7 +571,7 @@ export default {
   setup(props) {
     const loading = ref(false)
     const today = new Date().toISOString().split('T')[0]
-    const { auth } = usePage().props
+    const { auth, locale } = usePage().props
 
     // Safely access artifact data
     const artifact = computed(() => props.artifact || {})
@@ -774,10 +776,11 @@ export default {
       
       if (props.isEditing && props.existingEvaluation) {
         // Update existing evaluation
-        form.put(`/artifacts/${artifact.value.id}/update-evaluation`, {
+        form.put(route('artifacts.update-evaluation', artifact.value.id), {
           onSuccess: () => {
             loading.value = false
-            alert('تم تحديث التقييم بنجاح!')
+            const message = locale === 'ar' ? 'تم تحديث التقييم بنجاح!' : 'Evaluation updated successfully!'
+            alert(message)
           },
           onError: (errors) => {
             loading.value = false
@@ -785,16 +788,18 @@ export default {
             if (errors.error) {
               alert(errors.error)
             } else {
-              alert('حدث خطأ أثناء تحديث التقييم. يرجى المحاولة مرة أخرى.')
+              const errorMsg = locale === 'ar' ? 'حدث خطأ أثناء تحديث التقييم. يرجى المحاولة مرة أخرى.' : 'Error updating evaluation. Please try again.'
+              alert(errorMsg)
             }
           }
         })
       } else {
         // Create new evaluation
-        form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
+        form.post(route('dashboard.artifacts.evaluate.store', artifact.value.id), {
           onSuccess: () => {
             loading.value = false
-            alert('تم حفظ التقييم بنجاح!')
+            const msg = locale === 'ar' ? 'تم حفظ التقييم بنجاح!' : 'Evaluation saved successfully!'
+            alert(msg)
           },
           onError: (errors) => {
             loading.value = false
@@ -802,7 +807,8 @@ export default {
             if (errors.error) {
               alert(errors.error)
             } else {
-              alert('حدث خطأ أثناء حفظ التقييم. يرجى المحاولة مرة أخرى.')
+              const errorMsg = locale === 'ar' ? 'حدث خطأ أثناء حفظ التقييم. يرجى المحاولة مرة أخرى.' : 'Error saving evaluation. Please try again.'
+              alert(errorMsg)
             }
           }
         })

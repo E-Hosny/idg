@@ -91,6 +91,11 @@ class Artifact extends Model
         return $this->hasMany(DiamondEvaluation::class);
     }
 
+    public function jewelleryEvaluations(): HasMany
+    {
+        return $this->hasMany(JewelleryEvaluation::class);
+    }
+
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
