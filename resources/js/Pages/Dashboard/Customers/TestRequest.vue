@@ -586,6 +586,21 @@
                           </select>
                         </div>
                         
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            العدد | Quantity <span class="text-gray-400">(اختياري)</span>
+                          </label>
+                          <input
+                            v-model="newArtifact.quantity"
+                            type="number"
+                            min="1"
+                            max="100"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="__('Enter quantity (default: 1)')"
+                          />
+                          <p class="mt-1 text-xs text-gray-500">{{ __('If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123-2)') }}</p>
+                        </div>
+                        
                         <div class="md:col-span-2">
                           <label class="block text-sm font-medium text-gray-700">
                             Notes | ملاحظات
@@ -812,7 +827,8 @@ export default {
         weight_unit: 'ct',
         delivery_type: '',
         notes: '',
-        price: ''
+        price: '',
+        quantity: 1 // Default to 1, will create sub-codes if > 1
       },
       typeOptions: [
         { value: 'Colored Gemstones', label: 'Colored Gemstones | أحجار كريمة ملونة' },
@@ -886,7 +902,8 @@ export default {
         weight_unit: 'ct',
         delivery_type: '',
         notes: '',
-        price: ''
+        price: '',
+        quantity: 1 // Reset to default
       }
     },
     
@@ -992,7 +1009,8 @@ export default {
           weight_unit: this.newArtifact.weight_unit,
           delivery_type: this.newArtifact.delivery_type,
           notes: this.newArtifact.notes,
-          price: this.newArtifact.price
+          price: this.newArtifact.price,
+          quantity: this.newArtifact.quantity
         }, {
           onSuccess: (page) => {
             this.showAddArtifactModal = false
@@ -1005,7 +1023,8 @@ export default {
               weight_unit: 'ct',
               delivery_type: '',
               notes: '',
-              price: ''
+              price: '',
+              quantity: 1 // Reset to default
             }
             // No need for manual reload, Inertia will handle the redirect
           },
@@ -1078,7 +1097,11 @@ export default {
           'under_evaluation': 'قيد التقييم',
           'evaluated': 'تم التقييم',
           'certified': 'معتمد',
-          'delivered': 'تم التسليم'
+          'delivered': 'تم التسليم',
+          'Quantity': 'العدد',
+          'Optional': '(اختياري)',
+          'Enter quantity (default: 1)': 'أدخل العدد (افتراضي: 1)',
+          'If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123-2)': 'إذا كان العدد > 1، ستُنشأ القطع بأكواد فرعية (مثل: GR123-1, GR123-2)'
         }
       }
       
