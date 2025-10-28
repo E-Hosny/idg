@@ -1046,6 +1046,7 @@ class DashboardController extends Controller
                 'weight_unit' => 'nullable|in:ct,gm',
                 'delivery_type' => 'nullable|string|max:100',
                 'notes' => 'nullable|string|max:1000',
+                'quantity' => 'nullable|integer|min:1|max:100', // Optional quantity for creating multiple artifacts
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
@@ -1060,8 +1061,11 @@ class DashboardController extends Controller
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
-            // Generate artifact code
-            $artifactCode = \App\Models\Artifact::generateArtifactCode($validatedData['type']);
+            // Get quantity, default to 1
+            $quantity = intval($validatedData['quantity'] ?? 1);
+            
+            // Generate base artifact code
+            $baseCode = \App\Models\Artifact::generateArtifactCode($validatedData['type']);
 
             // Calculate price automatically
             $price = null;
@@ -1074,8 +1078,16 @@ class DashboardController extends Controller
                 );
             }
 
-            // Create artifact with Qoyod customer ID
-            $artifact = \App\Models\Artifact::create([
+            // Create multiple artifacts if quantity > 1
+            $createdArtifacts = [];
+            for ($i = 1; $i <= $quantity; $i++) {
+                // Generate sub-code if quantity > 1
+                $artifactCode = $quantity > 1
+                    ? $baseCode . '-' . $i
+                    : $baseCode;
+                
+                // Create artifact with Qoyod customer ID
+                $artifact = \App\Models\Artifact::create([
                 'client_id' => null, // Qoyod customers are not in local clients table
                 'qoyod_customer_id' => $validatedData['client_id'], // Store Qoyod customer ID
                 'test_request_id' => $validatedData['test_request_id'] ?? null, // Link to test request if provided
@@ -1096,25 +1108,36 @@ class DashboardController extends Controller
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
+                
+                $createdArtifacts[] = $artifact;
+            }
 
-            \Log::info('Artifact created successfully for Qoyod customer', [
-                'artifact_id' => $artifact->id,
-                'artifact_code' => $artifact->artifact_code,
-                'qoyod_customer_id' => $artifact->qoyod_customer_id,
-                'test_request_id' => $artifact->test_request_id
+            \Log::info('Artifacts created successfully for Qoyod customer', [
+                'created_count' => count($createdArtifacts),
+                'quantity' => $quantity,
+                'base_code' => $baseCode,
+                'artifacts' => collect($createdArtifacts)->map(fn($a) => [
+                    'id' => $a->id,
+                    'code' => $a->artifact_code
+                ])->toArray()
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
+            // Prepare success message
+            $message = $quantity > 1 
+                ? "Successfully created {$quantity} artifacts with codes from {$baseCode}-1 to {$baseCode}-{$quantity}"
+                : 'Artifact added successfully for customer!';
+
             // Redirect back to test request if it was created from there, otherwise to artifacts page
             if (!empty($validatedData['test_request_id'])) {
                 return redirect()->route('dashboard.test-requests.show', ['testRequest' => $validatedData['test_request_id']])
-                    ->with('success', 'Artifact added successfully to test request!');
+                    ->with('success', $quantity > 1 ? "Added {$quantity} artifacts to test request!" : 'Artifact added successfully to test request!');
             }
 
             return redirect()->route('dashboard.customers.artifacts.index', ['customer' => $validatedData['client_id']])
-                ->with('success', 'Artifact added successfully for customer!');
+                ->with('success', $message);
 
         } catch (\Exception $e) {
             \Log::error('Error creating artifact for Qoyod customer', [

@@ -1722,6 +1722,21 @@
                           </select>
                         </div>
                         
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Quantity') }} <span class="text-gray-400">({{ __('Optional') }})</span>
+                          </label>
+                          <input
+                            v-model="newArtifact.quantity"
+                            type="number"
+                            min="1"
+                            :max="100"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="__('Enter quantity (default: 1)')"
+                          />
+                          <p class="mt-1 text-xs text-gray-500">{{ __('If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123-2)') }}</p>
+                        </div>
+                        
                         <div class="md:col-span-2">
                           <label class="block text-sm font-medium text-gray-700">
                             {{ $t('messages.Notes') }}
@@ -1898,7 +1913,8 @@ export default {
         weight_unit: 'ct',
         delivery_type: '',
         notes: '',
-        price: ''
+        price: '',
+        quantity: 1 // Default to 1, will create sub-codes if > 1
       },
       // Artifact options (copied from NewClient.vue)
       typeOptions: [
@@ -2466,7 +2482,8 @@ export default {
           weight: this.newArtifact.weight,
           weight_unit: this.newArtifact.weight_unit,
           delivery_type: this.newArtifact.delivery_type,
-          notes: this.newArtifact.notes
+          notes: this.newArtifact.notes,
+          quantity: this.newArtifact.quantity || 1 // Send quantity to backend
         }, {
           onSuccess: () => {
             this.showAddArtifactModal = false
@@ -2480,7 +2497,8 @@ export default {
               weight_unit: 'ct',
               delivery_type: '',
               notes: '',
-              price: ''
+              price: '',
+              quantity: 1
             }
           },
           onError: (errors) => {
@@ -2575,7 +2593,10 @@ export default {
           'Please fill in all required fields (Type, Service, Weight)': 'Please fill in all required fields (Type, Service, Weight)',
           'Error calculating price. Please try again.': 'Error calculating price. Please try again.',
           'Error adding artifact. Please try again.': 'Error adding artifact. Please try again.',
-          'View Artifacts': 'View Artifacts'
+          'View Artifacts': 'View Artifacts',
+          'Quantity': 'Quantity',
+          'Enter quantity (default: 1)': 'Enter quantity (default: 1)',
+          'If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123-2)': 'If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123 captivated4)'
         },
         ar: {
           'Customers': 'العملاء',
@@ -2659,7 +2680,10 @@ export default {
           'Delete Customer': 'حذف العميل',
           'Subtype': 'النوع الفرعي',
           'Optional': 'اختياري',
-          'Enter subtype': 'أدخل النوع الفرعي'
+          'Enter subtype': 'أدخل النوع الفرعي',
+          'Quantity': 'العدد',
+          'Enter quantity (default: 1)': 'أدخل العدد (افتراضي: 1)',
+          'If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123-2)': 'إذا كان العدد > 1، وكانت ستُنشأ القطع بأكواد فرعية (مثل: GR123-1, GR123-2)'
         }
       }
 
