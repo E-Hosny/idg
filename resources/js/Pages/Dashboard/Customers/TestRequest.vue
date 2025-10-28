@@ -13,39 +13,33 @@
           <table class="w-full border-collapse">
             <tbody>
               <tr class="border-b-2 border-gray-300">
-                <!-- دمج 3 خانات على الشمال -->
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 w-1/2 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3" colspan="3">
-                  <div class="text-xl print:text-lg font-bold">Test Request</div>
-                </td>
-                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
-                  <div>Prepared by</div>
+                <!-- دمج خانة واحدة على اليمين -->
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3">
+                  <img src="/images/idg_logo.jpg" alt="IDG Logo" class="w-12 h-12 print:w-8 print:h-8 rounded-full mx-auto" />
+                  <div class="text-xs print:text-[10px] mt-1 font-semibold">IDG</div>
                 </td>
                 <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
                   <div>Approved by</div>
                 </td>
-                <!-- دمج خانة واحدة على اليمين -->
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black w-1/6 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3">
-                  <img src="/images/idg_logo.jpg" alt="IDG Logo" class="w-12 h-12 print:w-8 print:h-8 rounded-full mx-auto" />
-                  <div class="text-xs print:text-[10px] mt-1 font-semibold">IDG</div>
+                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
+                  <div>Prepared by</div>
+                </td>
+                <!-- دمج 3 خانات على الشمال -->
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black w-1/2 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3" colspan="3">
+                  <div class="text-xl print:text-lg font-bold">Test Request</div>
                 </td>
               </tr>
               <tr class="border-b-2 border-gray-300">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Enas Ibrahim</td>
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Sultan Aldosari</td>
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Enas Ibrahim</td>
               </tr>
               <tr class="border-b-2 border-gray-300">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Lab. Management Supervisor</td>
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Laboratory Manager</td>
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Lab. Management Supervisor</td>
               </tr>
               <tr class="border-b-2 border-gray-300 bg-gray-100">
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Document Number</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Document Level</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Document Classification</div>
+                  <div style="visibility: hidden;">Document Date</div>
                 </td>
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Issue Date</div>
@@ -53,17 +47,23 @@
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
                   <div>Issue No., Revision No</div>
                 </td>
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
+                  <div>Document Level</div>
+                </td>
+                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
+                  <div>Document Classification</div>
+                </td>
                 <td class="px-2 py-2 print:px-1 print:py-1 text-black w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div style="visibility: hidden;">Document Date</div>
+                  <div>Document Number</div>
                 </td>
               </tr>
               <tr>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">HOT-F03</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Document</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Control</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">&nbsp;</td>
                 <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">15/3/2025</td>
                 <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">002, 002</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black text-center align-middle font-semibold print:text-sm">&nbsp;</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Document</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Control</td>
+                <td class="px-2 py-3 print:px-1 print:py-2 text-black text-center align-middle font-semibold print:text-sm">HOT-F03</td>
               </tr>
             </tbody>
           </table>

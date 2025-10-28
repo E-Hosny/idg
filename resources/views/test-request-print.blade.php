@@ -288,12 +288,6 @@
         <!-- Header Table -->
         <table class="header-table">
             <tr>
-                <td class="title-cell" rowspan="3" colspan="3">
-                    <div style="font-size: 18px; font-weight: bold;">Test Request</div>
-                    <div style="font-size: 16px; margin-top: 4px;">طلب اختبار</div>
-                </td>
-                <td class="info-header">Prepared by<br>تم التحضير بواسطة</td>
-                <td class="info-header">Approved by<br>تم الاعتماد بواسطة</td>
                 <td class="logo-cell" rowspan="3">
                     @if(file_exists(public_path('images/idg_logo.jpg')))
                         <img src="{{ asset('images/idg_logo.jpg') }}" alt="IDG Logo">
@@ -302,30 +296,36 @@
                     @endif
                     <div style="font-size: 8px; margin-top: 4px;">IDG</div>
                 </td>
+                <td class="info-header">Approved by<br>تم الاعتماد بواسطة</td>
+                <td class="info-header">Prepared by<br>تم التحضير بواسطة</td>
+                <td class="title-cell" rowspan="3" colspan="3">
+                    <div style="font-size: 18px; font-weight: bold;">Test Request</div>
+                    <div style="font-size: 16px; margin-top: 4px;">طلب اختبار</div>
+                </td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">Enas Ibrahim</td>
                 <td style="font-weight: bold;">Sultan Aldosari</td>
+                <td style="font-weight: bold;">Enas Ibrahim</td>
             </tr>
             <tr>
-                <td style="font-size: 9px; color: #666;">Lab. Management Supervisor</td>
                 <td style="font-size: 9px; color: #666;">Laboratory Manager</td>
+                <td style="font-size: 9px; color: #666;">Lab. Management Supervisor</td>
             </tr>
             <tr style="background-color: #e5e5e5;">
-                <td class="info-header">Document Number<br>رقم المستند</td>
-                <td class="info-header">Document Level<br>مستوى المستند</td>
-                <td class="info-header">Document Classification<br>تصنيف المستند</td>
+                <td class="info-header" style="visibility: hidden;">Document Date<br>تاريخ المستند</td>
                 <td class="info-header">Issue Date<br>تاريخ الإصدار</td>
                 <td class="info-header">Issue No., Revision No<br>رقم الإصدار والمراجعة</td>
-                <td class="info-header" style="visibility: hidden;">Document Date<br>تاريخ المستند</td>
+                <td class="info-header">Document Level<br>مستوى المستند</td>
+                <td class="info-header">Document Classification<br>تصنيف المستند</td>
+                <td class="info-header">Document Number<br>رقم المستند</td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">HOT-F03</td>
-                <td>Document</td>
-                <td>Control</td>
+                <td>&nbsp;</td>
                 <td>15/3/2025</td>
                 <td>002, 002</td>
-                <td>&nbsp;</td>
+                <td>Document</td>
+                <td>Control</td>
+                <td style="font-weight: bold;">HOT-F03</td>
             </tr>
         </table>
 
