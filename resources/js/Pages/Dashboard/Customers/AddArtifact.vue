@@ -89,7 +89,7 @@
             <!-- Subtype -->
             <div>
               <label for="subtype" class="block text-sm font-medium text-gray-700 mb-2">
-                {{ __('Subtype') }} <span class="text-gray-400">({{ __('Optional') }})</span>
+                النوع الفرعي <span class="text-gray-400">(اختياري)</span>
               </label>
               <input
                 id="subtype"
@@ -98,7 +98,7 @@
                 :disabled="submitting"
                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 :class="{ 'bg-gray-50': submitting, 'border-red-300': errors.subtype }"
-                :placeholder="__('Enter subtype')"
+                placeholder="أدخل النوع الفرعي"
               />
               <p v-if="errors.subtype" class="mt-1 text-sm text-red-600">{{ errors.subtype }}</p>
             </div>

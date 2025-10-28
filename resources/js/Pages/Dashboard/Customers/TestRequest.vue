@@ -521,13 +521,13 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            Subtype | النوع الفرعي <span class="text-gray-400">(Optional | اختياري)</span>
+                            النوع الفرعي | Subtype <span class="text-gray-400">(اختياري | Optional)</span>
                           </label>
                           <input
                             v-model="newArtifact.subtype"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                            placeholder="Enter subtype | أدخل النوع الفرعي"
+                            placeholder="أدخل النوع الفرعي | Enter subtype"
                           />
                         </div>
                         

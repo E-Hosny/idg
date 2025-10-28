@@ -2656,7 +2656,10 @@ export default {
           'View Artifacts': 'عرض القطع',
           'View Customer': 'عرض العميل',
           'Edit Customer': 'تحرير العميل',
-          'Delete Customer': 'حذف العميل'
+          'Delete Customer': 'حذف العميل',
+          'Subtype': 'النوع الفرعي',
+          'Optional': 'اختياري',
+          'Enter subtype': 'أدخل النوع الفرعي'
         }
       }
 
