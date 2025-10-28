@@ -49,11 +49,11 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Email') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.email || customer?.email_address || '-' }}</p>
+            <p class="mt-1 text-sm text-gray-900" dir="ltr">{{ customer?.email || customer?.email_address || '-' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Phone') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.phone_number || customer?.phone || '-' }}</p>
+            <p class="mt-1 text-sm text-gray-900" dir="ltr">{{ customer?.phone_number || customer?.phone || '-' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Status') }}</label>

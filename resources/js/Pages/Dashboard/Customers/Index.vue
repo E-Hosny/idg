@@ -113,7 +113,7 @@
               </tr>
               <tr v-else v-for="customer in filteredCustomers" :key="customer.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div class="text-sm font-mono text-gray-900">
+                  <div class="text-sm font-mono text-gray-900" dir="ltr">
                     {{ formatQoyodReferenceNumber(customer.id) }}
                   </div>
                 </td>
@@ -126,7 +126,12 @@
                     </div>
                     <div class="ml-4">
                       <div class="text-sm font-medium text-gray-900">
-                        {{ customer.name || customer.display_name }}
+                        <a 
+                          @click.prevent="viewCustomerArtifacts(customer.id)" 
+                          class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          {{ customer.name || customer.display_name }}
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -134,10 +139,10 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ customer.organization || '-' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" dir="ltr">
                   {{ customer.email || customer.email_address || '-' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" dir="ltr">
                   {{ customer.phone || customer.phone_number || '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -1184,7 +1189,7 @@
                         <i class="fas fa-envelope text-gray-400 text-sm"></i>
                         <label class="text-sm font-medium text-gray-600">{{ $t('messages.Primary Email') }}</label>
                       </div>
-                      <p class="text-base text-gray-900">
+                      <p class="text-base text-gray-900" dir="ltr">
                         {{ mappedCustomer.email }}
                       </p>
                       </div>
@@ -1193,7 +1198,7 @@
                         <i class="fas fa-envelope-open text-gray-400 text-sm"></i>
                         <label class="text-sm font-medium text-gray-600">{{ $t('messages.Secondary Email') }}</label>
                       </div>
-                      <p class="text-base text-gray-900">
+                      <p class="text-base text-gray-900" dir="ltr">
                         {{ mappedCustomer.secondary_email }}
                       </p>
                     </div>
@@ -1202,7 +1207,7 @@
                         <i class="fas fa-phone text-gray-400 text-sm"></i>
                         <label class="text-sm font-medium text-gray-600">{{ $t('messages.Primary Phone') }}</label>
                       </div>
-                      <p class="text-base text-gray-900">
+                      <p class="text-base text-gray-900" dir="ltr">
                         {{ mappedCustomer.phone_number }}
                       </p>
                     </div>
@@ -1211,7 +1216,7 @@
                         <i class="fas fa-mobile-alt text-gray-400 text-sm"></i>
                         <label class="text-sm font-medium text-gray-600">{{ $t('messages.Secondary Phone') }}</label>
                       </div>
-                      <p class="text-base text-gray-900">
+                      <p class="text-base text-gray-900" dir="ltr">
                         {{ mappedCustomer.secondary_phone_number }}
                       </p>
                     </div>
@@ -2308,9 +2313,10 @@ export default {
     },
     
     // Artifact functions
-    viewCustomerArtifacts(customer) {
+    viewCustomerArtifacts(customerOrId) {
       // Navigate to customer artifacts page
-      this.$inertia.visit(`/dashboard/customers/${customer.id}/artifacts`)
+      const customerId = typeof customerOrId === 'object' ? customerOrId.id : customerOrId;
+      window.location.href = `/dashboard/customers/${customerId}/artifacts`;
     },
     
     addArtifactToCustomer(customer) {

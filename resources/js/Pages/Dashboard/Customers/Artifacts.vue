@@ -107,7 +107,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Reference Number') }}</label>
-            <p class="mt-1 text-sm text-gray-900 font-mono">{{ customer?.id ? formatQoyodReferenceNumber(customer.id) : 'CUS000' }}</p>
+            <p class="mt-1 text-sm text-gray-900 font-mono" dir="ltr">{{ customer?.id ? formatQoyodReferenceNumber(customer.id) : 'CUS000' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Customer Name') }}</label>
@@ -119,11 +119,11 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Email') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.email || customer?.email_address || '-' }}</p>
+            <p class="mt-1 text-sm text-gray-900" dir="ltr">{{ customer?.email || customer?.email_address || '-' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Phone') }}</label>
-            <p class="mt-1 text-sm text-gray-900">{{ customer?.phone_number || customer?.phone || '-' }}</p>
+            <p class="mt-1 text-sm text-gray-900" dir="ltr">{{ customer?.phone_number || customer?.phone || '-' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">{{ __('Status') }}</label>

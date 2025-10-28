@@ -29,7 +29,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <div class="text-sm font-medium text-gray-500">{{ __('Customer ID') }}</div>
-            <div class="text-base text-gray-900">{{ customer?.id || '-' }}</div>
+            <div class="text-base text-gray-900" dir="ltr">{{ customer?.id || '-' }}</div>
           </div>
           <div>
             <div class="text-sm font-medium text-gray-500">{{ __('Name') }}</div>
@@ -37,11 +37,11 @@
           </div>
           <div>
             <div class="text-sm font-medium text-gray-500">{{ __('Email') }}</div>
-            <div class="text-base text-gray-900">{{ customer?.email || '-' }}</div>
+            <div class="text-base text-gray-900" dir="ltr">{{ customer?.email || '-' }}</div>
           </div>
           <div>
             <div class="text-sm font-medium text-gray-500">{{ __('Phone') }}</div>
-            <div class="text-base text-gray-900">{{ customer?.phone_number || '-' }}</div>
+            <div class="text-base text-gray-900" dir="ltr">{{ customer?.phone_number || '-' }}</div>
           </div>
           <div>
             <div class="text-sm font-medium text-gray-500">{{ __('Organization') }}</div>

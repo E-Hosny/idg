@@ -66,11 +66,11 @@
               </div>
               <div>
                 <div class="text-sm font-medium text-gray-500">{{ __('Email') }}</div>
-                <div class="text-base text-gray-900">{{ customer?.email || '-' }}</div>
+                <div class="text-base text-gray-900" dir="ltr">{{ customer?.email || '-' }}</div>
               </div>
               <div>
                 <div class="text-sm font-medium text-gray-500">{{ __('Phone') }}</div>
-                <div class="text-base text-gray-900">{{ customer?.phone || '-' }}</div>
+                <div class="text-base text-gray-900" dir="ltr">{{ customer?.phone || '-' }}</div>
               </div>
               <div>
                 <div class="text-sm font-medium text-gray-500">{{ __('Organization') }}</div>
@@ -78,7 +78,7 @@
               </div>
               <div>
                 <div class="text-sm font-medium text-gray-500">{{ __('Customer Code') }}</div>
-                <div class="text-base text-gray-900">{{ customer?.code || customer?.id || '-' }}</div>
+                <div class="text-base text-gray-900" dir="ltr">{{ customer?.code || customer?.id || '-' }}</div>
               </div>
               <div>
                 <div class="text-sm font-medium text-gray-500">{{ __('Status') }}</div>
