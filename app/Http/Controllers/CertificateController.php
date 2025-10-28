@@ -177,7 +177,7 @@ class CertificateController extends Controller
      */
     public function certified()
     {
-        $artifacts = Artifact::with(['client', 'latestCertificate'])
+        $artifacts = Artifact::with(['client', 'latestCertificate', 'testRequest'])
             ->where('status', 'certified')
             ->whereHas('latestCertificate', function($query) {
                 $query->whereIn('status', ['issued', 'uploaded']);

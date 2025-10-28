@@ -37,6 +37,7 @@
               <tr class="bg-gray-100 border-b">
                 <th class="px-4 py-2 text-left font-bold">#</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Item Code') }}</th>
+                <th class="px-4 py-2 text-left font-bold">{{ __('Receiving Request No') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
@@ -50,6 +51,7 @@
                 <td class="px-4 py-2">
                   <span class="font-medium text-blue-600">{{ artifact.artifact_code }}</span>
                 </td>
+                <td class="px-4 py-2">{{ artifact.test_request?.receiving_record_no || '-' }}</td>
                 <td class="px-4 py-2">
                   <div class="flex items-center gap-2">
                     <span class="text-sm">{{ artifact.type }}</span>
@@ -130,7 +132,7 @@
                 </td>
               </tr>
               <tr v-if="!artifacts.data?.length">
-                <td colspan="7" class="text-center text-gray-400 py-8">{{ __('No certified items found.') }}</td>
+                <td colspan="8" class="text-center text-gray-400 py-8">{{ __('No certified items found.') }}</td>
               </tr>
             </tbody>
           </table>
@@ -232,6 +234,9 @@ export default {
         'Download Uploaded PDF': 'تحميل الشهادة المرفوعة',
         'Uploaded': 'مرفوعة',
         'No uploaded certificate found': 'لم يتم العثور على شهادة مرفوعة',
+        
+        // Receiving Request No
+        'Receiving Request No': 'رقم طلب الاستلام',
       }
       
       return this.$page.props.locale === 'ar' ? translations[key] || key : key

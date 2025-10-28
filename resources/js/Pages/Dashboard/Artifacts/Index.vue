@@ -36,6 +36,7 @@
             <tr class="bg-gray-100 border-b">
               <th class="px-4 py-2 text-left font-bold">#</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Code') }}</th>
+              <th class="px-4 py-2 text-left font-bold">{{ __('Receiving Request No') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Service') }}</th>
               <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
@@ -48,6 +49,7 @@
             <tr v-for="(artifact, idx) in artifacts.data" :key="artifact.id" class="border-b hover:bg-gray-50 transition">
               <td class="px-4 py-2">{{ idx + 1 }}</td>
               <td class="px-4 py-2">{{ artifact.artifact_code }}</td>
+              <td class="px-4 py-2">{{ artifact.test_request?.receiving_record_no || '-' }}</td>
               <td class="px-4 py-2">{{ artifact.type }}</td>
               <td class="px-4 py-2">{{ artifact.service }}</td>
               <td class="px-4 py-2">
@@ -113,7 +115,7 @@
               </td>
             </tr>
             <tr v-if="!artifacts.data.length">
-              <td colspan="8" class="text-center text-gray-400 py-4">{{ getNoDataMessage() }}</td>
+              <td colspan="9" class="text-center text-gray-400 py-4">{{ getNoDataMessage() }}</td>
             </tr>
           </tbody>
         </table>
@@ -183,6 +185,7 @@ export default {
         'Under Evaluation': 'قيد التقييم',
         'No pending items found.': 'لا توجد عناصر معلقة.',
         'Actions': 'الإجراءات',
+        'Receiving Request No': 'رقم طلب الاستلام',
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
     },

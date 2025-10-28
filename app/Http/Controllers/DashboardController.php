@@ -76,7 +76,7 @@ class DashboardController extends Controller
 
     public function artifacts(Request $request)
     {
-        $query = Artifact::with(['category', 'assignedTo', 'client']);
+        $query = Artifact::with(['category', 'assignedTo', 'client', 'testRequest']);
         
         // إذا تم تحديد status معين، فلتر حسب status
         if ($request->has('status')) {
@@ -711,7 +711,7 @@ class DashboardController extends Controller
 
     public function evaluatedArtifacts()
     {
-        $artifacts = Artifact::with(['client', 'category', 'latestCertificate'])
+        $artifacts = Artifact::with(['client', 'category', 'latestCertificate', 'testRequest'])
             ->whereIn('status', ['evaluated', 'certified'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
