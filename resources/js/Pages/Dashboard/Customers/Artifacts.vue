@@ -192,7 +192,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="artifact in artifacts" :key="artifact.id" class="hover:bg-gray-50">
+              <tr v-for="artifact in groupedArtifacts" :key="artifact.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
                   {{ artifact.artifact_code }}
                 </td>
@@ -604,6 +604,70 @@ export default {
     artifacts: {
       type: Array,
       default: () => []
+    }
+  },
+  computed: {
+    // Group artifacts by base code
+    groupedArtifacts() {
+      const groups = {}
+      
+      // Group artifacts by their base code (without sub-code suffix)
+      this.artifacts.forEach(artifact => {
+        const code = artifact.artifact_code
+        // Check if code has a sub-code (e.g., JR7081047438-1)
+        const hasSubCode = /-\d+$/.test(code)
+        
+        if (hasSubCode) {
+          // Extract base code (e.g., JR7081047438 from JR7081047438-1)
+          const baseCode = code.replace(/-\d+$/, '')
+          
+          if (!groups[baseCode]) {
+            groups[baseCode] = {
+              baseCode: baseCode,
+              codes: [],
+              items: []
+            }
+          }
+          
+          groups[baseCode].codes.push(code)
+          groups[baseCode].items.push(artifact)
+        } else {
+          // Single artifact without sub-code, add as is
+          groups[code] = {
+            baseCode: code,
+            codes: [code],
+            items: [artifact]
+          }
+        }
+      })
+      
+      // Convert to array and format for display
+      return Object.values(groups).map(group => {
+        const sortedCodes = group.codes.sort()
+        const firstArtifact = group.items[0]
+        
+        let displayCode = group.baseCode
+        if (sortedCodes.length > 1) {
+          // Extract numbers from codes (e.g., JR7081047438-1 -> 1)
+          const numbers = sortedCodes.map(code => {
+            const match = code.match(/-(\d+)$/)
+            return match ? parseInt(match[1]) : null
+          }).filter(n => n !== null).sort((a, b) => a - b)
+          
+          if (numbers.length > 0) {
+            const minNum = numbers[0]
+            const maxNum = numbers[numbers.length - 1]
+            displayCode = `${group.baseCode} (${minNum} - ${maxNum})`
+          }
+        }
+        
+        return {
+          ...firstArtifact,
+          artifact_code: displayCode,
+          ids: group.items.map(item => item.id),
+          count: group.items.length
+        }
+      })
     }
   },
   data() {

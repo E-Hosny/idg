@@ -246,7 +246,7 @@
               <span>Items | العناصر</span>
             </h3>
             <div class="text-base print:text-sm text-black bg-gray-100 px-3 py-1 print:px-2 print:py-1 border border-gray-300">
-              {{ __('Total') }}: {{ artifacts.length }} {{ __('items') }} | المجموع: {{ artifacts.length }} عنصر
+              {{ __('Total') }}: {{ groupedArtifacts.length }} {{ __('items') }} | المجموع: {{ groupedArtifacts.length }} عنصر
             </div>
           </div>
           
@@ -266,7 +266,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(artifact, idx) in artifacts" :key="artifact.id" class="hover:bg-gray-50 print:hover:bg-transparent">
+                <tr v-for="(artifact, idx) in groupedArtifacts" :key="artifact.id" class="hover:bg-gray-50 print:hover:bg-transparent">
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
                     <div class="text-sm print:text-xs font-medium text-black">{{ idx + 1 }}</div>
                   </td>
@@ -725,6 +725,70 @@ export default {
     artifacts: Array,
     received_by: String,
     receiving_record_no: String
+  },
+  computed: {
+    // Group artifacts by base code
+    groupedArtifacts() {
+      const groups = {}
+      
+      // Group artifacts by their base code (without sub-code suffix)
+      this.artifacts.forEach(artifact => {
+        const code = artifact.artifact_code
+        // Check if code has a sub-code (e.g., JR6365974581-1)
+        const hasSubCode = /-\d+$/.test(code)
+        
+        if (hasSubCode) {
+          // Extract base code (e.g., JR6365974581 from JR6365974581-1)
+          const baseCode = code.replace(/-\d+$/, '')
+          
+          if (!groups[baseCode]) {
+            groups[baseCode] = {
+              baseCode: baseCode,
+              codes: [],
+              items: []
+            }
+          }
+          
+          groups[baseCode].codes.push(code)
+          groups[baseCode].items.push(artifact)
+        } else {
+          // Single artifact without sub-code, add as is
+          groups[code] = {
+            baseCode: code,
+            codes: [code],
+            items: [artifact]
+          }
+        }
+      })
+      
+      // Convert to array and format for display
+      return Object.values(groups).map(group => {
+        const sortedCodes = group.codes.sort()
+        const firstArtifact = group.items[0]
+        
+        let displayCode = group.baseCode
+        if (sortedCodes.length > 1) {
+          // Extract numbers from codes (e.g., JR6365974581-1 -> 1)
+          const numbers = sortedCodes.map(code => {
+            const match = code.match(/-(\d+)$/)
+            return match ? parseInt(match[1]) : null
+          }).filter(n => n !== null).sort((a, b) => a - b)
+          
+          if (numbers.length > 0) {
+            const minNum = numbers[0]
+            const maxNum = numbers[numbers.length - 1]
+            displayCode = `${group.baseCode} (${minNum} - ${maxNum})`
+          }
+        }
+        
+        return {
+          ...firstArtifact,
+          artifact_code: displayCode,
+          ids: group.items.map(item => item.id),
+          count: group.items.length
+        }
+      })
+    }
   },
   data() {
     return {

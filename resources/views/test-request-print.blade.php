@@ -268,21 +268,6 @@
     <button onclick="window.close()" class="close-button no-print">
         ❌ إغلاق / Close
     </button>
-    
-    <!-- Instructions (hidden when printing or in auto-download mode) -->
-    <div id="instructions" class="no-print" style="position: fixed; top: 70px; left: 20px; background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; max-width: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 999;">
-        <div style="font-weight: bold; margin-bottom: 8px; color: #92400e; font-size: 14px;">
-            📥 لحفظ كملف PDF / To Save as PDF:
-        </div>
-        <ol style="margin: 0; padding-right: 20px; color: #78350f; font-size: 13px; line-height: 1.6;">
-            <li>اضغط Ctrl+P أو زر "طباعة" أعلاه</li>
-            <li>اختر "Save as PDF" من القائمة</li>
-            <li>اضغط "Save" لحفظ الملف</li>
-        </ol>
-        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #f59e0b; font-size: 12px; color: #92400e;">
-            ✨ الجودة ممتازة والعربية واضحة!
-        </div>
-    </div>
 
     <div class="container">
         <!-- Header Table -->
@@ -363,7 +348,70 @@
 
         <!-- Items Table -->
         <div class="section-title">العناصر | Items</div>
-        <div class="total-info">المجموع | Total: {{ $artifacts->count() }} عنصر | items</div>
+        @php
+            // Group artifacts by base code
+            $groups = [];
+            foreach ($artifacts as $artifact) {
+                $code = $artifact->artifact_code;
+                // Check if code has a sub-code (e.g., JR6365974581-1)
+                if (preg_match('/-\d+$/', $code)) {
+                    // Extract base code (e.g., JR6365974581 from JR6365974581-1)
+                    $baseCode = preg_replace('/-\d+$/', '', $code);
+                    
+                    if (!isset($groups[$baseCode])) {
+                        $groups[$baseCode] = [
+                            'baseCode' => $baseCode,
+                            'codes' => [],
+                            'items' => []
+                        ];
+                    }
+                    
+                    $groups[$baseCode]['codes'][] = $code;
+                    $groups[$baseCode]['items'][] = $artifact;
+                } else {
+                    // Single artifact without sub-code
+                    $groups[$code] = [
+                        'baseCode' => $code,
+                        'codes' => [$code],
+                        'items' => [$artifact]
+                    ];
+                }
+            }
+            
+            // Convert to array and format for display
+            $groupedArtifacts = [];
+            foreach ($groups as $group) {
+                $sortedCodes = $group['codes'];
+                sort($sortedCodes);
+                $firstArtifact = $group['items'][0];
+                
+                $displayCode = $group['baseCode'];
+                if (count($sortedCodes) > 1) {
+                    // Extract numbers from codes (e.g., JR6365974581-1 -> 1)
+                    $numbers = [];
+                    foreach ($sortedCodes as $code) {
+                        if (preg_match('/-(\d+)$/', $code, $matches)) {
+                            $numbers[] = intval($matches[1]);
+                        }
+                    }
+                    sort($numbers);
+                    
+                    if (count($numbers) > 0) {
+                        $minNum = min($numbers);
+                        $maxNum = max($numbers);
+                        $displayCode = $group['baseCode'] . ' (' . $minNum . ' - ' . $maxNum . ')';
+                    }
+                }
+                
+                $groupedArtifacts[] = [
+                    'artifact' => $firstArtifact,
+                    'display_code' => $displayCode,
+                    'ids' => array_map(function($item) { return $item->id; }, $group['items']),
+                    'count' => count($group['items'])
+                ];
+            }
+        @endphp
+        <div class="total-info">المجموع | Total: {{ count($groupedArtifacts) }} عنصر | items</div>
         <table class="items-table">
             <thead>
                 <tr>
@@ -379,9 +427,10 @@
                 </tr>
             </thead>
             <tbody>
-                @if($artifacts->count() > 0)
-                    @foreach($artifacts as $index => $artifact)
+                @if(count($groupedArtifacts) > 0)
+                    @foreach($groupedArtifacts as $index => $group)
                         @php
+                            $artifact = $group['artifact'];
                             $weight = $artifact->weight ? $artifact->weight . ' ' . ($artifact->unit_type === 'carat' ? 'ct' : 'gm') : '-';
                             $status = ucfirst($artifact->status ?? 'pending');
                             $statusAr = '';
@@ -465,7 +514,7 @@
                         @endphp
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td style="font-family: monospace;">{{ $artifact->artifact_code ?? '-' }}</td>
+                            <td style="font-family: monospace;">{{ $group['display_code'] }}</td>
                             <td>{{ $artifact->type ? ($artifact->subtype ? $artifact->type . ' - ' . $artifact->subtype : $artifact->type) : '-' }}</td>
                             <td style="font-size: 8px;">{{ $artifact->service ?? '-' }}</td>
                             <td>{{ $artifact->delivery_type ?? '-' }}</td>
@@ -625,13 +674,7 @@
         
         const shouldAutoDownload = autoDownload || autoDownloadFromUrl;
 
-        // Hide instructions if in auto-download mode
-        if (shouldAutoDownload) {
-            const instructions = document.getElementById('instructions');
-            if (instructions) {
-                instructions.style.display = 'none';
-            }
-        }
+        // Instructions box removed
 
         // Auto-print functionality
         window.addEventListener('load', function() {
