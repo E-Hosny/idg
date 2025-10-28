@@ -313,19 +313,19 @@
             </tr>
             <tr style="background-color: #e5e5e5;">
                 <td class="info-header">Document Number<br>رقم المستند</td>
-                <td class="info-header">Document Classification<br>تصنيف المستند</td>
                 <td class="info-header">Document Level<br>مستوى المستند</td>
-                <td class="info-header">Issue No., Revision No<br>رقم الإصدار والمراجعة</td>
-                <td class="info-header">Document Date<br>تاريخ المستند</td>
+                <td class="info-header">Document Classification<br>تصنيف المستند</td>
                 <td class="info-header">Issue Date<br>تاريخ الإصدار</td>
+                <td class="info-header">Issue No., Revision No<br>رقم الإصدار والمراجعة</td>
+                <td class="info-header" style="visibility: hidden;">Document Date<br>تاريخ المستند</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">HOT-F03</td>
-                <td>Control</td>
                 <td>Document</td>
-                <td>002, 002</td>
-                <td>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</td>
+                <td>Control</td>
                 <td>15/3/2025</td>
+                <td>002, 002</td>
+                <td>&nbsp;</td>
             </tr>
         </table>
 
