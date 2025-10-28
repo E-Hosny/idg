@@ -202,6 +202,19 @@ class CertificateController extends Controller
                 ->where('status', 'completed')
                 ->latest()
                 ->first();
+        } elseif ($artifact->type === 'Jewellery') {
+            // For Jewellery, try jewellery_evaluations first
+            $evaluation = $artifact->jewelleryEvaluations()
+                ->latest()
+                ->first();
+            
+            // If no jewellery evaluation found, try artifact_evaluations as fallback
+            if (!$evaluation) {
+                $evaluation = $artifact->evaluations()
+                    ->where('is_final', true)
+                    ->latest()
+                    ->first();
+            }
         } else {
             $evaluation = $artifact->evaluations()
                 ->where('is_final', true)
