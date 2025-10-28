@@ -235,6 +235,7 @@ class TestRequestController extends Controller
         try {
             $validated = $request->validate([
                 'type' => 'required|string|max:255',
+                'subtype' => 'nullable|string|max:255',
                 'service' => 'nullable|string|max:255',
                 'weight' => 'nullable|numeric|min:0',
                 'weight_unit' => 'nullable|in:ct,gm',

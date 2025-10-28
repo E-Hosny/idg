@@ -71,7 +71,7 @@
                 <td class="px-4 py-2">{{ artifact.test_request?.receiving_record_no || '-' }}</td>
                 <td class="px-4 py-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-sm">{{ artifact.type }}</span>
+                    <span class="text-sm">{{ getFullType(artifact) }}</span>
                     <span v-if="artifact.type === 'Colorless Diamonds'" class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
                       💎
                     </span>
@@ -345,6 +345,11 @@ export default {
   },
 
   methods: {
+    getFullType(artifact) {
+      if (!artifact.type) return '-';
+      return artifact.subtype ? `${artifact.type} - ${artifact.subtype}` : artifact.type;
+    },
+    
     __(key) {
       const translations = {
         'Evaluated Items': 'العناصر المقيمة',

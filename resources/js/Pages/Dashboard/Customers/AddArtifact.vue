@@ -86,6 +86,23 @@
               <p v-if="errors.type" class="mt-1 text-sm text-red-600">{{ errors.type }}</p>
             </div>
 
+            <!-- Subtype -->
+            <div>
+              <label for="subtype" class="block text-sm font-medium text-gray-700 mb-2">
+                {{ __('Subtype') }} <span class="text-gray-400">({{ __('Optional') }})</span>
+              </label>
+              <input
+                id="subtype"
+                v-model="form.subtype"
+                type="text"
+                :disabled="submitting"
+                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                :class="{ 'bg-gray-50': submitting, 'border-red-300': errors.subtype }"
+                :placeholder="__('Enter subtype')"
+              />
+              <p v-if="errors.subtype" class="mt-1 text-sm text-red-600">{{ errors.subtype }}</p>
+            </div>
+
             <!-- Service -->
             <div>
               <label for="service" class="block text-sm font-medium text-gray-700 mb-2">
@@ -231,6 +248,7 @@ export default {
     return {
       form: {
         type: '',
+        subtype: '',
         service: '',
         weight: '',
         weight_unit: 'ct',

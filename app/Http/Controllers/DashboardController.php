@@ -1007,6 +1007,7 @@ class DashboardController extends Controller
                 'client_id' => 'required|integer',
                 'test_request_id' => 'nullable|integer|exists:test_requests,id',
                 'type' => 'required|string|max:100',
+                'subtype' => 'nullable|string|max:100',
                 'service' => 'nullable|string|max:100',
                 'weight' => 'nullable|numeric',
                 'weight_unit' => 'nullable|in:ct,gm',
@@ -1047,6 +1048,7 @@ class DashboardController extends Controller
                 'test_request_id' => $validatedData['test_request_id'] ?? null, // Link to test request if provided
                 'artifact_code' => $artifactCode,
                 'type' => $validatedData['type'],
+                'subtype' => $validatedData['subtype'] ?? null,
                 'service' => $validatedData['service'] ?? null,
                 'weight' => $validatedData['weight'] ? (string)$validatedData['weight'] : null,
                 'weight_unit' => $validatedData['weight_unit'] ?? null,
@@ -1137,6 +1139,7 @@ class DashboardController extends Controller
             
             $validatedData = $request->validate([
                 'type' => 'required|string|max:255',
+                'subtype' => 'nullable|string|max:255',
                 'service' => 'required|string|max:255',
                 'weight' => 'required|numeric|min:0',
                 'weight_unit' => 'required|string|in:ct,g,kg,mg',
@@ -1156,6 +1159,7 @@ class DashboardController extends Controller
                 'qoyod_customer_id' => $customerId,
                 'artifact_code' => $artifactCode,
                 'type' => $validatedData['type'],
+                'subtype' => $validatedData['subtype'] ?? null,
                 'service' => $validatedData['service'],
                 'weight' => (string)$validatedData['weight'],
                 'weight_unit' => $validatedData['weight_unit'],
@@ -1434,6 +1438,7 @@ class DashboardController extends Controller
         try {
             $validatedData = $request->validate([
                 'type' => 'required|string|max:100',
+                'subtype' => 'nullable|string|max:100',
                 'service' => 'nullable|string|max:100',
                 'weight' => 'nullable|numeric',
                 'weight_unit' => 'nullable|in:ct,gm',
@@ -1458,6 +1463,7 @@ class DashboardController extends Controller
             // Update artifact
             $artifact->update([
                 'type' => $validatedData['type'],
+                'subtype' => $validatedData['subtype'] ?? null,
                 'service' => $validatedData['service'] ?? null,
                 'weight' => $validatedData['weight'] ? (string)$validatedData['weight'] : null,
                 'weight_unit' => $validatedData['weight_unit'] ?? null,

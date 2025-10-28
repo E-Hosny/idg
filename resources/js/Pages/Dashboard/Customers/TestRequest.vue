@@ -274,7 +274,7 @@
                     <div class="text-sm print:text-xs font-medium text-black">{{ artifact.artifact_code || '-' }}</div>
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
-                    <div class="text-sm print:text-xs text-black">{{ artifact.type }}</div>
+                    <div class="text-sm print:text-xs text-black">{{ getFullType(artifact) }}</div>
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
                     <div class="text-sm print:text-xs text-black">{{ artifact.service || '-' }}</div>
@@ -521,6 +521,18 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
+                            Subtype | النوع الفرعي <span class="text-gray-400">(Optional | اختياري)</span>
+                          </label>
+                          <input
+                            v-model="newArtifact.subtype"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            placeholder="Enter subtype | أدخل النوع الفرعي"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
                             Service | الخدمة *
                           </label>
                           <select
@@ -730,6 +742,7 @@ export default {
       addingArtifact: false,
       newArtifact: {
         type: '',
+        subtype: '',
         service: '',
         weight: '',
         weight_unit: 'ct',
@@ -758,6 +771,11 @@ export default {
     }
   },
   methods: {
+    getFullType(artifact) {
+      if (!artifact.type) return '-';
+      return artifact.subtype ? `${artifact.type} - ${artifact.subtype}` : artifact.type;
+    },
+    
     goBack() {
       this.$inertia.visit('/dashboard/customers')
     },
@@ -798,6 +816,7 @@ export default {
       this.showAddArtifactModal = false
       this.newArtifact = {
         type: '',
+        subtype: '',
         service: '',
         weight: '',
         weight_unit: 'ct',
@@ -903,6 +922,7 @@ export default {
           client_id: this.customer.id,
           test_request_id: this.testRequest.id,
           type: this.newArtifact.type,
+          subtype: this.newArtifact.subtype,
           service: this.newArtifact.service,
           weight: this.newArtifact.weight,
           weight_unit: this.newArtifact.weight_unit,
@@ -915,6 +935,7 @@ export default {
             // Reset form
             this.newArtifact = {
               type: '',
+              subtype: '',
               service: '',
               weight: '',
               weight_unit: 'ct',

@@ -466,7 +466,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td style="font-family: monospace;">{{ $artifact->artifact_code ?? '-' }}</td>
-                            <td>{{ $artifact->type ?? '-' }}</td>
+                            <td>{{ $artifact->type ? ($artifact->subtype ? $artifact->type . ' - ' . $artifact->subtype : $artifact->type) : '-' }}</td>
                             <td style="font-size: 8px;">{{ $artifact->service ?? '-' }}</td>
                             <td>{{ $artifact->delivery_type ?? '-' }}</td>
                             <td style="font-size: 8px;">{{ $expectedDate }}</td>

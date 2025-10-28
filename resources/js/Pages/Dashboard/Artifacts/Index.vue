@@ -50,7 +50,7 @@
               <td class="px-4 py-2">{{ idx + 1 }}</td>
               <td class="px-4 py-2">{{ artifact.artifact_code }}</td>
               <td class="px-4 py-2">{{ artifact.test_request?.receiving_record_no || '-' }}</td>
-              <td class="px-4 py-2">{{ artifact.type }}</td>
+              <td class="px-4 py-2">{{ getFullType(artifact) }}</td>
               <td class="px-4 py-2">{{ artifact.service }}</td>
               <td class="px-4 py-2">
                 <span v-if="artifact.weight">
@@ -153,6 +153,11 @@ export default {
   },
 
   methods: {
+    getFullType(artifact) {
+      if (!artifact.type) return '-';
+      return artifact.subtype ? `${artifact.type} - ${artifact.subtype}` : artifact.type;
+    },
+    
     __(key) {
       const t = {
         'Items List': 'قائمة العناصر',

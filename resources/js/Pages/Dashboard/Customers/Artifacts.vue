@@ -197,7 +197,7 @@
                   {{ artifact.artifact_code }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ artifact.type }}
+                  {{ getFullType(artifact) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ artifact.service || '-' }}
@@ -445,6 +445,18 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Subtype') }} <span class="text-gray-400">({{ __('Optional') }})</span>
+                          </label>
+                          <input
+                            v-model="newArtifact.subtype"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="__('Enter subtype')"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
                             {{ __('Service') }} *
                           </label>
                           <select
@@ -599,6 +611,7 @@ export default {
       },
       newArtifact: {
         type: '',
+        subtype: '',
         service: '',
         weight: '',
         weight_unit: 'ct',
@@ -633,6 +646,11 @@ export default {
     console.log('Artifacts data:', this.artifacts)
   },
   methods: {
+    getFullType(artifact) {
+      if (!artifact.type) return '-';
+      return artifact.subtype ? `${artifact.type} - ${artifact.subtype}` : artifact.type;
+    },
+    
     goBack() {
       // Return to the customers list page
       console.log('goBack clicked - navigating to customers list')
@@ -819,6 +837,7 @@ export default {
         this.$inertia.post('/dashboard/customers/artifacts', {
           client_id: this.selectedCustomerForArtifact.id,
           type: this.newArtifact.type,
+          subtype: this.newArtifact.subtype,
           service: this.newArtifact.service,
           weight: this.newArtifact.weight,
           weight_unit: this.newArtifact.weight_unit,
@@ -832,6 +851,7 @@ export default {
             // Reset form
             this.newArtifact = {
               type: '',
+              subtype: '',
               service: '',
               weight: '',
               weight_unit: 'ct',

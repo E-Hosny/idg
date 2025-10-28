@@ -17,6 +17,7 @@ class Artifact extends Model
         'test_request_id',
         'artifact_code',
         'type',
+        'subtype',
         'service',
         'weight',
         'weight_unit',
