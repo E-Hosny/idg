@@ -1197,9 +1197,9 @@ class DashboardController extends Controller
                 'type' => 'required|string|max:255',
                 'subtype' => 'nullable|string|max:255',
                 'service' => 'required|string|max:255',
-                'weight' => 'required|numeric|min:0',
-                'weight_unit' => 'required|string|in:ct,g,kg,mg',
-                'delivery_type' => 'required|string|max:255',
+                'weight' => 'nullable|numeric|min:0',
+                'weight_unit' => 'nullable|string|in:ct,g,kg,mg',
+                'delivery_type' => 'nullable|string|max:255',
                 'notes' => 'nullable|string|max:1000',
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',

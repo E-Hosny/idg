@@ -301,14 +301,13 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Weight') }} *
+                            {{ __('Weight') }} <span class="text-gray-400">({{ __('Optional') }})</span>
                           </label>
                           <div class="flex space-x-2">
                             <input
                               v-model="editArtifactData.weight"
                               type="number"
                               step="0.01"
-                              required
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                               placeholder="0.00"
                             />
@@ -473,14 +472,13 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Weight') }} *
+                            {{ __('Weight') }} <span class="text-gray-400">({{ __('Optional') }})</span>
                           </label>
                           <div class="flex space-x-2">
                             <input
                               v-model="newArtifact.weight"
                               type="number"
                               step="0.01"
-                              required
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                               placeholder="0.00"
                             />
@@ -553,7 +551,7 @@
                         <button
                           @click="calculatePrice"
                           type="button"
-                          :disabled="addingArtifact || !newArtifact.type || !newArtifact.service || !newArtifact.weight"
+                          :disabled="addingArtifact || !newArtifact.type || !newArtifact.service"
                           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {{ __('Calculate') }}
@@ -568,7 +566,7 @@
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <button
                 type="submit"
-                :disabled="addingArtifact || !newArtifact.type || !newArtifact.service || !newArtifact.weight"
+                :disabled="addingArtifact || !newArtifact.type || !newArtifact.service"
                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
               >
                 <i v-if="addingArtifact" class="fas fa-spinner fa-spin mr-2"></i>
@@ -905,8 +903,8 @@ export default {
     
     async submitArtifact() {
       // Validate required fields
-      if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
-        alert(this.__('Please fill in all required fields (Type, Service, Weight)'))
+      if (!this.newArtifact.type || !this.newArtifact.service) {
+        alert(this.__('Please fill in all required fields (Type, Service)'))
         return
       }
 

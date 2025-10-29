@@ -1685,14 +1685,13 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
-                            {{ __('Weight') }} *
+                            {{ __('Weight') }} <span class="text-gray-400">({{ __('Optional') }})</span>
                           </label>
                           <div class="flex space-x-2">
                             <input
                               v-model="newArtifact.weight"
                               type="number"
                               step="0.01"
-                              required
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                               placeholder="0.00"
                             />
@@ -2415,7 +2414,13 @@ export default {
     },
     
     async calculatePriceForNewArtifact() {
-      if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
+      if (!this.newArtifact.type || !this.newArtifact.service) {
+        alert(this.__('Please fill in Type and Service to calculate price'))
+        return
+      }
+      
+      if (!this.newArtifact.weight) {
+        alert(this.__('Please enter weight to calculate price'))
         return
       }
 
@@ -2467,11 +2472,11 @@ export default {
     async submitArtifact() {
       this.addingArtifact = true
       try {
-        // Validate required fields
-        if (!this.newArtifact.type || !this.newArtifact.service || !this.newArtifact.weight) {
-          alert(this.__('Please fill in all required fields (Type, Service, Weight)'))
-          return
-        }
+      // Validate required fields
+      if (!this.newArtifact.type || !this.newArtifact.service) {
+        alert(this.__('Please fill in all required fields (Type, Service)'))
+        return
+      }
 
         // Submit artifact to Laravel backend
         this.$inertia.post('/dashboard/customers/artifacts', {
