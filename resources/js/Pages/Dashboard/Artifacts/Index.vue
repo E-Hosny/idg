@@ -171,21 +171,30 @@ export default {
     viewType: {
       type: String,
       default: 'all'
+    },
+    stats: {
+      type: Object,
+      default: () => ({
+        pending: 0,
+        under_evaluation: 0,
+        evaluated: 0,
+        certified: 0
+      })
     }
   },
 
   computed: {
     pendingCount() {
-      return this.artifacts?.data?.filter(a => a.status === 'pending').length || 0
+      return this.stats?.pending || 0
     },
     underEvaluationCount() {
-      return this.artifacts?.data?.filter(a => a.status === 'under_evaluation').length || 0
+      return this.stats?.under_evaluation || 0
     },
     evaluatedCount() {
-      return this.artifacts?.data?.filter(a => a.status === 'evaluated').length || 0
+      return this.stats?.evaluated || 0
     },
     certifiedCount() {
-      return this.artifacts?.data?.filter(a => a.status === 'certified').length || 0
+      return this.stats?.certified || 0
     }
   },
 

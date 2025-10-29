@@ -93,9 +93,18 @@ class DashboardController extends Controller
         // تحديد نوع العرض للصفحة
         $viewType = $request->get('view', 'all'); // all, pending
         
+        // حساب الإحصائيات من قاعدة البيانات بالكامل (وليس فقط البيانات المعروضة)
+        $stats = [
+            'pending' => Artifact::where('status', 'pending')->count(),
+            'under_evaluation' => Artifact::where('status', 'under_evaluation')->count(),
+            'evaluated' => Artifact::where('status', 'evaluated')->count(),
+            'certified' => Artifact::where('status', 'certified')->count(),
+        ];
+        
         return Inertia::render('Dashboard/Artifacts/Index', [
             'artifacts' => $artifacts,
             'viewType' => $viewType,
+            'stats' => $stats,
         ]);
     }
 
