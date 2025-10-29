@@ -47,7 +47,7 @@
           </thead>
           <tbody>
             <tr v-for="(artifact, idx) in artifacts.data" :key="artifact.id" class="border-b hover:bg-gray-50 transition">
-              <td class="px-4 py-2">{{ idx + 1 }}</td>
+              <td class="px-4 py-2">{{ (artifacts.current_page - 1) * artifacts.per_page + idx + 1 }}</td>
               <td class="px-4 py-2">{{ artifact.artifact_code }}</td>
               <td class="px-4 py-2">{{ artifact.test_request?.receiving_record_no || '-' }}</td>
               <td class="px-4 py-2">{{ getFullType(artifact) }}</td>
@@ -120,15 +120,52 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination -->
+      <div v-if="artifacts.last_page > 1" class="flex justify-between items-center mt-6">
+        <div class="text-sm text-gray-600">
+          {{ __('Showing') }} {{ ((artifacts.current_page - 1) * artifacts.per_page) + 1 }} 
+          {{ __('to') }} {{ Math.min(artifacts.current_page * artifacts.per_page, artifacts.total) }} 
+          {{ __('of') }} {{ artifacts.total }} {{ __('items') }}
+        </div>
+        <div class="flex space-x-2">
+          <Link 
+            v-if="artifacts.prev_page_url"
+            :href="artifacts.prev_page_url"
+            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+          >
+            {{ __('Previous') }}
+          </Link>
+          <span 
+            v-for="page in getPageNumbers()" 
+            :key="page"
+            class="px-4 py-2 border rounded-md transition"
+            :class="page === artifacts.current_page 
+              ? 'bg-green-600 text-white border-green-600' 
+              : 'border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer'"
+            @click="page !== artifacts.current_page && goToPage(page)"
+          >
+            {{ page }}
+          </span>
+          <Link 
+            v-if="artifacts.next_page_url"
+            :href="artifacts.next_page_url"
+            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+          >
+            {{ __('Next') }}
+          </Link>
+        </div>
+      </div>
     </div>
   </DashboardLayout>
 </template>
 
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
+import { Link } from '@inertiajs/vue3'
 
 export default {
-  components: { DashboardLayout },
+  components: { DashboardLayout, Link },
   props: {
     artifacts: Object,
     viewType: {
@@ -191,8 +228,49 @@ export default {
         'No pending items found.': 'لا توجد عناصر معلقة.',
         'Actions': 'الإجراءات',
         'Receiving Request No': 'رقم طلب الاستلام',
+        'Showing': 'عرض',
+        'to': 'من',
+        'of': 'من',
+        'Previous': 'السابق',
+        'Next': 'التالي',
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
+    },
+    
+    getPageNumbers() {
+      const current = this.artifacts.current_page
+      const last = this.artifacts.last_page
+      const pages = []
+      
+      // Show first page
+      if (last > 0) pages.push(1)
+      
+      // Show pages around current
+      const start = Math.max(2, current - 1)
+      const end = Math.min(last - 1, current + 1)
+      
+      if (start > 2) pages.push('...')
+      
+      for (let i = start; i <= end; i++) {
+        if (i !== 1 && i !== last) {
+          pages.push(i)
+        }
+      }
+      
+      if (end < last - 1) pages.push('...')
+      
+      // Show last page
+      if (last > 1) pages.push(last)
+      
+      return pages
+    },
+    
+    goToPage(page) {
+      if (page === '...' || page === this.artifacts.current_page) return
+      
+      const url = new URL(window.location.href)
+      url.searchParams.set('page', page)
+      this.$inertia.visit(url.toString())
     },
     formatDate(dateString) {
       if (!dateString) return ''
