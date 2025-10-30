@@ -751,12 +751,31 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function evaluatedArtifacts()
+    public function evaluatedArtifacts(Request $request)
     {
-        $artifacts = Artifact::with(['client', 'category', 'latestCertificate', 'testRequest'])
-            ->whereIn('status', ['evaluated', 'certified'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        // Server-side filtering with stable ordering to avoid duplicates across pages
+        $perPage = (int) ($request->get('per_page', 15));
+        if ($perPage < 5 || $perPage > 100) {
+            $perPage = 15;
+        }
+
+        $query = Artifact::with(['client', 'category', 'latestCertificate', 'testRequest'])
+            ->whereIn('status', ['evaluated', 'certified']);
+
+        // Optional filters
+        if ($request->filled('status') && in_array($request->status, ['evaluated', 'certified'], true)) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $artifacts = $query
+            // Stable ordering: created_at desc then id desc to ensure deterministic pagination
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('Dashboard/Artifacts/EvaluatedIndex', [
             'artifacts' => $artifacts,
