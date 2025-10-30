@@ -653,7 +653,7 @@ class DashboardController extends Controller
             
             // Result
             'result' => 'nullable|string|max:255',
-            'comments' => 'nullable|text',
+            'comments' => 'nullable|string',
             
             // Grader
             'grader_name' => 'nullable|string|max:255',
