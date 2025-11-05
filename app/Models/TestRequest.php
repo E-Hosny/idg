@@ -26,12 +26,27 @@ class TestRequest extends Model
         'delivery_date' => 'date',
     ];
 
+    protected $appends = [
+        'signed_document_url'
+    ];
+
     /**
      * Get the artifacts for this test request.
      */
     public function artifacts()
     {
         return $this->hasMany(Artifact::class);
+    }
+
+    /**
+     * Get signed document URL (from Spaces or local storage)
+     */
+    public function getSignedDocumentUrlAttribute()
+    {
+        if ($this->signed_document_path) {
+            return file_url($this->signed_document_path);
+        }
+        return null;
     }
 
     /**

@@ -6,11 +6,21 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\TestRequestController;
+use App\Http\Controllers\TestSpaceController;
 
 // Public routes
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/test-spaces', [TestSpaceController::class, 'testSpaces']);
+
+// File Service Test Routes
+Route::get('/test/files', [\App\Http\Controllers\FileTestController::class, 'showTestPage'])->name('test.files');
+Route::post('/test/file-upload', [\App\Http\Controllers\FileTestController::class, 'uploadTest'])->name('test.file-upload');
+Route::get('/test/file-operations', [\App\Http\Controllers\FileTestController::class, 'testFileOperations'])->name('test.file-operations');
+Route::get('/test/check-file-status', [\App\Http\Controllers\FileTestController::class, 'checkFileStatus'])->name('test.check-file-status');
+
 
 // Test endpoint for debugging (public)
 Route::get('/test-evaluation', [\App\Http\Controllers\TestController::class, 'testEvaluation'])->name('test.evaluation');
@@ -217,32 +227,20 @@ Route::get('/verify-artifact/{token}', [\App\Http\Controllers\PublicCertificateC
 // Direct certificate download route
 Route::get('/download-certificate/{token}', [\App\Http\Controllers\PublicCertificateController::class, 'downloadUploadedCertificate'])->name('public.download-certificate');
 
-// Custom file access route to avoid 403 errors
+// Custom file access route to avoid 403 errors - now supports Spaces
 Route::get('/files/{filename}', function($filename) {
-    $path = storage_path('app/public/' . $filename);
+    \Log::info('File access request', ['filename' => $filename]);
     
-    // Log the request for debugging
-    \Log::info('File access request', [
-        'filename' => $filename,
-        'full_path' => $path,
-        'exists' => file_exists($path),
-        'readable' => is_readable($path),
-        'permissions' => decoct(fileperms($path))
-    ]);
+    // Use FileService to serve the file (checks Spaces first, then local)
+    $response = serve_file($filename);
     
-    if (file_exists($path) && is_readable($path)) {
-        // Set proper headers for PDF files
-        if (pathinfo($filename, PATHINFO_EXTENSION) === 'pdf') {
-            return response()->file($path, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . basename($filename) . '"'
-            ]);
-        }
-        return response()->file($path);
+    if (!$response) {
+        \Log::warning('File not found in any storage', ['filename' => $filename]);
+        abort(404, 'File not found or not accessible');
     }
     
-    abort(404, 'File not found or not accessible');
-})->name('files.show');
+    return $response;
+})->where('filename', '.*')->name('files.show');
 
 // Alternative file access route using controller method
 Route::get('/certificate-file/{filename}', [\App\Http\Controllers\PublicCertificateController::class, 'serveFile'])->where('filename', '.*')->name('certificate.file');

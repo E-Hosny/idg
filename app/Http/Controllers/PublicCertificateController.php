@@ -145,18 +145,17 @@ class PublicCertificateController extends Controller
             abort(404, 'Certificate file not found.');
         }
 
-        $filePath = storage_path('app/public/' . $certificate->uploaded_certificate_path);
-        
-        if (!file_exists($filePath)) {
-            abort(404, 'Certificate file not found on disk.');
-        }
-
+        // Use FileService to download the file (checks Spaces first, then local)
         $artifact = $certificate->artifact;
         $fileName = 'certificate-' . $artifact->artifact_code . '.pdf';
+        
+        $response = download_file_anywhere($certificate->uploaded_certificate_path, $fileName);
+        
+        if (!$response) {
+            abort(404, 'Certificate file not found in storage.');
+        }
 
-        return response()->download($filePath, $fileName, [
-            'Content-Type' => 'application/pdf',
-        ]);
+        return $response;
     }
 
     /**
@@ -165,42 +164,22 @@ class PublicCertificateController extends Controller
     public function serveFile($filename)
     {
         try {
-            $filePath = storage_path('app/public/' . $filename);
-            
-            // Log the request for debugging
             \Log::info('Certificate file access request', [
                 'filename' => $filename,
-                'full_path' => $filePath,
-                'exists' => file_exists($filePath),
-                'readable' => is_readable($filePath),
-                'permissions' => file_exists($filePath) ? decoct(fileperms($filePath)) : 'N/A',
-                'file_size' => file_exists($filePath) ? filesize($filePath) : 'N/A',
                 'user_agent' => request()->header('User-Agent'),
                 'ip' => request()->ip()
             ]);
             
-            if (!file_exists($filePath)) {
-                \Log::warning('Certificate file not found', ['path' => $filePath]);
+            // Use FileService to serve the file (checks Spaces first, then local)
+            $response = serve_file($filename);
+            
+            if (!$response) {
+                \Log::warning('Certificate file not found in any storage', ['path' => $filename]);
                 abort(404, 'Certificate file not found');
             }
             
-            if (!is_readable($filePath)) {
-                \Log::error('Certificate file not readable', ['path' => $filePath]);
-                abort(403, 'Certificate file not accessible');
-            }
-            
-            // For PDF files, serve inline
-            if (pathinfo($filename, PATHINFO_EXTENSION) === 'pdf') {
-                \Log::info('Serving PDF file successfully', ['path' => $filePath]);
-                return response()->file($filePath, [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="' . basename($filename) . '"',
-                    'Cache-Control' => 'public, max-age=3600'
-                ]);
-            }
-            
-            // For other file types
-            return response()->file($filePath);
+            \Log::info('Serving certificate file successfully', ['path' => $filename]);
+            return $response;
             
         } catch (\Exception $e) {
             \Log::error('Error serving certificate file', [

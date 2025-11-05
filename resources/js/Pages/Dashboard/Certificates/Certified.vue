@@ -319,7 +319,8 @@ export default {
     viewUploadedCertificate(certificate) {
       // Open uploaded certificate in new window
       if (certificate.uploaded_certificate_path) {
-        const url = `/storage/${certificate.uploaded_certificate_path}`
+        // Use the custom certificate-file route to avoid 403 errors
+        const url = `/certificate-file/${certificate.uploaded_certificate_path}`
         window.open(url, '_blank')
       } else {
         alert(this.__('No uploaded certificate found'))
@@ -329,7 +330,8 @@ export default {
     downloadUploadedPDF(certificate) {
       // Download the uploaded PDF
       if (certificate.uploaded_certificate_path) {
-        const url = `/storage/${certificate.uploaded_certificate_path}`
+        // Use the custom certificate-file route to avoid 403 errors
+        const url = `/certificate-file/${certificate.uploaded_certificate_path}`
         const link = document.createElement('a')
         link.href = url
         link.download = `uploaded-certificate-${certificate.certificate_number}.pdf`

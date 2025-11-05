@@ -197,7 +197,8 @@ export default {
     
     downloadSignedDocument(request) {
       if (request.signed_document_path) {
-        window.location.href = `/storage/${request.signed_document_path}`;
+        // Use certificate-file route to check Spaces first, then local storage
+        window.location.href = `/certificate-file/${request.signed_document_path}`;
       } else {
         alert(this.__('No signed document available for download.'));
       }

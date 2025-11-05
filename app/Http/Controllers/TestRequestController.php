@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TestRequest;
 use App\Models\Artifact;
 use App\Services\QoyodService;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -369,25 +370,22 @@ class TestRequestController extends Controller
                 'signed_document.max' => 'File size must be less than 10MB.'
             ]);
 
-            // Ensure directory exists
-            $uploadDir = 'test-requests/signed';
-            Storage::disk('public')->makeDirectory($uploadDir);
-
             // Delete old signed document if exists
-            if ($testRequest->signed_document_path && Storage::disk('public')->exists($testRequest->signed_document_path)) {
-                Storage::disk('public')->delete($testRequest->signed_document_path);
+            if ($testRequest->signed_document_path) {
+                delete_file_anywhere($testRequest->signed_document_path);
                 \Log::info('Deleted old signed document', ['old_path' => $testRequest->signed_document_path]);
             }
 
-            // Store the signed document
+            // Store the signed document to Spaces
             $file = $request->file('signed_document');
             $originalName = $file->getClientOriginalName();
             $filename = 'signed-test-request-' . $testRequest->receiving_record_no . '-' . time() . '.pdf';
+            $uploadDir = 'test-requests/signed';
             
-            $path = $file->storeAs($uploadDir, $filename, 'public');
+            $path = upload_file($file, $uploadDir, $filename);
             
             if (!$path) {
-                throw new \Exception('Failed to store uploaded file');
+                throw new \Exception('Failed to store uploaded file to Spaces');
             }
 
             // Update test request with signed document path
@@ -398,7 +396,7 @@ class TestRequestController extends Controller
 
             if (!$updated) {
                 // Clean up uploaded file if database update fails
-                Storage::disk('public')->delete($path);
+                delete_file_anywhere($path);
                 throw new \Exception('Failed to update database record');
             }
 

@@ -52,7 +52,8 @@ class Certificate extends Model
 
     protected $appends = [
         'qr_code_url',
-        'public_url'
+        'public_url',
+        'uploaded_certificate_url'
     ];
 
     /**
@@ -200,6 +201,17 @@ class Certificate extends Model
             }
             // For other certificates, use verification route
             return url('/verify-artifact/' . $this->qr_code_token);
+        }
+        return null;
+    }
+
+    /**
+     * Get uploaded certificate file URL (from Spaces or local storage)
+     */
+    public function getUploadedCertificateUrlAttribute()
+    {
+        if ($this->uploaded_certificate_path) {
+            return file_url($this->uploaded_certificate_path);
         }
         return null;
     }

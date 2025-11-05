@@ -582,7 +582,8 @@ export default {
 
     viewUploadedCertificate(artifact) {
       if (artifact.latest_certificate && artifact.latest_certificate.uploaded_certificate_path) {
-        const url = `/storage/${artifact.latest_certificate.uploaded_certificate_path}`
+        // Use the custom certificate-file route to avoid 403 errors
+        const url = `/certificate-file/${artifact.latest_certificate.uploaded_certificate_path}`
         window.open(url, '_blank')
       } else {
         alert('لم يتم العثور على شهادة مرفوعة')

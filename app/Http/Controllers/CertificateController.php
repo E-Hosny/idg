@@ -379,16 +379,18 @@ class CertificateController extends Controller
             
             // If replacing an existing uploaded certificate, delete the old file first
             if ($certificate && $certificate->status === 'uploaded' && $certificate->uploaded_certificate_path) {
-                $oldFilePath = public_path('storage/' . $certificate->uploaded_certificate_path);
-                if (file_exists($oldFilePath)) {
-                    unlink($oldFilePath);
-                }
+                delete_file_anywhere($certificate->uploaded_certificate_path);
+                \Log::info('Deleted old certificate file', ['path' => $certificate->uploaded_certificate_path]);
             }
 
-            // Store the uploaded file
+            // Store the uploaded file to Spaces
             $certificateFile = $request->file('certificate_file');
             $fileName = 'certificate-' . $artifact->artifact_code . '-' . time() . '.pdf';
-            $filePath = $certificateFile->storeAs('certificates', $fileName, 'public');
+            $filePath = upload_file($certificateFile, 'certificates', $fileName);
+            
+            if (!$filePath) {
+                throw new \Exception('Failed to upload certificate file to Spaces');
+            }
 
             if (!$certificate) {
                 // Create a basic certificate record
