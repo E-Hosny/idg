@@ -335,3 +335,4 @@ $info = file_service()->getFileInfo('certificates/cert-123.pdf');
 التاريخ: **{{ now()->format('Y-m-d') }}**
 
 
+

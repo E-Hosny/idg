@@ -1074,7 +1074,7 @@ class DashboardController extends Controller
                 'weight_unit' => 'nullable|in:ct,gm',
                 'delivery_type' => 'nullable|string|max:100',
                 'notes' => 'nullable|string|max:1000',
-                'quantity' => 'nullable|integer|min:1|max:100', // Optional quantity for creating multiple artifacts
+                'quantity' => 'nullable|integer|min:1', // Optional quantity for creating multiple artifacts
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
