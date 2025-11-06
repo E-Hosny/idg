@@ -294,6 +294,18 @@
                         
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
+                            {{ $page.props.locale === 'ar' ? 'النوع الفرعي' : 'Subtype' }} <span class="text-gray-400">({{ __('Optional') }})</span>
+                          </label>
+                          <input
+                            v-model="editArtifactData.subtype"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="$page.props.locale === 'ar' ? 'أدخل النوع الفرعي' : 'Enter subtype'"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
                             {{ __('Service') }} *
                           </label>
                           <select
@@ -344,6 +356,18 @@
                               {{ option.label }}
                             </option>
                           </select>
+                        </div>
+                        
+                        <div v-if="editArtifactData.delivery_type === 'Specific Date'">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $page.props.locale === 'ar' ? 'التاريخ المحدد' : 'Specific Date' }} *
+                          </label>
+                          <input
+                            v-model="editArtifactData.specific_delivery_date"
+                            type="date"
+                            :required="editArtifactData.delivery_type === 'Specific Date'"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
                         </div>
                         
                         <div>
@@ -698,10 +722,12 @@ export default {
       selectedCustomerForArtifact: null,
       editArtifactData: {
         type: '',
+        subtype: '',
         service: '',
         weight: '',
         weight_unit: 'ct',
         delivery_type: '',
+        specific_delivery_date: '',
         price: '',
         status: 'pending',
         notes: ''
@@ -807,10 +833,12 @@ export default {
       this.selectedArtifact = artifact
       this.editArtifactData = {
         type: artifact.type || '',
+        subtype: artifact.subtype || '',
         service: artifact.service || '',
         weight: artifact.weight || '',
         weight_unit: artifact.weight_unit || 'ct',
         delivery_type: artifact.delivery_type || '',
+        specific_delivery_date: artifact.specific_delivery_date || '',
         price: artifact.price || '',
         status: artifact.status || 'pending',
         notes: artifact.notes || ''
