@@ -24,6 +24,7 @@ class Artifact extends Model
         'price',
         'notes',
         'delivery_type',
+        'specific_delivery_date',
         'expected_date',
         'title',
         'description',
@@ -59,6 +60,7 @@ class Artifact extends Model
         'estimated_value' => 'decimal:2',
         'acquisition_date' => 'date',
         'expected_date' => 'date',
+        'specific_delivery_date' => 'date',
         'evaluation_deadline' => 'datetime',
         'is_authentic' => 'boolean',
     ];

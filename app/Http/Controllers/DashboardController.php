@@ -1073,6 +1073,7 @@ class DashboardController extends Controller
                 'weight' => 'nullable|numeric',
                 'weight_unit' => 'nullable|in:ct,gm',
                 'delivery_type' => 'nullable|string|max:100',
+                'specific_delivery_date' => 'nullable|date|required_if:delivery_type,Specific Date',
                 'notes' => 'nullable|string|max:1000',
                 'quantity' => 'nullable|integer|min:1', // Optional quantity for creating multiple artifacts
             ], [
@@ -1127,6 +1128,7 @@ class DashboardController extends Controller
                 'weight_unit' => $validatedData['weight_unit'] ?? null,
                 'price' => $price,
                 'delivery_type' => $validatedData['delivery_type'] ?? null,
+                'specific_delivery_date' => $validatedData['specific_delivery_date'] ?? null,
                 'notes' => $validatedData['notes'] ?? null,
                 'status' => 'pending',
                 'title' => ['en' => '', 'ar' => ''],
@@ -1228,6 +1230,7 @@ class DashboardController extends Controller
                 'weight' => 'nullable|numeric|min:0',
                 'weight_unit' => 'nullable|string|in:ct,g,kg,mg',
                 'delivery_type' => 'nullable|string|max:255',
+                'specific_delivery_date' => 'nullable|date|required_if:delivery_type,Specific Date',
                 'notes' => 'nullable|string|max:1000',
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
@@ -1248,6 +1251,7 @@ class DashboardController extends Controller
                 'weight' => (string)$validatedData['weight'],
                 'weight_unit' => $validatedData['weight_unit'],
                 'delivery_type' => $validatedData['delivery_type'],
+                'specific_delivery_date' => $validatedData['specific_delivery_date'] ?? null,
                 'notes' => $validatedData['notes'],
                 'status' => 'pending',
                 'title' => ['en' => '', 'ar' => ''],

@@ -47,6 +47,7 @@ class ReceptionController extends Controller
             'artifacts.*.weight_unit' => 'nullable|in:ct,gm',
             'artifacts.*.notes' => 'nullable|string|max:1000',
             'artifacts.*.delivery_type' => 'nullable|string|max:100',
+            'artifacts.*.specific_delivery_date' => 'nullable|date',
         ]);
 
         \Log::info('Validation passed, creating client...');
@@ -125,6 +126,7 @@ class ReceptionController extends Controller
                     'price' => $price,
                     'notes' => $artifactData['notes'] ?? null,
                     'delivery_type' => $artifactData['delivery_type'] ?? null,
+                    'specific_delivery_date' => $artifactData['specific_delivery_date'] ?? null,
                     'status' => 'pending',
                     'title' => ['en' => '', 'ar' => ''],
                     'description' => ['en' => '', 'ar' => ''],
@@ -171,6 +173,7 @@ class ReceptionController extends Controller
             'weight' => 'nullable|string|max:50',
             'weight_unit' => 'nullable|in:ct,gm',
             'delivery_type' => 'nullable|string|max:100',
+            'specific_delivery_date' => 'nullable|date|required_if:delivery_type,Specific Date',
             'notes' => 'nullable|string|max:1000',
         ]);
         // حساب السعر تلقائياً
@@ -194,6 +197,7 @@ class ReceptionController extends Controller
             'weight_unit' => $data['weight_unit'] ?? null,
             'price' => $price,
             'delivery_type' => $data['delivery_type'] ?? null,
+            'specific_delivery_date' => $data['specific_delivery_date'] ?? null,
             'notes' => $data['notes'] ?? null,
             'status' => 'pending',
             'title' => json_encode(['en' => '', 'ar' => '']),

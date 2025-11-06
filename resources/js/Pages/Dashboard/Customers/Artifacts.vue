@@ -181,6 +181,9 @@
                   {{ __('Delivery Type') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ __('Delivery Date') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ __('Status') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -210,6 +213,12 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ artifact.delivery_type || '-' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ artifact.delivery_type === 'Specific Date' && artifact.specific_delivery_date 
+                      ? formatDate(artifact.specific_delivery_date) 
+                      : (artifact.expected_date ? formatDate(artifact.expected_date) : '-') 
+                  }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span 
@@ -508,6 +517,18 @@
                           </select>
                         </div>
                         
+                        <div v-if="newArtifact.delivery_type === 'Specific Date'">
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $page.props.locale === 'ar' ? 'التاريخ المحدد' : 'Specific Date' }} *
+                          </label>
+                          <input
+                            v-model="newArtifact.specific_delivery_date"
+                            type="date"
+                            :required="newArtifact.delivery_type === 'Specific Date'"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        
                         <div>
                           <label class="block text-sm font-medium text-gray-700">
                             {{ __('Quantity') }} <span class="text-gray-400">({{ __('Optional') }})</span>
@@ -692,6 +713,7 @@ export default {
         weight: '',
         weight_unit: 'ct',
         delivery_type: '',
+        specific_delivery_date: '',
         notes: '',
         price: '',
         quantity: 1 // Default to 1, will create sub-codes if > 1
@@ -714,6 +736,7 @@ export default {
         { value: '24 hours', label: this.$page.props.locale === 'ar' ? '24 ساعة' : '24 hours' },
         { value: '48 hours', label: this.$page.props.locale === 'ar' ? '48 ساعة' : '48 hours' },
         { value: '72 hours', label: this.$page.props.locale === 'ar' ? '72 ساعة' : '72 hours' },
+        { value: 'Specific Date', label: this.$page.props.locale === 'ar' ? 'تاريخ محدد' : 'Specific Date' },
       ]
     }
   },
@@ -878,6 +901,7 @@ export default {
             let finalPrice = priceValue
 
             // Calculate price based on delivery type
+            // Note: 'Regular' and 'Specific Date' use base price (1x)
             if (this.newArtifact.delivery_type === 'Same Day') {
               finalPrice = priceValue * 2
             } else if (this.newArtifact.delivery_type === '48 hours') {
@@ -885,6 +909,7 @@ export default {
             } else if (this.newArtifact.delivery_type === '72 hours') {
               finalPrice = priceValue * 0.5
             }
+            // For 'Regular', 'Specific Date', and other types: use base price (finalPrice = priceValue)
 
             this.newArtifact.price = finalPrice.toFixed(2)
           } else {
@@ -919,6 +944,7 @@ export default {
           weight: this.newArtifact.weight,
           weight_unit: this.newArtifact.weight_unit,
           delivery_type: this.newArtifact.delivery_type,
+          specific_delivery_date: this.newArtifact.specific_delivery_date,
           notes: this.newArtifact.notes,
           price: this.newArtifact.price,
           quantity: this.newArtifact.quantity
@@ -934,6 +960,7 @@ export default {
               weight: '',
               weight_unit: 'ct',
               delivery_type: '',
+              specific_delivery_date: '',
               notes: '',
               price: '',
               quantity: 1 // Reset to default
@@ -1146,6 +1173,7 @@ export default {
           'Artifact added successfully!': 'تم إضافة القطعة بنجاح!',
           'Artifact Information': 'معلومات القطعة',
           'Delivery Type': 'نوع التسليم',
+          'Delivery Date': 'تاريخ التسليم',
           'Select Delivery Type': 'اختر نوع التسليم',
           'Notes': 'ملاحظات',
           'Any additional notes about the artifact...': 'أي ملاحظات إضافية عن القطعة...',
