@@ -9,6 +9,45 @@
         </div>
       </div>
 
+      <!-- Filter Section -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">{{ __('Filter') }}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              {{ __('Item Code') }}
+            </label>
+            <input
+              v-model="filters.code"
+              type="text"
+              @input="applyFilters"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              :placeholder="__('Enter code')"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              {{ __('Receiving Request No') }}
+            </label>
+            <input
+              v-model="filters.receiving_record_no"
+              type="text"
+              @input="applyFilters"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              :placeholder="__('Enter receiving record number')"
+            />
+          </div>
+          <div class="flex items-end">
+            <button
+              @click="clearFilters"
+              class="w-full px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+            >
+              {{ __('Clear Filters') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Statistics Card -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -181,7 +220,7 @@
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export default {
   components: { DashboardLayout, Link },
@@ -204,9 +243,20 @@ export default {
       return props.artifacts?.data?.filter(a => a.type === 'Colorless Diamonds').length || 0
     })
 
+    const filterTimeout = ref(null)
+    
+    // تهيئة الفلاتر من URL parameters
+    const urlParams = new URLSearchParams(window.location.search)
+    const filters = ref({
+      code: urlParams.get('code') || '',
+      receiving_record_no: urlParams.get('receiving_record_no') || ''
+    })
+
     return {
       thisMonthCount,
-      diamondCount
+      diamondCount,
+      filters,
+      filterTimeout
     }
   },
 
@@ -258,6 +308,10 @@ export default {
         
         // Receiving Request No
         'Receiving Request No': 'رقم طلب الاستلام',
+        'Filter': 'فلترة',
+        'Enter code': 'أدخل الكود',
+        'Enter receiving record number': 'أدخل رقم طلب الاستلام',
+        'Clear Filters': 'مسح الفلاتر',
       }
       
       return this.$page.props.locale === 'ar' ? translations[key] || key : key
@@ -361,6 +415,61 @@ export default {
     downloadPDF(certificate) {
       // Download certificate as PDF
       window.open(`/certificates/${certificate.id}/pdf`, '_blank')
+    },
+
+    applyFilters() {
+      // استخدام debounce لتقليل عدد الطلبات
+      if (this.filterTimeout) {
+        clearTimeout(this.filterTimeout)
+      }
+      this.filterTimeout = setTimeout(() => {
+        const url = new URL(window.location.href)
+        
+        // الوصول إلى قيمة ref
+        const code = this.filters?.value?.code || this.filters?.code || ''
+        const receivingRecordNo = this.filters?.value?.receiving_record_no || this.filters?.receiving_record_no || ''
+        
+        if (code) {
+          url.searchParams.set('code', code)
+        } else {
+          url.searchParams.delete('code')
+        }
+        
+        if (receivingRecordNo) {
+          url.searchParams.set('receiving_record_no', receivingRecordNo)
+        } else {
+          url.searchParams.delete('receiving_record_no')
+        }
+        
+        // إعادة تعيين الصفحة إلى 1 عند الفلترة
+        url.searchParams.set('page', '1')
+        
+        this.$inertia.visit(url.toString(), {
+          preserveState: true,
+          preserveScroll: true
+        })
+      }, 500) // انتظار 500ms بعد توقف الكتابة
+    },
+
+    clearFilters() {
+      // تحديث قيمة ref
+      if (this.filters?.value) {
+        this.filters.value.code = ''
+        this.filters.value.receiving_record_no = ''
+      } else if (this.filters) {
+        this.filters.code = ''
+        this.filters.receiving_record_no = ''
+      }
+      
+      const url = new URL(window.location.href)
+      url.searchParams.delete('code')
+      url.searchParams.delete('receiving_record_no')
+      url.searchParams.set('page', '1')
+      
+      this.$inertia.visit(url.toString(), {
+        preserveState: true,
+        preserveScroll: true
+      })
     }
   }
 }

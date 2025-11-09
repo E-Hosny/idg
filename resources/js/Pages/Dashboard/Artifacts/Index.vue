@@ -9,6 +9,45 @@
         </div>
       </div>
 
+      <!-- Filter Section -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">{{ __('Filter') }}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              {{ __('Code') }}
+            </label>
+            <input
+              v-model="filters.code"
+              type="text"
+              @input="applyFilters"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              :placeholder="__('Enter code')"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              {{ __('Receiving Request No') }}
+            </label>
+            <input
+              v-model="filters.receiving_record_no"
+              type="text"
+              @input="applyFilters"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              :placeholder="__('Enter receiving record number')"
+            />
+          </div>
+          <div class="flex items-end">
+            <button
+              @click="clearFilters"
+              class="w-full px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+            >
+              {{ __('Clear Filters') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Statistics Cards (only for All Artifacts view) -->
       <div v-if="viewType === 'all'" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -180,6 +219,25 @@ export default {
         evaluated: 0,
         certified: 0
       })
+    },
+    filters: {
+      type: Object,
+      default: () => ({
+        code: '',
+        receiving_record_no: ''
+      })
+    }
+  },
+
+  data() {
+    // تهيئة الفلاتر من URL parameters
+    const urlParams = new URLSearchParams(window.location.search)
+    return {
+      filterTimeout: null,
+      filters: {
+        code: urlParams.get('code') || '',
+        receiving_record_no: urlParams.get('receiving_record_no') || ''
+      }
     }
   },
 
@@ -237,6 +295,10 @@ export default {
         'No pending items found.': 'لا توجد عناصر معلقة.',
         'Actions': 'الإجراءات',
         'Receiving Request No': 'رقم طلب الاستلام',
+        'Filter': 'فلترة',
+        'Enter code': 'أدخل الكود',
+        'Enter receiving record number': 'أدخل رقم طلب الاستلام',
+        'Clear Filters': 'مسح الفلاتر',
         'Showing': 'عرض',
         'to': 'من',
         'of': 'من',
@@ -335,6 +397,51 @@ export default {
             alert('حدث خطأ أثناء إنشاء الشهادة. يرجى المحاولة مرة أخرى.')
           }
         }
+      })
+    },
+
+    applyFilters() {
+      // استخدام debounce لتقليل عدد الطلبات
+      clearTimeout(this.filterTimeout)
+      this.filterTimeout = setTimeout(() => {
+        const url = new URL(window.location.href)
+        
+        if (this.filters.code) {
+          url.searchParams.set('code', this.filters.code)
+        } else {
+          url.searchParams.delete('code')
+        }
+        
+        if (this.filters.receiving_record_no) {
+          url.searchParams.set('receiving_record_no', this.filters.receiving_record_no)
+        } else {
+          url.searchParams.delete('receiving_record_no')
+        }
+        
+        // إعادة تعيين الصفحة إلى 1 عند الفلترة
+        url.searchParams.set('page', '1')
+        
+        this.$inertia.visit(url.toString(), {
+          preserveState: true,
+          preserveScroll: true
+        })
+      }, 500) // انتظار 500ms بعد توقف الكتابة
+    },
+
+    clearFilters() {
+      this.filters = {
+        code: '',
+        receiving_record_no: ''
+      }
+      
+      const url = new URL(window.location.href)
+      url.searchParams.delete('code')
+      url.searchParams.delete('receiving_record_no')
+      url.searchParams.set('page', '1')
+      
+      this.$inertia.visit(url.toString(), {
+        preserveState: true,
+        preserveScroll: true
       })
     }
   }

@@ -175,18 +175,37 @@ class CertificateController extends Controller
     /**
      * Display all certified artifacts including uploaded certificates
      */
-    public function certified()
+    public function certified(Request $request)
     {
-        $artifacts = Artifact::with(['client', 'latestCertificate', 'testRequest'])
+        $query = Artifact::with(['client', 'latestCertificate', 'testRequest'])
             ->where('status', 'certified')
             ->whereHas('latestCertificate', function($query) {
                 $query->whereIn('status', ['issued', 'uploaded']);
-            })
+            });
+
+        // فلترة حسب الكود (Code)
+        if ($request->filled('code')) {
+            $query->where('artifact_code', 'like', '%' . $request->code . '%');
+        }
+        
+        // فلترة حسب رقم طلب الاستلام (Receiving Request No)
+        if ($request->filled('receiving_record_no')) {
+            $query->whereHas('testRequest', function($q) use ($request) {
+                $q->where('receiving_record_no', 'like', '%' . $request->receiving_record_no . '%');
+            });
+        }
+
+        $artifacts = $query
             ->orderBy('updated_at', 'desc')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return Inertia::render('Dashboard/Certificates/Certified', [
             'artifacts' => $artifacts,
+            'filters' => [
+                'code' => $request->get('code', ''),
+                'receiving_record_no' => $request->get('receiving_record_no', ''),
+            ],
         ]);
     }
 

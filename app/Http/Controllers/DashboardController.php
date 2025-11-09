@@ -88,7 +88,19 @@ class DashboardController extends Controller
         }
         // وإلا عرض جميع القطع (Total Artifacts)
         
-        $artifacts = $query->orderBy('created_at', 'desc')->paginate(15);
+        // فلترة حسب الكود (Code)
+        if ($request->filled('code')) {
+            $query->where('artifact_code', 'like', '%' . $request->code . '%');
+        }
+        
+        // فلترة حسب رقم طلب الاستلام (Receiving Request No)
+        if ($request->filled('receiving_record_no')) {
+            $query->whereHas('testRequest', function($q) use ($request) {
+                $q->where('receiving_record_no', 'like', '%' . $request->receiving_record_no . '%');
+            });
+        }
+        
+        $artifacts = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         
         // تحديد نوع العرض للصفحة
         $viewType = $request->get('view', 'all'); // all, pending
@@ -105,6 +117,10 @@ class DashboardController extends Controller
             'artifacts' => $artifacts,
             'viewType' => $viewType,
             'stats' => $stats,
+            'filters' => [
+                'code' => $request->get('code', ''),
+                'receiving_record_no' => $request->get('receiving_record_no', ''),
+            ],
         ]);
     }
 
@@ -769,6 +785,18 @@ class DashboardController extends Controller
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
+        
+        // فلترة حسب الكود (Code)
+        if ($request->filled('code')) {
+            $query->where('artifact_code', 'like', '%' . $request->code . '%');
+        }
+        
+        // فلترة حسب رقم طلب الاستلام (Receiving Request No)
+        if ($request->filled('receiving_record_no')) {
+            $query->whereHas('testRequest', function($q) use ($request) {
+                $q->where('receiving_record_no', 'like', '%' . $request->receiving_record_no . '%');
+            });
+        }
 
         $artifacts = $query
             // Stable ordering: created_at desc then id desc to ensure deterministic pagination
@@ -779,6 +807,10 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Artifacts/EvaluatedIndex', [
             'artifacts' => $artifacts,
+            'filters' => [
+                'code' => $request->get('code', ''),
+                'receiving_record_no' => $request->get('receiving_record_no', ''),
+            ],
         ]);
     }
 
