@@ -77,6 +77,54 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');
     });
     
+    // Refresh products from Qoyod (clear cache and fetch new)
+    Route::post('/dashboard/api/refresh-products', [DashboardController::class, 'refreshProducts'])->name('dashboard.api.refresh-products');
+    
+    // Test page to view products and prices (for debugging)
+    Route::get('/dashboard/api/test-products', function() {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            
+            // Clear cache and get fresh data
+            $qoyodService->clearProductsCache();
+            $result = $qoyodService->getProducts();
+            
+            $products = $result['products'] ?? [];
+            
+            // Group products by price status
+            $withPrices = array_filter($products, fn($p) => $p['price'] > 0);
+            $withoutPrices = array_filter($products, fn($p) => $p['price'] == 0);
+            
+            // Sample products for debugging
+            $samples = array_slice($products, 0, 5);
+            
+            return response()->json([
+                'success' => true,
+                'total_products' => count($products),
+                'products_with_prices' => count($withPrices),
+                'products_without_prices' => count($withoutPrices),
+                'sample_products' => array_map(function($p) {
+                    return [
+                        'id' => $p['id'],
+                        'name_ar' => $p['name_ar'],
+                        'price' => $p['price'],
+                        'original_qoyod_price' => $p['original_qoyod_price'],
+                        'is_local_pricing' => $p['is_local_pricing']
+                    ];
+                }, $samples),
+                'message' => 'تحقق من storage/logs/laravel.log للمزيد من التفاصيل'
+            ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    })->name('dashboard.api.test-products');
+    
     // Debug route for testing Qoyod connection
     Route::get('/dashboard/api/test-qoyod', function(\Illuminate\Http\Request $request) {
         try {

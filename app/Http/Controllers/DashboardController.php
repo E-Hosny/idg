@@ -3235,4 +3235,44 @@ class DashboardController extends Controller
             return redirect()->back()->withErrors(['error' => 'An error occurred while loading the invoice for editing.']);
         }
     }
+
+    /**
+     * Refresh products from Qoyod (clear cache and fetch new data)
+     */
+    public function refreshProducts()
+    {
+        try {
+            \Log::info('Manual products refresh requested');
+            
+            $qoyodService = new \App\Services\QoyodService();
+            $result = $qoyodService->refreshProducts();
+            
+            \Log::info('Products refreshed successfully', [
+                'total_products' => count($result['products'] ?? [])
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Products refreshed successfully from Qoyod',
+                'total_products' => count($result['products'] ?? []),
+                'products_with_prices' => count(array_filter($result['products'] ?? [], function($p) {
+                    return $p['price'] > 0;
+                })),
+                'products_without_prices' => count(array_filter($result['products'] ?? [], function($p) {
+                    return $p['price'] == 0;
+                }))
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error refreshing products', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error refreshing products: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

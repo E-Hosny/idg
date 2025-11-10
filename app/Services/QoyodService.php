@@ -453,6 +453,29 @@ class QoyodService
     }
 
     /**
+     * Clear products cache to force refresh from Qoyod
+     */
+    public function clearProductsCache()
+    {
+        Cache::forget('qoyod_all_products');
+        Log::info('Products cache cleared - will be refreshed on next request');
+        return true;
+    }
+
+    /**
+     * Refresh products immediately (clear cache and fetch new data)
+     */
+    public function refreshProducts()
+    {
+        $this->clearProductsCache();
+        $products = $this->getProducts();
+        Log::info('Products refreshed from Qoyod', [
+            'total_products' => count($products['products'] ?? [])
+        ]);
+        return $products;
+    }
+
+    /**
      * Get invoices for a specific customer
      */
     public function getCustomerInvoices($customerId, $page = 1, $perPage = 50)
@@ -894,77 +917,152 @@ class QoyodService
 
     /**
      * Get products from Qoyod for line items
+     * This method fetches ALL products from ALL pages
      */
     public function getProducts($page = 1, $perPage = 100)
     {
         try {
-            $cacheKey = "qoyod_products_page_{$page}_per_{$perPage}";
+            // Use a single cache key for all products to ensure consistency
+            $cacheKey = "qoyod_all_products";
             
-            return Cache::remember($cacheKey, 300, function () use ($page, $perPage) {
-                $response = Http::timeout($this->timeout)
-                    ->withHeaders([
-                        'API-KEY' => $this->apiKey,
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                    ])
-                    ->get("{$this->baseUrl}/products", [
-                        'page' => $page,
-                        'per_page' => $perPage,
-                    ]);
+            return Cache::remember($cacheKey, 60, function () use ($perPage) {
+                $allProducts = [];
+                $currentPage = 1;
+                $hasMorePages = true;
+                
+                Log::info('Starting to fetch all products from Qoyod');
+                
+                // Fetch all pages
+                while ($hasMorePages) {
+                    $response = Http::timeout($this->timeout)
+                        ->withHeaders([
+                            'API-KEY' => $this->apiKey,
+                            'Accept' => 'application/json',
+                            'Content-Type' => 'application/json',
+                        ])
+                        ->get("{$this->baseUrl}/products", [
+                            'page' => $currentPage,
+                            'per_page' => $perPage,
+                        ]);
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    Log::info('Qoyod products fetched successfully', [
-                        'page' => $page,
-                        'per_page' => $perPage,
-                        'total' => count($data['products'] ?? [])
-                    ]);
-                    
-                    // Transform products to include both Arabic and English names
-                    $products = [];
-                    foreach ($data['products'] ?? [] as $product) {
-                        // Get local pricing data
-                        $localPrice = $this->getLocalPricingForProduct($product);
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        $products = $data['products'] ?? [];
                         
-                        $products[] = [
+                        Log::info('Qoyod products page fetched', [
+                            'page' => $currentPage,
+                            'count' => count($products)
+                        ]);
+                        
+                        if (empty($products)) {
+                            $hasMorePages = false;
+                        } else {
+                            // Add products to our collection
+                            foreach ($products as $product) {
+                                $allProducts[] = $product;
+                            }
+                            
+                            // Check if there are more pages
+                            $meta = $data['meta'] ?? [];
+                            if (isset($meta['current_page']) && isset($meta['total_pages'])) {
+                                $hasMorePages = $meta['current_page'] < $meta['total_pages'];
+                            } else {
+                                // If no meta, check if we got less than perPage items
+                                $hasMorePages = count($products) >= $perPage;
+                            }
+                            
+                            $currentPage++;
+                        }
+                    } else {
+                        Log::error('Failed to fetch products from Qoyod', [
+                            'page' => $currentPage,
+                            'status' => $response->status(),
+                            'response' => $response->body()
+                        ]);
+                        $hasMorePages = false;
+                    }
+                }
+                
+                Log::info('Finished fetching all products from Qoyod', [
+                    'total_products' => count($allProducts),
+                    'total_pages' => $currentPage - 1
+                ]);
+                
+                // Transform products to include both Arabic and English names and local pricing
+                $transformedProducts = [];
+                $productsWithMissingPrices = [];
+                
+                foreach ($allProducts as $product) {
+                    // Get local pricing data
+                    $localPrice = $this->getLocalPricingForProduct($product);
+                    
+                    // Try multiple price fields from Qoyod
+                    // Qoyod uses 'selling_price' as the field name
+                    $qoyodPrice = $product['selling_price'] ?? 
+                                 $product['sell_price'] ?? 
+                                 $product['price'] ?? 
+                                 $product['unit_price'] ?? 
+                                 $product['sale_price'] ?? 0;
+                    
+                    // Use local price if available, otherwise use Qoyod price
+                    $finalPrice = $localPrice !== null ? $localPrice : $qoyodPrice;
+                    
+                    // Log products that have price in Qoyod but showing as 0
+                    if ($qoyodPrice == 0 && ($product['sell_price'] ?? false) !== false) {
+                        $productsWithMissingPrices[] = [
                             'id' => $product['id'],
-                            'name' => $product['name_en'] ?? $product['name_ar'] ?? 'Unknown Product',
-                            'name_ar' => $product['name_ar'] ?? 'منتج غير معروف',
-                            'name_en' => $product['name_en'] ?? 'Unknown Product',
-                            'description' => $product['description'] ?? '',
-                            'category_id' => $product['category_id'] ?? null,
-                            'type' => $product['type'] ?? 'Product',
-                            'unit_type' => $product['unit_type'] ?? null,
-                            'unit' => $product['unit'] ?? '',
-                            'price' => $localPrice !== null ? $localPrice : ($product['price'] ?? 0),
-                            'original_qoyod_price' => $product['price'] ?? 0,
-                            'is_local_pricing' => $localPrice !== null,
-                            'created_at' => $product['created_at'] ?? null,
-                            'updated_at' => $product['updated_at'] ?? null
+                            'name' => $product['name_ar'] ?? $product['name_en'],
+                            'raw_product' => $product
                         ];
                     }
                     
-                    return [
-                        'products' => $products,
-                        'meta' => [
-                            'current_page' => $page,
-                            'per_page' => $perPage,
-                            'total' => count($products)
-                        ]
+                    $transformedProducts[] = [
+                        'id' => $product['id'],
+                        'name' => $product['name_en'] ?? $product['name_ar'] ?? 'Unknown Product',
+                        'name_ar' => $product['name_ar'] ?? 'منتج غير معروف',
+                        'name_en' => $product['name_en'] ?? 'Unknown Product',
+                        'description' => $product['description'] ?? '',
+                        'category_id' => $product['category_id'] ?? null,
+                        'type' => $product['type'] ?? 'Product',
+                        'unit_type' => $product['unit_type'] ?? null,
+                        'unit' => $product['unit'] ?? '',
+                        'price' => $finalPrice,
+                        'original_qoyod_price' => $qoyodPrice,
+                        'is_local_pricing' => $localPrice !== null,
+                        'created_at' => $product['created_at'] ?? null,
+                        'updated_at' => $product['updated_at'] ?? null
                     ];
                 }
-
-                Log::error('Failed to fetch products from Qoyod', [
-                    'status' => $response->status(),
-                    'response' => $response->body()
+                
+                // Log sample of products with their price fields for debugging
+                if (count($allProducts) > 0) {
+                    $sampleProduct = $allProducts[0];
+                    Log::info('Sample product raw data from Qoyod', [
+                        'product_id' => $sampleProduct['id'] ?? 'unknown',
+                        'product_name' => $sampleProduct['name_ar'] ?? $sampleProduct['name_en'] ?? 'Unknown',
+                        'price_fields' => [
+                            'selling_price' => $sampleProduct['selling_price'] ?? 'not set',
+                            'buying_price' => $sampleProduct['buying_price'] ?? 'not set',
+                            'price' => $sampleProduct['price'] ?? 'not set',
+                            'sell_price' => $sampleProduct['sell_price'] ?? 'not set',
+                        ]
+                    ]);
+                }
+                
+                Log::info('Products transformed with pricing', [
+                    'total_products' => count($transformedProducts),
+                    'products_with_local_pricing' => count(array_filter($transformedProducts, function($p) {
+                        return $p['is_local_pricing'] === true;
+                    })),
+                    'products_with_zero_price' => count(array_filter($transformedProducts, function($p) {
+                        return $p['price'] == 0;
+                    }))
                 ]);
-
+                
                 return [
-                    'products' => [],
+                    'products' => $transformedProducts,
                     'meta' => [
-                        'current_page' => $page,
-                        'per_page' => $perPage,
-                        'total' => 0
+                        'total' => count($transformedProducts)
                     ]
                 ];
             });
@@ -976,8 +1074,6 @@ class QoyodService
             return [
                 'products' => [],
                 'meta' => [
-                    'current_page' => $page,
-                    'per_page' => $perPage,
                     'total' => 0
                 ]
             ];
@@ -1094,6 +1190,10 @@ class QoyodService
 
             $productName = $product['name_ar'] ?? $product['name_en'] ?? '';
             
+            // Normalize product name: remove extra spaces and normalize punctuation
+            $productName = preg_replace('/\s+/', ' ', $productName); // Multiple spaces to single space
+            $productName = trim($productName);
+            
             Log::info('Checking local pricing for product', [
                 'product_name' => $productName,
                 'product_id' => $product['id'] ?? 'unknown'
@@ -1104,44 +1204,62 @@ class QoyodService
                 $artifactType = 'Colored Gemstones';
                 $weightRange = $matches[1];
                 
-                // Determine service type from Arabic name
+                // Normalize weight range
+                $weightRange = str_replace(['،', ' '], ['-', ''], $weightRange); // Convert Arabic comma to dash
+                $weightRange = preg_replace('/\s+/', '', $weightRange); // Remove all spaces
+                
+                // Determine service type from Arabic name (more flexible matching)
                 $serviceType = null;
-                if (strpos($productName, 'تقرير كبير') !== false && strpos($productName, 'المنشأ') === false) {
+                $normalizedName = mb_strtolower($productName);
+                
+                // Check for report type and origin
+                $hasOrigin = (strpos($normalizedName, 'المنشأ') !== false);
+                $hasBigReport = (strpos($normalizedName, 'تقرير كبير') !== false || 
+                                strpos($normalizedName, 'تقريركبير') !== false ||
+                                (strpos($normalizedName, 'تقرير') !== false && 
+                                 strpos($normalizedName, 'صغير') === false && 
+                                 strpos($normalizedName, 'بطاقة') === false));
+                $hasSmallReport = (strpos($normalizedName, 'تقرير صغير') !== false || 
+                                  strpos($normalizedName, 'تقريرصغير') !== false ||
+                                  strpos($normalizedName, 'بطاقة') !== false);
+                
+                if ($hasBigReport && !$hasOrigin) {
                     $serviceType = 'Regular - ID Report';
-                } elseif (strpos($productName, 'تقرير') !== false && strpos($productName, 'المنشأ') !== false) {
+                } elseif ($hasBigReport && $hasOrigin) {
                     $serviceType = 'Regular - ID + Origin';
-                } elseif (strpos($productName, 'بطاقة') !== false && strpos($productName, 'المنشأ') === false) {
+                } elseif ($hasSmallReport && !$hasOrigin) {
                     $serviceType = 'Mini Card Report - ID Report';
-                } elseif (strpos($productName, 'بطاقة') !== false && strpos($productName, 'المنشأ') !== false) {
+                } elseif ($hasSmallReport && $hasOrigin) {
                     $serviceType = 'Mini Card Report - ID + Origin';
                 }
                 
-                // Parse weight range
-                if (strpos($weightRange, '-') !== false) {
-                    preg_match('/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/', $weightRange, $weightMatches);
-                    if (count($weightMatches) >= 3) {
-                        $minWeight = (float)$weightMatches[1];
-                        $maxWeight = (float)$weightMatches[2];
-                        
-                        // Find matching pricing entry
-                        Log::info('Looking for pricing match', [
-                            'artifact_type' => $artifactType,
-                            'service_type' => $serviceType,
-                            'min_weight' => $maxWeight, // Note: swap order in Arabic product names
-                            'max_weight' => $minWeight
-                        ]);
-                        
-                        foreach ($pricingData as $pricing) {
-                            if ($pricing['artifact_type'] === $artifactType && 
-                                $pricing['service_type'] === $serviceType &&
-                                $pricing['min_weight'] == $maxWeight && // Note: swap order in Arabic product names
-                                $pricing['max_weight'] == $minWeight) {
-                                Log::info('Found pricing match', [
-                                    'price' => $pricing['price'],
-                                    'pricing_id' => $pricing['id']
-                                ]);
-                                return (float)$pricing['price'];
-                            }
+                // Parse weight range (support both - and ،)
+                if (preg_match('/(\d+\.?\d*)\s*[-،]\s*(\d+\.?\d*)/', $weightRange, $weightMatches)) {
+                    $weight1 = (float)$weightMatches[1];
+                    $weight2 = (float)$weightMatches[2];
+                    
+                    // Determine which is min and which is max
+                    $minWeightInName = min($weight1, $weight2);
+                    $maxWeightInName = max($weight1, $weight2);
+                    
+                    // Find matching pricing entry
+                    Log::info('Looking for pricing match', [
+                        'artifact_type' => $artifactType,
+                        'service_type' => $serviceType,
+                        'min_weight_in_name' => $minWeightInName,
+                        'max_weight_in_name' => $maxWeightInName
+                    ]);
+                    
+                    foreach ($pricingData as $pricing) {
+                        if ($pricing['artifact_type'] === $artifactType && 
+                            $pricing['service_type'] === $serviceType &&
+                            (float)$pricing['min_weight'] == $minWeightInName &&
+                            (float)$pricing['max_weight'] == $maxWeightInName) {
+                            Log::info('Found pricing match', [
+                                'price' => $pricing['price'],
+                                'pricing_id' => $pricing['id']
+                            ]);
+                            return (float)$pricing['price'];
                         }
                     }
                 } elseif (preg_match('/(\d+\.?\d*)/', $weightRange, $singleWeight)) {
@@ -1152,8 +1270,8 @@ class QoyodService
                         if ($pricing['artifact_type'] === $artifactType && 
                             $pricing['service_type'] === $serviceType) {
                             // Check if weight falls within range
-                            if (($pricing['min_weight'] <= $weight) &&
-                                ($pricing['max_weight'] === null || $pricing['max_weight'] >= $weight)) {
+                            if (((float)$pricing['min_weight'] <= $weight) &&
+                                ($pricing['max_weight'] === null || (float)$pricing['max_weight'] >= $weight)) {
                                 return (float)$pricing['price'];
                             }
                         }
