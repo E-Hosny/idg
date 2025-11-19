@@ -399,6 +399,20 @@
                           </select>
                         </div>
                         
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ __('Quantity') }} <span class="text-gray-400">({{ __('Optional') }})</span>
+                          </label>
+                          <input
+                            v-model="editArtifactData.quantity"
+                            type="number"
+                            min="1"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            :placeholder="__('Enter quantity (default: 1)')"
+                          />
+                          <p class="mt-1 text-xs text-gray-500">{{ __('If quantity > 1, items will be created with sub-codes (e.g., GR123-1, GR123-2)') }}</p>
+                        </div>
+                        
                         <div class="md:col-span-2">
                           <label class="block text-sm font-medium text-gray-700">
                             {{ __('Notes') }}
@@ -730,7 +744,8 @@ export default {
         specific_delivery_date: '',
         price: '',
         status: 'pending',
-        notes: ''
+        notes: '',
+        quantity: 1
       },
       newArtifact: {
         type: '',
@@ -831,6 +846,9 @@ export default {
     
     editArtifact(artifact) {
       this.selectedArtifact = artifact
+      // Get current quantity from count (if grouped) or default to 1
+      const currentQuantity = artifact.count || artifact.ids?.length || 1
+      
       this.editArtifactData = {
         type: artifact.type || '',
         subtype: artifact.subtype || '',
@@ -841,7 +859,8 @@ export default {
         specific_delivery_date: artifact.specific_delivery_date || '',
         price: artifact.price || '',
         status: artifact.status || 'pending',
-        notes: artifact.notes || ''
+        notes: artifact.notes || '',
+        quantity: currentQuantity
       }
       this.showEditArtifactModal = true
     },
@@ -849,7 +868,17 @@ export default {
     async updateArtifact() {
       this.updatingArtifact = true
       try {
-        this.$inertia.put(`/dashboard/artifacts/${this.selectedArtifact.id}`, this.editArtifactData, {
+        // Prepare data with quantity and artifact IDs (for grouped artifacts)
+        const updateData = {
+          ...this.editArtifactData,
+          quantity: parseInt(this.editArtifactData.quantity) || 1,
+          artifact_ids: this.selectedArtifact.ids || [this.selectedArtifact.id]
+        }
+        
+        console.log('Updating artifact with data:', updateData)
+        console.log('Selected artifact:', this.selectedArtifact)
+        
+        this.$inertia.put(`/dashboard/artifacts/${this.selectedArtifact.id}`, updateData, {
           onFinish: () => {
             this.updatingArtifact = false
             this.showEditArtifactModal = false

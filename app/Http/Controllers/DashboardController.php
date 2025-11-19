@@ -1567,6 +1567,9 @@ class DashboardController extends Controller
                 'price' => 'nullable|numeric',
                 'status' => 'required|string|in:pending,under_evaluation,evaluated,certified,rejected',
                 'notes' => 'nullable|string|max:1000',
+                'quantity' => 'nullable|integer|min:1',
+                'artifact_ids' => 'nullable|array',
+                'artifact_ids.*' => 'integer|exists:artifacts,id',
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
@@ -1575,14 +1578,47 @@ class DashboardController extends Controller
             \Log::info('Updating artifact', [
                 'artifact_id' => $artifact->id,
                 'artifact_code' => $artifact->artifact_code,
-                'data' => $validatedData
+                'data' => $validatedData,
+                'raw_quantity' => $request->input('quantity'),
+                'validated_quantity' => $validatedData['quantity'] ?? null
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
-            // Update artifact
-            $artifact->update([
+            // Get quantity, default to 1
+            $quantity = isset($validatedData['quantity']) ? intval($validatedData['quantity']) : 1;
+            
+            // Extract base code from current artifact
+            $currentCode = $artifact->artifact_code;
+            $hasSubCode = preg_match('/-\d+$/', $currentCode);
+            $baseCode = $hasSubCode ? preg_replace('/-\d+$/', '', $currentCode) : $currentCode;
+            
+            // Find all artifacts with the same base code (to handle grouped artifacts)
+            // Search by base code pattern
+            $existingArtifacts = \App\Models\Artifact::where(function($query) use ($baseCode, $artifact) {
+                // Match exact base code or base code with sub-code
+                $query->where('artifact_code', $baseCode)
+                      ->orWhere('artifact_code', 'like', $baseCode . '-%');
+            })
+            ->where(function($query) use ($artifact) {
+                // Same customer and test request
+                $query->where('qoyod_customer_id', $artifact->qoyod_customer_id)
+                      ->orWhere('client_id', $artifact->client_id);
+            })
+            ->get();
+            
+            $currentCount = $existingArtifacts->count();
+            
+            \Log::info('Artifact update - quantity handling', [
+                'requested_quantity' => $quantity,
+                'current_count' => $currentCount,
+                'base_code' => $baseCode,
+                'artifact_ids' => $existingArtifacts->pluck('id')->toArray()
+            ]);
+            
+            // Prepare update data
+            $updateData = [
                 'type' => $validatedData['type'],
                 'subtype' => $validatedData['subtype'] ?? null,
                 'service' => $validatedData['service'] ?? null,
@@ -1593,20 +1629,113 @@ class DashboardController extends Controller
                 'price' => $validatedData['price'] ?? null,
                 'status' => $validatedData['status'],
                 'notes' => $validatedData['notes'] ?? null,
-            ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-            ]);
+            ];
+            
+            // Update all existing artifacts
+            foreach ($existingArtifacts as $existingArtifact) {
+                $existingArtifact->update($updateData);
+            }
+            
+            // Handle quantity changes
+            if ($quantity > $currentCount) {
+                // Need to create more artifacts
+                $newCount = $quantity - $currentCount;
+                
+                // If we have a single artifact without sub-code and quantity > 1,
+                // we need to update the original artifact to have sub-code -1
+                if ($currentCount == 1 && !$hasSubCode && $quantity > 1) {
+                    // Update the original artifact to have sub-code -1
+                    $artifact->update(['artifact_code' => $baseCode . '-1']);
+                    // Refresh the artifact to get updated code
+                    $artifact->refresh();
+                    $startIndex = 2; // Start creating from -2
+                } else {
+                    // Find the highest existing sub-code number
+                    $maxSubCode = 0;
+                    foreach ($existingArtifacts as $existingArtifact) {
+                        $code = $existingArtifact->artifact_code;
+                        if (preg_match('/-(\d+)$/', $code, $matches)) {
+                            $subCodeNum = intval($matches[1]);
+                            if ($subCodeNum > $maxSubCode) {
+                                $maxSubCode = $subCodeNum;
+                            }
+                        }
+                    }
+                    $startIndex = $maxSubCode + 1;
+                }
+                
+                // Create new artifacts
+                for ($i = $startIndex; $i <= $quantity; $i++) {
+                    $newArtifactCode = $baseCode . '-' . $i;
+                    
+                    \App\Models\Artifact::create(array_merge($updateData, [
+                        'client_id' => $artifact->client_id,
+                        'qoyod_customer_id' => $artifact->qoyod_customer_id,
+                        'test_request_id' => $artifact->test_request_id,
+                        'artifact_code' => $newArtifactCode,
+                        'title' => ['en' => '', 'ar' => ''],
+                        'description' => ['en' => '', 'ar' => ''],
+                        'category_id' => null,
+                    ]));
+                }
+            } elseif ($quantity < $currentCount) {
+                // Need to delete excess artifacts
+                // Delete artifacts with highest sub-code numbers first (e.g., x-3 before x-1)
+                $excessCount = $currentCount - $quantity;
+                
+                // Sort artifacts by sub-code number descending (highest numbers first)
+                $sortedArtifacts = $existingArtifacts->sortByDesc(function($artifact) use ($baseCode) {
+                    $code = $artifact->artifact_code;
+                    
+                    // If it's the base code (no sub-code), return -1 (keep it, lowest priority for deletion)
+                    if ($code === $baseCode) {
+                        return -1;
+                    }
+                    
+                    // Extract sub-code number (e.g., GR123-3 -> 3, GR123-1 -> 1)
+                    if (preg_match('/-(\d+)$/', $code, $matches)) {
+                        return intval($matches[1]);
+                    }
+                    
+                    // If no number found, return 0
+                    return 0;
+                }); // Sort descending (highest numbers first)
+                
+                // Take the artifacts with highest sub-code numbers to delete
+                $artifactsToDelete = $sortedArtifacts->take($excessCount);
+                
+                foreach ($artifactsToDelete as $artifactToDelete) {
+                    \Log::info('Deleting artifact with highest sub-code', [
+                        'artifact_id' => $artifactToDelete->id,
+                        'artifact_code' => $artifactToDelete->artifact_code
+                    ]);
+                    $artifactToDelete->delete();
+                }
+            }
+            
+            // If quantity is 1 and artifact has sub-code, update to base code only
+            if ($quantity == 1 && $hasSubCode) {
+                $firstArtifact = $existingArtifacts->first();
+                if ($firstArtifact && $firstArtifact->artifact_code !== $baseCode) {
+                    $firstArtifact->update(['artifact_code' => $baseCode]);
+                }
+            }
 
             \Log::info('Artifact updated successfully', [
                 'artifact_id' => $artifact->id,
-                'artifact_code' => $artifact->artifact_code
+                'artifact_code' => $artifact->artifact_code,
+                'quantity' => $quantity,
+                'previous_count' => $currentCount
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
-            return redirect()->back()->with('success', 'Artifact updated successfully');
+            $message = $quantity > 1 
+                ? "Successfully updated {$quantity} artifacts"
+                : 'Artifact updated successfully';
+
+            return redirect()->back()->with('success', $message);
 
         } catch (\Exception $e) {
             \Log::error('Error updating artifact', [
