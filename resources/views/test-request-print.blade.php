@@ -33,6 +33,26 @@
                 font-size: 10px;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                min-height: 100vh;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .container.print-doc-wrapper {
+                display: flex !important;
+                flex-direction: column;
+                min-height: calc(100vh - 2cm);
+                box-sizing: border-box;
+            }
+
+            .print-content-body {
+                flex: 1 1 auto;
+            }
+
+            .print-page-tail {
+                flex-shrink: 0;
+                margin-top: auto;
+                padding-top: 8px;
             }
 
             .no-print {
@@ -55,6 +75,10 @@
                 margin: 20px auto;
                 padding: 20px;
                 background: #f5f5f5;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
             }
 
             .container {
@@ -62,6 +86,22 @@
                 padding: 20px;
                 box-shadow: 0 0 10px rgba(0,0,0,0.1);
                 border-radius: 8px;
+            }
+
+            .print-doc-wrapper.container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-height: calc(100vh - 40px);
+            }
+
+            .print-content-body {
+                flex: 1 1 auto;
+            }
+
+            .print-page-tail {
+                margin-top: auto;
+                flex-shrink: 0;
             }
         }
 
@@ -209,28 +249,92 @@
             font-weight: bold;
         }
 
-        /* Delivery Section */
+        /* Delivery Documentation (2×6 grid) */
         .delivery-section {
             margin-top: 15px;
         }
 
-        .delivery-table {
+        .delivery-doc-table {
             width: 100%;
             border-collapse: collapse;
-            border: 2px solid #333;
+            border: 2px solid #000;
+            margin-top: 0;
         }
 
-        .delivery-table td {
-            border: 1px solid #333;
+        .delivery-doc-table .delivery-doc-heading {
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #000;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            font-family: "Times New Roman", Times, serif;
+            color: #000;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .delivery-doc-table td {
+            border: 1px solid #000;
             padding: 8px;
             font-size: 11px;
+            vertical-align: middle;
+            color: #000;
         }
 
-        .signature-box {
-            background-color: #fff;
-            border: 1px solid #999;
-            height: 40px;
-            margin-top: 5px;
+        .delivery-doc-table .delivery-doc-label {
+            font-weight: bold;
+            font-family: "Times New Roman", Times, serif;
+            text-align: left;
+            width: 14%;
+        }
+
+        .delivery-doc-table .delivery-doc-date {
+            text-align: center;
+            font-weight: bold;
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        .delivery-doc-table .delivery-doc-sig-box {
+            min-height: 48px;
+            background: #fff;
+            border: 1px solid #333;
+        }
+
+        /* Push delivery + contact strip to bottom when printing */
+        .print-doc-wrapper {
+            display: block;
+        }
+
+        .print-contact-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #000;
+            font-size: 9px;
+            line-height: 1.35;
+            color: #000;
+        }
+
+        .print-contact-footer .cfa {
+            flex: 1 1 0;
+            text-align: left;
+            min-width: 0;
+        }
+
+        .print-contact-footer .cfd {
+            flex: 1 1 0;
+            text-align: right;
+            min-width: 0;
+        }
+
+        .print-page-tail {
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
 
         /* Print Button */
@@ -282,7 +386,7 @@
             .info-table td,
             .items-table th,
             .items-table td,
-            .delivery-table td {
+            .delivery-doc-table td {
                 font-size: 9px;
                 padding: 4px;
             }
@@ -298,7 +402,8 @@
         ❌ إغلاق / Close
     </button>
 
-    <div class="container">
+    <div class="container print-doc-wrapper">
+        <div class="print-content-body">
         <!-- Document header (form code left, title center, logo right; LTR strip on RTL page) -->
         <div dir="ltr" class="doc-header-bar">
             <span class="doc-header-docno">HOT - F03</span>
@@ -628,39 +733,56 @@
             </table>
         </div>
 
-        <!-- Delivery Documentation -->
+        </div><!-- /.print-content-body -->
+
+        <!-- Tail: pinned to bottom of sheet when printing -->
+        @php
+            $deliveryDocCreated = $testRequest->created_at
+                ? $testRequest->created_at->format('d/m/Y')
+                : now()->format('d/m/Y');
+        @endphp
+        <div class="print-page-tail" dir="ltr">
         <div class="delivery-section">
-            <div class="section-title">توثيق التسليم | Delivery Documentation</div>
-            <table class="delivery-table">
-                <tr>
-                    <td class="label" style="width: 20%;">تاريخ الاستلام<br>Received Date</td>
-                    <td style="width: 30%; text-align: center; font-weight: bold;">
-                        {{ $testRequest->received_date ? \Carbon\Carbon::parse($testRequest->received_date)->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
-                    </td>
-                    <td class="label" style="width: 20%;">حالة الطلب<br>Request Status</td>
-                    <td style="width: 30%; text-align: center; font-weight: bold;">{{ ucfirst($testRequest->status ?? 'pending') }}</td>
-                </tr>
-                <tr>
-                    <td class="label">توقيع التسليم<br>Delivery Signature</td>
-                    <td><div class="signature-box"></div></td>
-                    <td class="label">توقيع الاستلام<br>Reception Signature</td>
-                    <td>
-                        @if(file_exists(public_path('maram_sign.png')))
-                            <img src="{{ asset('maram_sign.png') }}" alt="Signature" style="max-height: 40px; max-width: 200px; display: block; margin: 0 auto;">
-                        @else
-                            <div class="signature-box"></div>
-                        @endif
-                    </td>
-                </tr>
-                <tr>
-                    <td class="label">ملاحظات إضافية<br>Additional Notes</td>
-                    <td colspan="3" style="height: 50px; vertical-align: top; padding-top: 8px;">
-                        {{ $testRequest->notes ?? '' }}
-                    </td>
-                </tr>
+            <table class="delivery-doc-table" dir="ltr">
+                <thead>
+                    <tr>
+                        <th colspan="6" class="delivery-doc-heading">Delivery Documentation | توثيق التسليم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="delivery-doc-label">Delivered by:<br>سلّم بواسطة</td>
+                        <td class="delivery-doc-value" style="width: 17%;"></td>
+                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
+                        <td class="delivery-doc-value" style="width: 20%;"><div class="delivery-doc-sig-box"></div></td>
+                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
+                        <td class="delivery-doc-date" style="width: 13%;">{{ $deliveryDocCreated }}</td>
+                    </tr>
+                    <tr>
+                        <td class="delivery-doc-label">Received by:<br>أستلم بواسطة</td>
+                        <td class="delivery-doc-value"></td>
+                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
+                        <td class="delivery-doc-value" style="text-align: center;">
+                            <div class="delivery-doc-sig-box" style="display: flex; align-items: center; justify-content: center; padding: 4px;">
+                                @if(file_exists(public_path('maram_sign.png')))
+                                    <img src="{{ asset('maram_sign.png') }}" alt="" style="max-height: 48px; max-width: 100%; object-fit: contain;">
+                                @endif
+                            </div>
+                        </td>
+                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
+                        <td class="delivery-doc-date">{{ $deliveryDocCreated }}</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-    </div>
+
+        <div class="print-contact-footer">
+            <div class="cfa">Gate 6, First Floor, Andalus Mall, Olaya Street, 12215, Riyadh, Saudi Arabia</div>
+            <div class="cfd">Mobile: +966580583000<br>website: https://idg-lab.com.sa</div>
+        </div>
+        </div><!-- /.print-page-tail -->
+
+    </div><!-- /.print-doc-wrapper -->
 
     <script>
         // Check if opened for auto-download (from session flash or URL param)

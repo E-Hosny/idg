@@ -383,50 +383,82 @@
           </div>
         </div>
 
-        <!-- Delivery Documentation Section -->
-        <div class="bg-white shadow-lg print:shadow-none border-2 border-gray-300 p-6 print:p-3 mb-6 print:mb-3">
-          <div class="mb-4 print:mb-2 border-b-2 border-gray-400 pb-2">
-            <h3 class="text-xl print:text-lg font-semibold text-black flex items-center">
-              <i class="fas fa-truck mr-3 text-gray-600 text-xl print:hidden"></i>
-              <span>Delivery Documentation | توثيق التسليم</span>
-            </h3>
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-6 print:gap-2">
-            <!-- Column 1: Delivery Information -->
-            <div class="space-y-4 print:space-y-2">
-              <!-- Delivery Signature -->
-              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-black text-base print:text-sm">Delivery Signature - توقيع التسليم</span>
-                  <div class="bg-white border border-gray-300 w-48 h-16 print:w-36 print:h-12 flex items-center justify-center text-gray-400 text-xs">
-                    <!-- Empty signature space -->
+        <!-- Delivery Documentation: 2×6 grid (matches print form) -->
+        <div class="bg-white shadow-lg print:shadow-none mb-6 print:mb-3 overflow-hidden">
+          <table class="w-full border-collapse border-2 border-black delivery-doc-table" dir="ltr">
+            <thead>
+              <tr>
+                <th
+                  colspan="6"
+                  class="bg-[#f5f5f5] border-b-2 border-black py-3 print:py-2 px-2 text-center font-bold text-black text-base print:text-sm font-serif"
+                >
+                  Delivery Documentation | توثيق التسليم
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle w-[15%]"
+                >
+                  Delivered by:<br />سلّم بواسطة
+                </td>
+                <td class="border border-black p-2 print:p-1.5 align-middle min-h-[3rem] print:min-h-[2.5rem] w-[17%] bg-white" />
+                <td
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle w-[13%]"
+                >
+                  Signature:<br />التوقيع
+                </td>
+                <td class="border border-black p-2 print:p-1.5 align-middle w-[20%] bg-white">
+                  <div class="min-h-[3.5rem] print:min-h-[2.75rem] bg-white border border-black border-opacity-30" />
+                </td>
+                <td
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle w-[12%]"
+                >
+                  Date:<br />التاريخ
+                </td>
+                <td
+                  class="border border-black p-2 print:p-1.5 text-center font-bold text-black text-sm print:text-xs font-serif align-middle w-[13%] bg-white"
+                >
+                  {{ formatDate(testRequest?.created_at) }}
+                </td>
+              </tr>
+              <tr>
+                <td
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle"
+                >
+                  Received by:<br />أستلم بواسطة
+                </td>
+                <td class="border border-black p-2 print:p-1.5 align-middle min-h-[3rem] bg-white" />
+                <td
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle"
+                >
+                  Signature:<br />التوقيع
+                </td>
+                <td class="border border-black p-2 print:p-1.5 align-middle bg-white text-center">
+                  <div
+                    class="min-h-[3.5rem] print:min-h-[2.75rem] bg-white border border-black border-opacity-30 flex items-center justify-center p-1"
+                  >
+                    <img
+                      src="/maram_sign.png"
+                      alt=""
+                      class="max-h-14 print:max-h-10 max-w-full object-contain mx-auto"
+                    />
                   </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Column 2: Reception Information -->
-            <div class="space-y-4 print:space-y-2">
-              <!-- Reception Date -->
-              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-black text-base print:text-sm">{{ __('Received Date') }}</span>
-                  <span class="text-black text-lg print:text-sm font-medium">{{ formatDate(testRequest?.received_date) }}</span>
-                </div>
-              </div>
-              
-              <!-- Reception Signature -->
-              <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-black text-base print:text-sm">Reception Signature - توقيع الاستلام</span>
-                  <div class="bg-white border border-gray-300 w-48 h-16 print:w-36 print:h-12 flex items-center justify-center text-gray-400 text-xs">
-                    <img src="/maram_sign.png" alt="Signature" class="max-h-full max-w-full object-contain">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                </td>
+                <td
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle"
+                >
+                  Date:<br />التاريخ
+                </td>
+                <td
+                  class="border border-black p-2 print:p-1.5 text-center font-bold text-black text-sm print:text-xs font-serif align-middle bg-white"
+                >
+                  {{ formatDate(testRequest?.created_at) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div class="mt-6 flex justify-end print:hidden">
@@ -1507,6 +1539,10 @@ export default {
   
   /* Keep essential backgrounds */
   .bg-gray-100, .bg-gray-50 {
+    background: #f5f5f5 !important;
+  }
+
+  .delivery-doc-table .delivery-doc-heading {
     background: #f5f5f5 !important;
   }
 
