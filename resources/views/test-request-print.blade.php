@@ -71,45 +71,75 @@
             max-width: none;
         }
 
-        /* Header Section */
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 2px solid #333;
+        /* Document header strip (matches dashboard test request header) */
+        .doc-header-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 52px;
+            padding: 10px 20px;
             margin-bottom: 15px;
+            background: #f2f2f2;
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px dotted #000;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .header-table td {
-            border: 1px solid #333;
-            padding: 8px;
+        .doc-header-bar .doc-header-title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Times New Roman", Times, serif;
+            font-weight: 700;
+            color: #000;
+            font-size: 18px;
+            line-height: 1.2;
             text-align: center;
-            vertical-align: middle;
-            font-size: 11px;
+            white-space: nowrap;
+            max-width: 55%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .logo-cell {
-            background-color: #f5f5f5;
-            width: 12%;
+        .doc-header-bar .doc-header-docno {
+            font-family: "Times New Roman", Times, serif;
+            font-weight: 700;
+            color: #000;
+            font-size: 18px;
+            line-height: 1.2;
+            white-space: nowrap;
+            flex-shrink: 0;
+            z-index: 1;
+            padding-right: 8px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .logo-cell img {
-            width: 50px;
-            height: 50px;
+        .doc-header-logo-wrap {
+            flex-shrink: 0;
+            z-index: 1;
+            background: #fff;
+            padding: 6px;
+            border: 1px solid #ddd;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .doc-header-logo-wrap img {
+            width: 48px;
+            height: 48px;
             display: block;
-            margin: 0 auto;
-        }
-
-        .title-cell {
-            background-color: #f5f5f5;
-            font-size: 16px;
-            font-weight: bold;
-            width: 40%;
-        }
-
-        .info-header {
-            background-color: #e5e5e5;
-            font-weight: bold;
-            font-size: 10px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         /* Customer Info Section */
@@ -249,7 +279,6 @@
                 padding: 10px;
             }
             
-            .header-table td,
             .info-table td,
             .items-table th,
             .items-table td,
@@ -270,49 +299,18 @@
     </button>
 
     <div class="container">
-        <!-- Header Table -->
-        <table class="header-table">
-            <tr>
-                <td class="logo-cell" rowspan="3">
-                    @if(file_exists(public_path('images/idg_logo.jpg')))
-                        <img src="{{ asset('images/idg_logo.jpg') }}" alt="IDG Logo">
-                    @else
-                        <div style="font-size: 12px; font-weight: bold;">IDG</div>
-                    @endif
-                    <div style="font-size: 8px; margin-top: 4px;">IDG</div>
-                </td>
-                <td class="info-header">Approved by<br>تم الاعتماد بواسطة</td>
-                <td class="info-header">Prepared by<br>تم التحضير بواسطة</td>
-                <td class="title-cell" rowspan="3" colspan="3">
-                    <div style="font-size: 18px; font-weight: bold;">Test Request</div>
-                    <div style="font-size: 16px; margin-top: 4px;">طلب اختبار</div>
-                </td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;">Sultan Aldosari</td>
-                <td style="font-weight: bold;">Enas Ibrahim</td>
-            </tr>
-            <tr>
-                <td style="font-size: 9px; color: #666;">Laboratory Manager</td>
-                <td style="font-size: 9px; color: #666;">Lab. Management Supervisor</td>
-            </tr>
-            <tr style="background-color: #e5e5e5;">
-                <td class="info-header" style="visibility: hidden;">Document Date<br>تاريخ المستند</td>
-                <td class="info-header">Issue Date<br>تاريخ الإصدار</td>
-                <td class="info-header">Issue No., Revision No<br>رقم الإصدار والمراجعة</td>
-                <td class="info-header">Document Level<br>مستوى المستند</td>
-                <td class="info-header">Document Classification<br>تصنيف المستند</td>
-                <td class="info-header">Document Number<br>رقم المستند</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>15/3/2025</td>
-                <td>002, 002</td>
-                <td>Document</td>
-                <td>Control</td>
-                <td style="font-weight: bold;">HOT-F03</td>
-            </tr>
-        </table>
+        <!-- Document header (form code left, title center, logo right; LTR strip on RTL page) -->
+        <div dir="ltr" class="doc-header-bar">
+            <span class="doc-header-docno">HOT - F03</span>
+            <span class="doc-header-title">TEST Request</span>
+            <div class="doc-header-logo-wrap">
+                @if(file_exists(public_path('images/idg_logo.jpg')))
+                    <img src="{{ asset('images/idg_logo.jpg') }}" alt="IDG Logo">
+                @else
+                    <div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;color:#000;">IDG</div>
+                @endif
+            </div>
+        </div>
 
         <!-- Customer Information -->
         <table class="info-table">

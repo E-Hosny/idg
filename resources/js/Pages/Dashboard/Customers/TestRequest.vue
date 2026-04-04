@@ -1,72 +1,28 @@
 <template>
   <div class="min-h-screen bg-gray-200 print:bg-white print:min-h-0">
-    <!-- Fixed Header Section - Full Width - Optimized for print -->
+    <!-- Document header bar (matches official form strip: gray bar, navy serif title, logo in white box) -->
     <div class="bg-gray-200 p-4 print:bg-white print:p-2">
       <div class="max-w-7xl mx-auto print:max-w-none">
-        <!-- Title Section - Hidden in print -->
-        <div class="text-center mb-4 print:hidden">
-          <h1 class="text-xl font-bold text-black">TEST Request</h1>
-        </div>
-        
-        <!-- Header Table - Optimized for A4 Landscape Print -->
-        <div class="border-2 border-gray-300 bg-white print:bg-white mb-6 print:mb-3 shadow-lg print:shadow-none">
-          <table class="w-full border-collapse">
-            <tbody>
-              <tr class="border-b-2 border-gray-300">
-                <!-- دمج خانة واحدة على اليمين -->
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3">
-                  <img src="/images/idg_logo.jpg" alt="IDG Logo" class="w-12 h-12 print:w-8 print:h-8 rounded-full mx-auto" />
-                  <div class="text-xs print:text-[10px] mt-1 font-semibold">IDG</div>
-                </td>
-                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
-                  <div>Approved by</div>
-                </td>
-                <td class="px-2 py-3 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 text-center align-middle font-semibold print:text-sm">
-                  <div>Prepared by</div>
-                </td>
-                <!-- دمج 3 خانات على الشمال -->
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black w-1/2 text-center align-middle bg-gray-50 print:bg-gray-100" rowspan="3" colspan="3">
-                  <div class="text-xl print:text-lg font-bold">Test Request</div>
-                </td>
-              </tr>
-              <tr class="border-b-2 border-gray-300">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Sultan Aldosari</td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle print:text-sm font-medium">Enas Ibrahim</td>
-              </tr>
-              <tr class="border-b-2 border-gray-300">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Laboratory Manager</td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 text-center align-middle text-xs print:text-[10px] text-gray-700">Lab. Management Supervisor</td>
-              </tr>
-              <tr class="border-b-2 border-gray-300 bg-gray-100">
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div style="visibility: hidden;">Document Date</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Issue Date</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Issue No., Revision No</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Document Level</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black border-r-2 border-gray-300 w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Document Classification</div>
-                </td>
-                <td class="px-2 py-2 print:px-1 print:py-1 text-black w-1/6 font-bold text-center align-middle print:text-xs">
-                  <div>Document Number</div>
-                </td>
-              </tr>
-              <tr>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">&nbsp;</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">15/3/2025</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">002, 002</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Document</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black border-r-2 border-gray-300 text-center align-middle font-semibold print:text-sm">Control</td>
-                <td class="px-2 py-3 print:px-1 print:py-2 text-black text-center align-middle font-semibold print:text-sm">HOT-F03</td>
-              </tr>
-            </tbody>
-          </table>
+        <div
+          class="test-request-doc-header-bar relative flex items-center justify-between mb-6 print:mb-3 min-h-[3.25rem] print:min-h-[2.75rem] px-5 print:px-4 py-2.5 print:py-2 bg-[#f2f2f2]"
+        >
+          <span
+            class="test-request-doc-header-text z-10 shrink-0 text-xl print:text-lg whitespace-nowrap pr-2"
+          >
+            HOT - F03
+          </span>
+          <span
+            class="test-request-doc-header-text absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl print:text-lg text-center pointer-events-none max-w-[55%] truncate"
+          >
+            TEST Request
+          </span>
+          <div class="z-10 shrink-0 bg-white p-1.5 print:p-1 border border-gray-200">
+            <img
+              src="/images/idg_logo.jpg"
+              alt="IDG Logo"
+              class="block h-12 w-12 print:h-10 print:w-10 rounded-full object-cover"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -76,12 +32,6 @@
       <div class="max-w-7xl mx-auto print:max-w-none">
         <!-- Classic Client Information Form -->
         <div class="bg-white border-2 border-gray-300 shadow-lg mb-6 print:shadow-none print:mb-3">
-          <!-- Header - Hidden in print to save space -->
-          <div class="bg-gray-100 border-b-2 border-black p-4 text-center print:hidden">
-            <h1 class="text-3xl font-bold text-black mb-1">Test Request</h1>
-            <h2 class="text-2xl font-bold text-gray-800">طلب اختبار</h2>
-          </div>
-          
           <!-- Client Information -->
           <div class="p-6 print:p-3">
             <!-- Client Information Section -->
@@ -1364,6 +1314,20 @@ export default {
 </script> 
 
 <style>
+/* Test request document header strip (solid top/sides, dotted bottom, black serif type) */
+.test-request-doc-header-bar {
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  border-bottom: 1px dotted #000;
+}
+
+.test-request-doc-header-text {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+  color: #000;
+}
+
 /* Success Modal Animation */
 .success-modal-enter-active, .success-modal-leave-active {
   transition: opacity 0.3s ease;
@@ -1544,6 +1508,19 @@ export default {
   /* Keep essential backgrounds */
   .bg-gray-100, .bg-gray-50 {
     background: #f5f5f5 !important;
+  }
+
+  /* Document header strip (screen design preserved in print) */
+  .test-request-doc-header-bar {
+    background: #f2f2f2 !important;
+  }
+
+  .test-request-doc-header-text {
+    color: #000 !important;
+  }
+
+  .test-request-doc-header-bar .bg-white {
+    background: #ffffff !important;
   }
   
   /* Ensure text is readable */
