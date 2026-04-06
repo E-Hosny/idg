@@ -1965,16 +1965,23 @@ export default {
 
       // Filter by search query
       if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase()
-        filtered = filtered.filter(customer => 
-          (customer.name && customer.name.toLowerCase().includes(query)) ||
-          (customer.display_name && customer.display_name.toLowerCase().includes(query)) ||
-          (customer.organization && customer.organization.toLowerCase().includes(query)) ||
-          (customer.email && customer.email.toLowerCase().includes(query)) ||
-          (customer.email_address && customer.email_address.toLowerCase().includes(query)) ||
-          (customer.phone && customer.phone.toLowerCase().includes(query)) ||
-          (customer.phone_number && customer.phone_number.toLowerCase().includes(query))
-        )
+        const query = this.searchQuery.toLowerCase().trim()
+        const queryDigits = query.replace(/\D/g, '')
+        filtered = filtered.filter(customer => {
+          const ref = this.formatQoyodReferenceNumber(customer.id).toLowerCase()
+          const idStr = customer.id != null ? String(customer.id) : ''
+          return (
+            (customer.name && customer.name.toLowerCase().includes(query)) ||
+            (customer.display_name && customer.display_name.toLowerCase().includes(query)) ||
+            (customer.organization && customer.organization.toLowerCase().includes(query)) ||
+            (customer.email && customer.email.toLowerCase().includes(query)) ||
+            (customer.email_address && customer.email_address.toLowerCase().includes(query)) ||
+            (customer.phone && customer.phone.toLowerCase().includes(query)) ||
+            (customer.phone_number && customer.phone_number.toLowerCase().includes(query)) ||
+            ref.includes(query) ||
+            (queryDigits.length > 0 && idStr.includes(queryDigits))
+          )
+        })
       }
 
       // Filter by status
@@ -2544,7 +2551,7 @@ export default {
           'Manage your customers from Qoyod': 'Manage your customers from Qoyod',
           'Refresh': 'Refresh',
           'Add Customer': 'Add Customer',
-          'Search customers...': 'Search customers...',
+          'Search customers...': 'Search by name, email, phone, or reference (e.g. CUS067)...',
           'All Status': 'All Status',
           'Active': 'Active',
           'Inactive': 'Inactive',
@@ -2625,7 +2632,7 @@ export default {
           'Manage your customers from Qoyod': 'إدارة عملائك من قيود',
           'Refresh': 'تحديث',
           'Add Customer': 'إضافة عميل',
-          'Search customers...': 'البحث في العملاء...',
+          'Search customers...': 'البحث بالاسم أو البريد أو الجوال أو الرقم المرجعي (مثل CUS067)...',
           'All Status': 'جميع الحالات',
           'Active': 'نشط',
           'Inactive': 'غير نشط',
