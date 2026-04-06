@@ -86,6 +86,7 @@ class DashboardController extends Controller
 
         $query = TestRequest::query()
             ->whereHas('artifacts')
+            ->with(['redeliveries' => fn ($q) => $q->orderByDesc('id')])
             ->withCount([
                 'artifacts as pending_pieces_count' => function ($q) {
                     $q->whereIn('status', ['pending', 'under_evaluation']);
@@ -359,19 +360,13 @@ class DashboardController extends Controller
                     $artifact->update([
                         'status' => 'evaluated',
                         'assigned_to' => auth()->id(),
-                    ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-            ]);
+                    ]);
                     \Log::info('Diamond artifact status updated to evaluated');
                 } else {
                     $artifact->update([
                         'status' => 'under_evaluation',
                         'assigned_to' => auth()->id(),
-                    ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-            ]);
+                    ]);
                     \Log::info('Diamond artifact status updated to under_evaluation');
                 }
             } else {
@@ -379,10 +374,7 @@ class DashboardController extends Controller
                 $artifact->update([
                     'status' => 'evaluated',
                     'assigned_to' => auth()->id(),
-                ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-            ]);
+                ]);
                 \Log::info('General artifact status updated to evaluated');
             }
 
@@ -403,10 +395,7 @@ class DashboardController extends Controller
                 'error_code' => $e->getCode(),
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'trace' => $e->getTraceAsString(),
             ]);
             return back()->withErrors(['error' => 'An error occurred while saving the evaluation. Please try again.']);
         }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <title>@if(!empty($redeliveryFromLabPrint))إعادة التسليم للاستقبال — @elseif(!empty($labDeliveryFile))ملف التسليم للمختبر — @elseطلب اختبار — @endif{{ $testRequest->receiving_record_no }}</title>
+    <title>@if(!empty($redeliveryFromLabPrint) && isset($redelivery))إعادة التسليم — دفعة #{{ $redelivery->id }} — @elseif(!empty($redeliveryFromLabPrint))إعادة التسليم للاستقبال — @elseif(!empty($labDeliveryFile))ملف التسليم للمختبر — @elseطلب اختبار — @endif{{ $testRequest->receiving_record_no }}</title>
     <style>
         /* Reset and Base Styles */
         * {
@@ -843,9 +843,9 @@
                     </tr>
                     <tr>
                         <td class="delivery-doc-label" style="width: 20%;">Delivered pieces:<br>القطع المسلمة</td>
-                        <td class="redelivery-count-cell" style="width: 10%;">{{ $evaluatedPiecesCount ?? 0 }}</td>
+                        <td class="redelivery-count-cell" style="width: 10%;">{{ isset($redelivery) ? $redelivery->delivered_pieces_count : ($evaluatedPiecesCount ?? 0) }}</td>
                         <td class="delivery-doc-label" style="width: 20%;">Pending Pieces:<br>القطع المتبقية</td>
-                        <td class="redelivery-count-cell" style="width: 10%;">{{ $pendingPiecesCount ?? 0 }}</td>
+                        <td class="redelivery-count-cell" style="width: 10%;">{{ isset($redelivery) ? $redelivery->remaining_pieces_count : ($pendingPiecesCount ?? 0) }}</td>
                         <td colspan="2" style="background: #fafafa;"></td>
                     </tr>
                     <tr>

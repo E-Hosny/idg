@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TestRequest;
+use App\Models\TestRequestRedelivery;
 use App\Models\Artifact;
 use App\Services\QoyodService;
 use App\Services\FileService;
@@ -32,6 +33,15 @@ class TestRequestController extends Controller
 
             // Get all test requests for this customer
             $testRequests = TestRequest::where('qoyod_customer_id', $customerId)
+                ->with(['redeliveries' => fn ($q) => $q->orderByDesc('id')])
+                ->withCount([
+                    'artifacts as pending_pieces_count' => function ($q) {
+                        $q->whereIn('status', ['pending', 'under_evaluation']);
+                    },
+                    'artifacts as evaluated_pieces_count' => function ($q) {
+                        $q->whereIn('status', ['evaluated', 'certified']);
+                    },
+                ])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -381,26 +391,61 @@ class TestRequestController extends Controller
     }
 
     /**
-     * Redelivery from lab to reception (after evaluation): same body as lab file, extended bilingual footer with counts.
+     * Create a new redelivery batch (document) with explicit delivered / remaining counts.
      */
-    public function showRedeliveryFromLabPrint(TestRequest $testRequest)
+    public function storeRedelivery(Request $request, TestRequest $testRequest)
+    {
+        $validated = $request->validate([
+            'delivered_pieces_count' => 'required|integer|min:0',
+            'remaining_pieces_count' => 'required|integer|min:0',
+        ], [
+            'delivered_pieces_count.required' => 'أدخل عدد القطع المسلمة | Enter delivered pieces count.',
+            'remaining_pieces_count.required' => 'أدخل عدد القطع المتبقية | Enter remaining pieces count.',
+        ]);
+
+        $redelivery = TestRequestRedelivery::create([
+            'test_request_id' => $testRequest->id,
+            'delivered_pieces_count' => $validated['delivered_pieces_count'],
+            'remaining_pieces_count' => $validated['remaining_pieces_count'],
+        ]);
+
+        \Log::info('Redelivery batch created', [
+            'test_request_id' => $testRequest->id,
+            'redelivery_id' => $redelivery->id,
+        ]);
+
+        return back()->with('success', 'تم إنشاء مستند إعادة التسليم | Redelivery document created.');
+    }
+
+    /**
+     * Redelivery from lab to reception: one print per batch; footer uses stored counts.
+     */
+    public function showRedeliveryPrint(TestRequest $testRequest, TestRequestRedelivery $redelivery)
     {
         try {
-            \Log::info('Showing redelivery from lab print page', ['test_request_id' => $testRequest->id]);
+            if ((int) $redelivery->test_request_id !== (int) $testRequest->id) {
+                abort(404);
+            }
+
+            \Log::info('Showing redelivery print page', [
+                'test_request_id' => $testRequest->id,
+                'redelivery_id' => $redelivery->id,
+            ]);
 
             $data = $this->buildTestRequestPrintData($testRequest);
 
             return view('test-request-print', array_merge($data, [
                 'labDeliveryFile' => true,
                 'redeliveryFromLabPrint' => true,
+                'redelivery' => $redelivery,
             ]));
         } catch (\RuntimeException $e) {
-            \Log::warning('Redelivery from lab print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
+            \Log::warning('Redelivery print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 
             return redirect()->route('dashboard.customers')
                 ->withErrors(['error' => $e->getMessage()]);
         } catch (\Exception $e) {
-            \Log::error('Error showing redelivery from lab print page', [
+            \Log::error('Error showing redelivery print page', [
                 'test_request_id' => $testRequest->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -568,30 +613,34 @@ class TestRequestController extends Controller
     }
 
     /**
-     * Upload signed redelivery-from-lab document (PDF) — Spaces via upload_file().
+     * Upload signed PDF for a specific redelivery batch — Spaces via upload_file().
      */
-    public function uploadRedeliveryFromLabSigned(Request $request, TestRequest $testRequest)
+    public function uploadRedeliverySigned(Request $request, TestRequest $testRequest, TestRequestRedelivery $redelivery)
     {
         try {
+            if ((int) $redelivery->test_request_id !== (int) $testRequest->id) {
+                abort(404);
+            }
+
             $request->validate([
-                'redelivery_from_lab_signed_document' => [
+                'signed_document' => [
                     'required',
                     'file',
                     'mimes:pdf',
                     'max:10240',
                 ],
             ], [
-                'redelivery_from_lab_signed_document.required' => 'يرجى اختيار ملف PDF | Please select a PDF file.',
-                'redelivery_from_lab_signed_document.mimes' => 'يُسمح بملفات PDF فقط | Only PDF files are allowed.',
-                'redelivery_from_lab_signed_document.max' => 'حجم الملف أقل من 10 ميجابايت | File size must be less than 10MB.',
+                'signed_document.required' => 'يرجى اختيار ملف PDF | Please select a PDF file.',
+                'signed_document.mimes' => 'يُسمح بملفات PDF فقط | Only PDF files are allowed.',
+                'signed_document.max' => 'حجم الملف أقل من 10 ميجابايت | File size must be less than 10MB.',
             ]);
 
-            if ($testRequest->redelivery_from_lab_signed_document_path) {
-                delete_file_anywhere($testRequest->redelivery_from_lab_signed_document_path);
+            if ($redelivery->signed_document_path) {
+                delete_file_anywhere($redelivery->signed_document_path);
             }
 
-            $file = $request->file('redelivery_from_lab_signed_document');
-            $filename = 'redelivery-lab-' . $testRequest->receiving_record_no . '-' . time() . '.pdf';
+            $file = $request->file('signed_document');
+            $filename = 'redelivery-lab-' . $testRequest->receiving_record_no . '-r' . $redelivery->id . '-' . time() . '.pdf';
             $uploadDir = 'test-requests/redelivery-from-lab-signed';
 
             $path = upload_file($file, $uploadDir, $filename);
@@ -600,22 +649,24 @@ class TestRequestController extends Controller
                 throw new \Exception('Failed to store redelivery file to Spaces');
             }
 
-            if (! $testRequest->update(['redelivery_from_lab_signed_document_path' => $path])) {
+            if (! $redelivery->update(['signed_document_path' => $path])) {
                 delete_file_anywhere($path);
                 throw new \Exception('Failed to update database record');
             }
 
-            \Log::info('Redelivery from lab document uploaded', [
+            \Log::info('Redelivery batch document uploaded', [
                 'test_request_id' => $testRequest->id,
+                'redelivery_id' => $redelivery->id,
                 'path' => $path,
             ]);
 
-            return back()->with('success', 'تم رفع ملف إعادة التسليم للاستقبال بنجاح | Redelivery document uploaded successfully.');
+            return back()->with('success', 'تم رفع ملف إعادة التسليم بنجاح | Redelivery file uploaded successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            \Log::error('Redelivery from lab upload failed', [
+            \Log::error('Redelivery upload failed', [
                 'test_request_id' => $testRequest->id,
+                'redelivery_id' => $redelivery->id ?? null,
                 'error' => $e->getMessage(),
             ]);
 
@@ -637,8 +688,10 @@ class TestRequestController extends Controller
             if ($testRequest->lab_delivery_signed_document_path) {
                 delete_file_anywhere($testRequest->lab_delivery_signed_document_path);
             }
-            if ($testRequest->redelivery_from_lab_signed_document_path) {
-                delete_file_anywhere($testRequest->redelivery_from_lab_signed_document_path);
+
+            $testRequest->load('redeliveries');
+            foreach ($testRequest->redeliveries as $r) {
+                $r->delete();
             }
 
             // Delete associated artifacts

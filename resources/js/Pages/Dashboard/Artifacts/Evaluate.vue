@@ -499,7 +499,9 @@ function submitEvaluation() {
   
   if (props.isEditing && props.existingEvaluation) {
     // Update existing evaluation
+    const hasFiles = form.image1 instanceof File || form.image2 instanceof File
     form.put(`/artifacts/${artifact.value.id}/update-evaluation`, {
+      forceFormData: hasFiles,
       onSuccess: () => {
         alert('Evaluation updated successfully!');
       },
@@ -520,8 +522,10 @@ function submitEvaluation() {
       }
     });
   } else {
-    // Create new evaluation
+    // Create new evaluation (multipart required when uploading stone photos)
+    const hasFiles = form.image1 instanceof File || form.image2 instanceof File
     form.post(`/dashboard/artifacts/${artifact.value.id}/evaluate`, {
+      forceFormData: hasFiles,
       onSuccess: () => {
         alert('Evaluation saved successfully!');
       },
