@@ -18,7 +18,8 @@ class TestRequest extends Model
         'received_by',
         'status',
         'notes',
-        'signed_document_path'
+        'signed_document_path',
+        'lab_delivery_signed_document_path',
     ];
 
     protected $casts = [
@@ -27,7 +28,8 @@ class TestRequest extends Model
     ];
 
     protected $appends = [
-        'signed_document_url'
+        'signed_document_url',
+        'lab_delivery_signed_document_url',
     ];
 
     /**
@@ -45,6 +47,14 @@ class TestRequest extends Model
     {
         if ($this->signed_document_path) {
             return file_url($this->signed_document_path);
+        }
+        return null;
+    }
+
+    public function getLabDeliverySignedDocumentUrlAttribute()
+    {
+        if ($this->lab_delivery_signed_document_path) {
+            return file_url($this->lab_delivery_signed_document_path);
         }
         return null;
     }

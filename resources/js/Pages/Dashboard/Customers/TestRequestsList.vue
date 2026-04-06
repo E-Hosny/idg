@@ -79,6 +79,9 @@
                   Receiving Record No | رقم سجل الاستلام
                 </th>
                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Created | تاريخ ووقت الإنشاء
+                </th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Received Date | تاريخ الاستلام
                 </th>
                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -104,10 +107,13 @@
                   {{ request.receiving_record_no }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ formatDate(request.received_date) }}
+                  {{ formatDateTime(request.created_at) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {{ request.delivery_date ? formatDate(request.delivery_date) : '-' }}
+                  {{ formatDateTimeOrDate(request.received_date) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {{ request.delivery_date ? formatDateTimeOrDate(request.delivery_date) : '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="getStatusClass(request.status)" class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
@@ -159,10 +165,108 @@
                     <i class="fas fa-download mr-1"></i>
                     Signed | موقع
                   </a>
+                  <button
+                    type="button"
+                    @click="openLabDeliveryModal(request)"
+                    :class="labDeliveryButtonClass(request)"
+                    :title="request.lab_delivery_signed_document_path ? 'التسليم للمختبر — تم رفع الملف الموقع' : 'التسليم للمختبر'"
+                  >
+                    <i :class="request.lab_delivery_signed_document_path ? 'fas fa-check-circle' : 'fas fa-flask'" class="mr-1"></i>
+                    <span>التسليم للمختبر</span>
+                    <span
+                      v-if="request.lab_delivery_signed_document_path"
+                      class="mr-1 text-[10px] font-bold uppercase tracking-wide opacity-90"
+                    >موقع</span>
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lab delivery modal -->
+    <div
+      v-if="labModalOpen && selectedLabRequest"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeLabDeliveryModal"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden border border-gray-200">
+        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex justify-between items-start gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">التسليم للمختبر</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              {{ selectedLabRequest.receiving_record_no }}
+              <span class="text-gray-400">|</span>
+              #{{ selectedLabRequest.id }}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="text-gray-400 hover:text-gray-700 p-1 rounded"
+            aria-label="إغلاق"
+            @click="closeLabDeliveryModal"
+          >
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="px-6 py-6 space-y-5">
+          <a
+            :href="`/dashboard/test-requests/${selectedLabRequest.id}/print-lab`"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors"
+          >
+            <i class="fas fa-print"></i>
+            <span>الملف للطباعة</span>
+          </a>
+
+          <div class="rounded-lg border border-dashed border-gray-300 p-4 bg-gray-50/80">
+            <p class="text-xs font-medium text-gray-700 mb-2">رفع الملف بعد التوقيع (PDF)</p>
+            <input
+              ref="labDeliveryFileInput"
+              type="file"
+              accept="application/pdf,.pdf"
+              class="hidden"
+              @change="onLabDeliveryFileChange"
+            >
+            <div class="flex flex-wrap gap-2 items-center">
+              <button
+                type="button"
+                class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-800 hover:bg-gray-50"
+                @click="$refs.labDeliveryFileInput && $refs.labDeliveryFileInput.click()"
+              >
+                <i class="fas fa-folder-open ml-2 text-gray-500"></i>
+                اختيار ملف
+              </button>
+              <span v-if="labPendingFileName" class="text-xs text-gray-600 truncate max-w-[180px]" :title="labPendingFileName">{{ labPendingFileName }}</span>
+              <button
+                type="button"
+                :disabled="!labPendingFileName || labUploading"
+                class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="submitLabDeliveryUpload"
+              >
+                <i v-if="labUploading" class="fas fa-spinner fa-spin ml-2"></i>
+                <i v-else class="fas fa-cloud-upload-alt ml-2"></i>
+                رفع الملف
+              </button>
+            </div>
+          </div>
+
+          <a
+            v-if="selectedLabRequest.lab_delivery_signed_document_path"
+            :href="`/certificate-file/${selectedLabRequest.lab_delivery_signed_document_path}`"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
+          >
+            <i class="fas fa-file-pdf"></i>
+            <span>عرض الملف الموقع</span>
+          </a>
+          <p v-else class="text-center text-xs text-gray-500">لا يوجد ملف موقع بعد — ارفع ملف PDF بعد التوقيع</p>
         </div>
       </div>
     </div>
@@ -182,7 +286,89 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      labModalOpen: false,
+      selectedLabRequest: null,
+      labUploading: false,
+      labPendingFileName: ''
+    }
+  },
   methods: {
+    labDeliveryButtonClass(request) {
+      const base = 'inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded focus:outline-none focus:ring-2 transition-shadow'
+      if (request.lab_delivery_signed_document_path) {
+        return `${base} bg-emerald-600 text-white ring-2 ring-emerald-300 ring-offset-1 hover:bg-emerald-700 focus:ring-emerald-400 shadow-sm`
+      }
+      return `${base} bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-500`
+    },
+    openLabDeliveryModal(request) {
+      this.selectedLabRequest = { ...request }
+      this.labPendingFileName = ''
+      this.labModalOpen = true
+      this.$nextTick(() => {
+        if (this.$refs.labDeliveryFileInput) {
+          this.$refs.labDeliveryFileInput.value = ''
+        }
+      })
+    },
+    closeLabDeliveryModal() {
+      this.labModalOpen = false
+      this.selectedLabRequest = null
+      this.labPendingFileName = ''
+      this.labUploading = false
+      if (this.$refs.labDeliveryFileInput) {
+        this.$refs.labDeliveryFileInput.value = ''
+      }
+    },
+    onLabDeliveryFileChange(e) {
+      const f = e.target.files && e.target.files[0]
+      this.labPendingFileName = f ? f.name : ''
+    },
+    submitLabDeliveryUpload() {
+      const input = this.$refs.labDeliveryFileInput
+      const file = input && input.files && input.files[0]
+      if (!file) {
+        alert('يرجى اختيار ملف PDF أولاً | Please choose a PDF file first.')
+        return
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert('حجم الملف يجب أن يكون أقل من 10 ميجابايت | File size must be less than 10MB.')
+        return
+      }
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert('يُسمح بملفات PDF فقط | Only PDF files are allowed.')
+        return
+      }
+      const id = this.selectedLabRequest.id
+      const formData = new FormData()
+      formData.append('lab_delivery_signed_document', file)
+      this.labUploading = true
+      this.$inertia.post(`/dashboard/test-requests/${id}/upload-lab-delivery-signed`, formData, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+          this.labUploading = false
+          this.labPendingFileName = ''
+          if (this.$refs.labDeliveryFileInput) {
+            this.$refs.labDeliveryFileInput.value = ''
+          }
+          const rows = page?.props?.testRequests || this.testRequests
+          const updated = rows.find((r) => r.id === id)
+          if (updated) {
+            this.selectedLabRequest = { ...updated }
+          }
+        },
+        onError: (errors) => {
+          this.labUploading = false
+          const msg = errors.lab_delivery_signed_document || errors.error || 'فشل الرفع | Upload failed'
+          alert(Array.isArray(msg) ? msg[0] : msg)
+        },
+        onFinish: () => {
+          this.labUploading = false
+        }
+      })
+    },
     createNewRequest() {
       this.$inertia.visit(`/dashboard/customers/${this.customer.id}/test-requests/create`)
     },
@@ -210,11 +396,46 @@ export default {
     },
     formatDate(date) {
       if (!date) return '-'
-      const d = new Date(date)
+      const d = this.parseDateValue(date)
       const day = String(d.getDate()).padStart(2, '0')
       const month = String(d.getMonth() + 1).padStart(2, '0')
       const year = d.getFullYear()
       return `${day}/${month}/${year}`
+    },
+
+    /** Date-only fields (Y-m-d) — avoid UTC midnight shifting the calendar day */
+    parseDateValue(date) {
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())) {
+        const [y, m, day] = date.trim().split('-').map(Number)
+        return new Date(y, m - 1, day)
+      }
+      return new Date(date)
+    },
+
+    /** Full datetime (e.g. created_at); 12-hour clock with AM/PM / ص م */
+    formatDateTime(dateString) {
+      if (!dateString) return '-'
+      const d = new Date(dateString)
+      if (Number.isNaN(d.getTime())) return '-'
+      const locale = this.$page?.props?.locale === 'ar' ? 'ar-SA' : 'en-GB'
+      return d.toLocaleString(locale, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      })
+    },
+
+    /** Date-only column: show calendar date; if value is a full ISO datetime, show date + time */
+    formatDateTimeOrDate(value) {
+      if (!value) return '-'
+      const s = typeof value === 'string' ? value.trim() : ''
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        return this.formatDate(s)
+      }
+      return this.formatDateTime(value)
     },
     getStatusClass(status) {
       const classes = {

@@ -281,52 +281,89 @@ class TestRequestController extends Controller
     }
 
     /**
+     * Shared data for test-request print views (full print vs lab delivery file).
+     */
+    protected function buildTestRequestPrintData(TestRequest $testRequest): array
+    {
+        $qoyodService = new QoyodService();
+        $customer = $qoyodService->getCustomer($testRequest->qoyod_customer_id);
+
+        if (!$customer) {
+            throw new \RuntimeException('Customer not found in Qoyod.');
+        }
+
+        $artifacts = Artifact::where('test_request_id', $testRequest->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $formattedCustomer = [
+            'id' => $customer['id'] ?? $testRequest->qoyod_customer_id,
+            'full_name' => $customer['name'] ?? $customer['display_name'] ?? '',
+            'company_name' => $customer['organization'] ?? null,
+            'customer_code' => 'CUS' . str_pad($testRequest->qoyod_customer_id, 3, '0', STR_PAD_LEFT),
+            'phone' => $customer['phone_number'] ?? $customer['phone'] ?? null,
+            'email' => $customer['email'] ?? $customer['email_address'] ?? null,
+            'address' => 'الرياض',
+            'qoyod_customer_id' => $testRequest->qoyod_customer_id,
+            'status' => $customer['status'] ?? 'active',
+        ];
+
+        return compact('testRequest', 'formattedCustomer', 'artifacts');
+    }
+
+    /**
      * Show print page for test request (replaces PDF download with browser print)
      */
     public function showPrintPage(TestRequest $testRequest)
     {
         try {
             \Log::info('Showing test request print page', ['test_request_id' => $testRequest->id]);
-            
-            // Get customer info from Qoyod
-            $qoyodService = new QoyodService();
-            $customer = $qoyodService->getCustomer($testRequest->qoyod_customer_id);
-            
-            if (!$customer) {
-                \Log::warning('Customer not found in Qoyod', ['customer_id' => $testRequest->qoyod_customer_id]);
-                return redirect()->route('dashboard.customers')
-                    ->withErrors(['error' => 'Customer not found in Qoyod.']);
-            }
 
-            // Get artifacts for this test request
-            $artifacts = Artifact::where('test_request_id', $testRequest->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $data = $this->buildTestRequestPrintData($testRequest);
 
-            // Format customer data
-            $formattedCustomer = [
-                'id' => $customer['id'] ?? $testRequest->qoyod_customer_id,
-                'full_name' => $customer['name'] ?? $customer['display_name'] ?? '',
-                'company_name' => $customer['organization'] ?? null,
-                'customer_code' => 'CUS' . str_pad($testRequest->qoyod_customer_id, 3, '0', STR_PAD_LEFT),
-                'phone' => $customer['phone_number'] ?? $customer['phone'] ?? null,
-                'email' => $customer['email'] ?? $customer['email_address'] ?? null,
-                'address' => 'الرياض',
-                'qoyod_customer_id' => $testRequest->qoyod_customer_id,
-                'status' => $customer['status'] ?? 'active'
-            ];
+            return view('test-request-print', array_merge($data, ['labDeliveryFile' => false]));
+        } catch (\RuntimeException $e) {
+            \Log::warning('Test request print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 
-            return view('test-request-print', compact('testRequest', 'formattedCustomer', 'artifacts'));
-
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => $e->getMessage()]);
         } catch (\Exception $e) {
             \Log::error('Error showing test request print page', [
                 'test_request_id' => $testRequest->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()->back()
                 ->withErrors(['error' => 'An error occurred while showing print page: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Laboratory delivery file: same layout as print but no PII, no terms, Samples Delivery Record header.
+     */
+    public function showLabDeliveryPrint(TestRequest $testRequest)
+    {
+        try {
+            \Log::info('Showing lab delivery print page', ['test_request_id' => $testRequest->id]);
+
+            $data = $this->buildTestRequestPrintData($testRequest);
+
+            return view('test-request-print', array_merge($data, ['labDeliveryFile' => true]));
+        } catch (\RuntimeException $e) {
+            \Log::warning('Lab delivery print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
+
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing lab delivery print page', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'An error occurred while showing lab delivery file: ' . $e->getMessage()]);
         }
     }
 
@@ -431,16 +468,79 @@ class TestRequestController extends Controller
     }
 
     /**
+     * Upload signed lab delivery document (PDF) — stored on Spaces via upload_file().
+     */
+    public function uploadLabDeliverySigned(Request $request, TestRequest $testRequest)
+    {
+        try {
+            $request->validate([
+                'lab_delivery_signed_document' => [
+                    'required',
+                    'file',
+                    'mimes:pdf',
+                    'max:10240',
+                ],
+            ], [
+                'lab_delivery_signed_document.required' => 'يرجى اختيار ملف PDF | Please select a PDF file.',
+                'lab_delivery_signed_document.mimes' => 'يُسمح بملفات PDF فقط | Only PDF files are allowed.',
+                'lab_delivery_signed_document.max' => 'حجم الملف أقل من 10 ميجابايت | File size must be less than 10MB.',
+            ]);
+
+            if ($testRequest->lab_delivery_signed_document_path) {
+                delete_file_anywhere($testRequest->lab_delivery_signed_document_path);
+            }
+
+            $file = $request->file('lab_delivery_signed_document');
+            $filename = 'lab-delivery-' . $testRequest->receiving_record_no . '-' . time() . '.pdf';
+            $uploadDir = 'test-requests/lab-delivery-signed';
+
+            $path = upload_file($file, $uploadDir, $filename);
+
+            if (! $path) {
+                throw new \Exception('Failed to store lab delivery file to Spaces');
+            }
+
+            if (! $testRequest->update(['lab_delivery_signed_document_path' => $path])) {
+                delete_file_anywhere($path);
+                throw new \Exception('Failed to update database record');
+            }
+
+            \Log::info('Lab delivery signed document uploaded', [
+                'test_request_id' => $testRequest->id,
+                'path' => $path,
+            ]);
+
+            return back()->with('success', 'تم رفع ملف التسليم للمختبر بنجاح | Lab delivery file uploaded successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Lab delivery upload failed', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
      * Delete a test request
      */
     public function destroy(TestRequest $testRequest)
     {
         try {
             \Log::info('Deleting test request', ['test_request_id' => $testRequest->id]);
-            
+
+            if ($testRequest->signed_document_path) {
+                delete_file_anywhere($testRequest->signed_document_path);
+            }
+            if ($testRequest->lab_delivery_signed_document_path) {
+                delete_file_anywhere($testRequest->lab_delivery_signed_document_path);
+            }
+
             // Delete associated artifacts
             $testRequest->artifacts()->delete();
-            
+
             // Delete test request
             $testRequest->delete();
             

@@ -72,7 +72,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'destroy'])->name('dashboard.test-requests.destroy');
         Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
+        Route::get('/dashboard/test-requests/{testRequest}/print-lab', [TestRequestController::class, 'showLabDeliveryPrint'])->name('dashboard.test-requests.print-lab');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
+        Route::post('/dashboard/test-requests/{testRequest}/upload-lab-delivery-signed', [TestRequestController::class, 'uploadLabDeliverySigned'])->name('dashboard.test-requests.upload-lab-delivery-signed');
         
         // Legacy routes for backward compatibility
         Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');

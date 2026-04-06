@@ -79,6 +79,7 @@
               <th class="px-4 py-3 text-center font-bold align-middle">{{ __('Created At') }}</th>
               <th class="px-4 py-3 text-center font-bold align-middle">{{ __('Pending pieces') }}</th>
               <th class="px-4 py-3 text-center font-bold align-middle">{{ __('Evaluated pieces') }}</th>
+              <th class="px-4 py-3 text-center font-bold align-middle whitespace-nowrap">{{ __('Lab delivery') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -100,9 +101,24 @@
               <td class="px-4 py-3 text-center align-middle whitespace-nowrap">{{ formatDateTime(row.created_at) }}</td>
               <td class="px-4 py-3 text-center align-middle text-yellow-700 font-semibold">{{ row.pending_pieces_count }}</td>
               <td class="px-4 py-3 text-center align-middle text-green-700 font-semibold">{{ row.evaluated_pieces_count }}</td>
+              <td class="px-4 py-3 text-center align-middle">
+                <button
+                  type="button"
+                  @click.stop="openLabDeliveryModal(row)"
+                  :class="labDeliveryButtonClass(row)"
+                  :title="row.lab_delivery_signed_document_path ? __('Lab delivery signed hint') : __('Lab delivery')"
+                >
+                  <i :class="row.lab_delivery_signed_document_path ? 'fas fa-check-circle' : 'fas fa-flask'" class="mr-1"></i>
+                  <span>{{ __('Lab delivery') }}</span>
+                  <span
+                    v-if="row.lab_delivery_signed_document_path"
+                    class="mr-1 text-[10px] font-bold uppercase tracking-wide opacity-90"
+                  >{{ __('Signed short') }}</span>
+                </button>
+              </td>
             </tr>
             <tr v-if="!receivingRecords.data.length">
-              <td colspan="6" class="text-center text-gray-400 py-4">{{ getNoDataMessage() }}</td>
+              <td colspan="7" class="text-center text-gray-400 py-4">{{ getNoDataMessage() }}</td>
             </tr>
           </tbody>
         </table>
@@ -141,6 +157,91 @@
           >
             {{ __('Next') }}
           </Link>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lab delivery (same flow as customer test-requests list) -->
+    <div
+      v-if="labModalOpen && selectedLabRequest"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeLabDeliveryModal"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden border border-gray-200">
+        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex justify-between items-start gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">{{ __('Lab delivery') }}</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              {{ selectedLabRequest.receiving_record_no }}
+              <span class="text-gray-400">|</span>
+              #{{ selectedLabRequest.id }}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="text-gray-400 hover:text-gray-700 p-1 rounded"
+            :aria-label="__('Close')"
+            @click="closeLabDeliveryModal"
+          >
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="px-6 py-6 space-y-5">
+          <a
+            :href="`/dashboard/test-requests/${selectedLabRequest.id}/print-lab`"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors"
+          >
+            <i class="fas fa-print"></i>
+            <span>{{ __('Print file') }}</span>
+          </a>
+
+          <div class="rounded-lg border border-dashed border-gray-300 p-4 bg-gray-50/80">
+            <p class="text-xs font-medium text-gray-700 mb-2">{{ __('Upload signed PDF') }}</p>
+            <input
+              ref="labDeliveryFileInput"
+              type="file"
+              accept="application/pdf,.pdf"
+              class="hidden"
+              @change="onLabDeliveryFileChange"
+            >
+            <div class="flex flex-wrap gap-2 items-center">
+              <button
+                type="button"
+                class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-800 hover:bg-gray-50"
+                @click="$refs.labDeliveryFileInput && $refs.labDeliveryFileInput.click()"
+              >
+                <i class="fas fa-folder-open ml-2 text-gray-500"></i>
+                {{ __('Choose file') }}
+              </button>
+              <span v-if="labPendingFileName" class="text-xs text-gray-600 truncate max-w-[180px]" :title="labPendingFileName">{{ labPendingFileName }}</span>
+              <button
+                type="button"
+                :disabled="!labPendingFileName || labUploading"
+                class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="submitLabDeliveryUpload"
+              >
+                <i v-if="labUploading" class="fas fa-spinner fa-spin ml-2"></i>
+                <i v-else class="fas fa-cloud-upload-alt ml-2"></i>
+                {{ __('Upload file') }}
+              </button>
+            </div>
+          </div>
+
+          <a
+            v-if="selectedLabRequest.lab_delivery_signed_document_path"
+            :href="`/certificate-file/${selectedLabRequest.lab_delivery_signed_document_path}`"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
+          >
+            <i class="fas fa-file-pdf"></i>
+            <span>{{ __('View signed file') }}</span>
+          </a>
+          <p v-else class="text-center text-xs text-gray-500">{{ __('No signed file yet') }}</p>
         </div>
       </div>
     </div>
@@ -187,7 +288,11 @@ export default {
       filters: {
         receiving_record_no: urlParams.get('receiving_record_no') || '',
         customer_code: urlParams.get('customer_code') || ''
-      }
+      },
+      labModalOpen: false,
+      selectedLabRequest: null,
+      labUploading: false,
+      labPendingFileName: ''
     }
   },
 
@@ -253,9 +358,95 @@ export default {
         'Next': 'التالي',
         'No items found.': 'لا توجد سجلات.',
         'No pending items found.': 'لا توجد سجلات بقطع معلقة.',
-        'All Items': 'جميع العناصر'
+        'All Items': 'جميع العناصر',
+        'Lab delivery': 'التسليم للمختبر',
+        'Lab delivery signed hint': 'التسليم للمختبر — تم رفع الملف الموقع',
+        'Signed short': 'موقع',
+        'Close': 'إغلاق',
+        'Print file': 'الملف للطباعة',
+        'Upload signed PDF': 'رفع الملف بعد التوقيع (PDF)',
+        'Choose file': 'اختيار ملف',
+        'Upload file': 'رفع الملف',
+        'View signed file': 'عرض الملف الموقع',
+        'No signed file yet': 'لا يوجد ملف موقع بعد — ارفع ملف PDF بعد التوقيع'
       }
       return this.$page.props.locale === 'ar' ? t[key] || key : key
+    },
+
+    labDeliveryButtonClass(row) {
+      const base = 'inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded focus:outline-none focus:ring-2 transition-shadow'
+      if (row.lab_delivery_signed_document_path) {
+        return `${base} bg-emerald-600 text-white ring-2 ring-emerald-300 ring-offset-1 hover:bg-emerald-700 focus:ring-emerald-400 shadow-sm`
+      }
+      return `${base} bg-teal-600 text-white hover:bg-teal-700 focus:ring-teal-500`
+    },
+    openLabDeliveryModal(row) {
+      this.selectedLabRequest = { ...row }
+      this.labPendingFileName = ''
+      this.labModalOpen = true
+      this.$nextTick(() => {
+        if (this.$refs.labDeliveryFileInput) {
+          this.$refs.labDeliveryFileInput.value = ''
+        }
+      })
+    },
+    closeLabDeliveryModal() {
+      this.labModalOpen = false
+      this.selectedLabRequest = null
+      this.labPendingFileName = ''
+      this.labUploading = false
+      if (this.$refs.labDeliveryFileInput) {
+        this.$refs.labDeliveryFileInput.value = ''
+      }
+    },
+    onLabDeliveryFileChange(e) {
+      const f = e.target.files && e.target.files[0]
+      this.labPendingFileName = f ? f.name : ''
+    },
+    submitLabDeliveryUpload() {
+      const input = this.$refs.labDeliveryFileInput
+      const file = input && input.files && input.files[0]
+      if (!file) {
+        alert(this.$page.props.locale === 'ar' ? 'يرجى اختيار ملف PDF أولاً' : 'Please choose a PDF file first.')
+        return
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert(this.$page.props.locale === 'ar' ? 'حجم الملف يجب أن يكون أقل من 10 ميجابايت' : 'File size must be less than 10MB.')
+        return
+      }
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert(this.$page.props.locale === 'ar' ? 'يُسمح بملفات PDF فقط' : 'Only PDF files are allowed.')
+        return
+      }
+      const id = this.selectedLabRequest.id
+      const formData = new FormData()
+      formData.append('lab_delivery_signed_document', file)
+      this.labUploading = true
+      this.$inertia.post(`/dashboard/test-requests/${id}/upload-lab-delivery-signed`, formData, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+          this.labUploading = false
+          this.labPendingFileName = ''
+          if (this.$refs.labDeliveryFileInput) {
+            this.$refs.labDeliveryFileInput.value = ''
+          }
+          const rec = page?.props?.receivingRecords
+          const rows = rec?.data || this.receivingRecords.data
+          const updated = rows.find((r) => r.id === id)
+          if (updated) {
+            this.selectedLabRequest = { ...updated }
+          }
+        },
+        onError: (errors) => {
+          this.labUploading = false
+          const msg = errors.lab_delivery_signed_document || errors.error || (this.$page.props.locale === 'ar' ? 'فشل الرفع' : 'Upload failed')
+          alert(Array.isArray(msg) ? msg[0] : msg)
+        },
+        onFinish: () => {
+          this.labUploading = false
+        }
+      })
     },
 
     getPageTitle() {

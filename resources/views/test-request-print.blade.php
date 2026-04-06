@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <title>طلب اختبار - {{ $testRequest->receiving_record_no }}</title>
+    <title>@if(!empty($labDeliveryFile))ملف التسليم للمختبر — @elseطلب اختبار — @endif{{ $testRequest->receiving_record_no }}</title>
     <style>
         /* Reset and Base Styles */
         * {
@@ -438,8 +438,13 @@
         <div class="print-content-body">
         <!-- Document header (form code left, title center, logo right; LTR strip on RTL page) -->
         <div dir="ltr" class="doc-header-bar">
-            <span class="doc-header-docno">HOT - F03</span>
-            <span class="doc-header-title">TEST Request</span>
+            @if(!empty($labDeliveryFile))
+                <span class="doc-header-docno">HOT - F04</span>
+                <span class="doc-header-title">Samples Delivery Record</span>
+            @else
+                <span class="doc-header-docno">HOT - F03</span>
+                <span class="doc-header-title">TEST Request</span>
+            @endif
             <div class="doc-header-logo-wrap">
                 @if(file_exists(public_path('images/idg_logo.jpg')))
                     <img src="{{ asset('images/idg_logo.jpg') }}" alt="IDG Logo">
@@ -450,6 +455,30 @@
         </div>
 
         <!-- Customer Information -->
+        @if(!empty($labDeliveryFile))
+        <table class="info-table">
+            <tr>
+                <td class="label">كود العميل<br>Customer Code</td>
+                <td class="value">{{ $formattedCustomer['customer_code'] ?? '-' }}</td>
+                <td class="label">رقم سجل الاستلام<br>Receiving Record No</td>
+                <td class="value">{{ $testRequest->receiving_record_no ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">تاريخ الاستلام<br>Received Date</td>
+                <td class="value">
+                    {{ $testRequest->received_date ? \Carbon\Carbon::parse($testRequest->received_date)->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
+                </td>
+                <td class="label">تم الاستلام بواسطة<br>Received By</td>
+                <td class="value">{{ $testRequest->received_by ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">استلم في<br>Received In</td>
+                <td class="value">{{ $testRequest->received_in ?? '-' }}</td>
+                <td class="label">ملاحظات<br>Notes</td>
+                <td class="value">{{ $testRequest->notes ? $testRequest->notes : '-' }}</td>
+            </tr>
+        </table>
+        @else
         <table class="info-table">
             <tr>
                 <td class="label">اسم العميل<br>Customer Name</td>
@@ -480,6 +509,7 @@
                 <td class="value">{{ $testRequest->received_in ?? '-' }}</td>
             </tr>
         </table>
+        @endif
 
         <!-- Items Table -->
         <div class="section-title">العناصر | Items</div>
@@ -671,7 +701,8 @@
             </tbody>
         </table>
 
-        <!-- Terms and Conditions -->
+        <!-- Terms and Conditions (not shown on lab delivery file) -->
+        @if(empty($labDeliveryFile))
         <div style="margin-top: 15px;">
             <div class="section-title">الشروط والأحكام | Terms and Conditions</div>
             <table class="items-table terms-conditions-print">
@@ -759,6 +790,7 @@
                 </tbody>
             </table>
         </div>
+        @endif
 
         </div><!-- /.print-content-body -->
 
@@ -778,26 +810,12 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="delivery-doc-label">Delivered by:<br>سلّم بواسطة</td>
+                        <td class="delivery-doc-label">Received by:<br>أستلم بواسطة</td>
                         <td class="delivery-doc-value" style="width: 17%;"></td>
                         <td class="delivery-doc-label">Signature:<br>التوقيع</td>
                         <td class="delivery-doc-value" style="width: 20%;"><div class="delivery-doc-sig-box"></div></td>
                         <td class="delivery-doc-label">Date:<br>التاريخ</td>
                         <td class="delivery-doc-date" style="width: 13%;">{{ $deliveryDocCreated }}</td>
-                    </tr>
-                    <tr>
-                        <td class="delivery-doc-label">Received by:<br>أستلم بواسطة</td>
-                        <td class="delivery-doc-value"></td>
-                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
-                        <td class="delivery-doc-value" style="text-align: center;">
-                            <div class="delivery-doc-sig-box" style="display: flex; align-items: center; justify-content: center; padding: 4px;">
-                                @if(file_exists(public_path('maram_sign.png')))
-                                    <img src="{{ asset('maram_sign.png') }}" alt="" style="max-height: 48px; max-width: 100%; object-fit: contain;">
-                                @endif
-                            </div>
-                        </td>
-                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
-                        <td class="delivery-doc-date">{{ $deliveryDocCreated }}</td>
                     </tr>
                 </tbody>
             </table>
