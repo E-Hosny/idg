@@ -1,10 +1,7 @@
 <template>
   <div class="flex min-h-screen bg-gray-100" :class="{ 'font-arabic': $page.props.locale === 'ar' }">
     <!-- Sidebar -->
-    <div 
-      class="hidden lg:flex lg:flex-shrink-0"
-      :class="{ 'lg:order-2': $page.props.locale === 'ar' }"
-    >
+    <div class="hidden lg:flex lg:flex-shrink-0">
       <div class="flex flex-col w-64">
         <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-gradient-to-b from-green-800 to-green-900">
           <!-- Logo -->
@@ -118,7 +115,7 @@
     </div>
 
     <!-- Main content -->
-    <div class="flex-1 overflow-y-auto" :class="{ 'lg:order-1': $page.props.locale === 'ar' }">
+    <div class="flex-1 overflow-y-auto">
       <!-- Top navigation -->
       <div class="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
         <!-- Mobile menu button -->
