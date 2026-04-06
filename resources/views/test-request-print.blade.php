@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <title>@if(!empty($labDeliveryFile))ملف التسليم للمختبر — @elseطلب اختبار — @endif{{ $testRequest->receiving_record_no }}</title>
+    <title>@if(!empty($redeliveryFromLabPrint))إعادة التسليم للاستقبال — @elseif(!empty($labDeliveryFile))ملف التسليم للمختبر — @elseطلب اختبار — @endif{{ $testRequest->receiving_record_no }}</title>
     <style>
         /* Reset and Base Styles */
         * {
@@ -367,6 +367,38 @@
         .print-page-tail {
             break-inside: avoid;
             page-break-inside: avoid;
+        }
+
+        /* Redelivery from lab → reception (extended footer) */
+        .redelivery-footer-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            margin-top: 10px;
+        }
+        .redelivery-footer-table td {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            font-size: 11px;
+            vertical-align: middle;
+            color: #000;
+        }
+        .redelivery-section-heading {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            text-decoration: underline;
+            text-align: center;
+            font-size: 13px;
+            font-family: "Times New Roman", Times, serif;
+            padding: 10px 8px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .redelivery-count-cell {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            font-family: "Times New Roman", Times, serif;
         }
 
         /* Print Button */
@@ -796,12 +828,56 @@
 
         <!-- Tail: pinned to bottom of sheet when printing -->
         @php
+            $todayFormatted = \Carbon\Carbon::now()->format('d/m/Y');
             $deliveryDocCreated = $testRequest->created_at
                 ? $testRequest->created_at->format('d/m/Y')
-                : now()->format('d/m/Y');
+                : $todayFormatted;
         @endphp
         <div class="print-page-tail" dir="ltr">
         <div class="delivery-section">
+            @if(!empty($redeliveryFromLabPrint))
+            <table class="redelivery-footer-table" dir="ltr">
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="redelivery-section-heading">Delivered Report and Items: التقرير والعناصر المسلمة</td>
+                    </tr>
+                    <tr>
+                        <td class="delivery-doc-label" style="width: 20%;">Delivered pieces:<br>القطع المسلمة</td>
+                        <td class="redelivery-count-cell" style="width: 10%;">{{ $evaluatedPiecesCount ?? 0 }}</td>
+                        <td class="delivery-doc-label" style="width: 20%;">Pending Pieces:<br>القطع المتبقية</td>
+                        <td class="redelivery-count-cell" style="width: 10%;">{{ $pendingPiecesCount ?? 0 }}</td>
+                        <td colspan="2" style="background: #fafafa;"></td>
+                    </tr>
+                    <tr>
+                        <td class="delivery-doc-label">Delivered by:<br>المسلّم</td>
+                        <td class="delivery-doc-value"></td>
+                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
+                        <td class="delivery-doc-value"><div class="delivery-doc-sig-box"></div></td>
+                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
+                        <td class="delivery-doc-date">{{ $todayFormatted }}</td>
+                    </tr>
+                    <tr>
+                        <td class="delivery-doc-label">Pending Item:<br>القطع المتبقية</td>
+                        <td class="delivery-doc-value"></td>
+                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
+                        <td class="delivery-doc-value"><div class="delivery-doc-sig-box"></div></td>
+                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
+                        <td class="delivery-doc-date">{{ $todayFormatted }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="redelivery-section-heading">Received Report and Pieces: استلام التقرير والقطع</td>
+                    </tr>
+                    <tr>
+                        <td class="delivery-doc-label">Received by:<br>المستلم</td>
+                        <td class="delivery-doc-value"></td>
+                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
+                        <td class="delivery-doc-value"><div class="delivery-doc-sig-box"></div></td>
+                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
+                        <td class="delivery-doc-date">{{ $todayFormatted }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            @else
             <table class="delivery-doc-table" dir="ltr">
                 <thead>
                     <tr>
@@ -819,6 +895,7 @@
                     </tr>
                 </tbody>
             </table>
+            @endif
         </div>
 
         <div class="print-contact-footer">

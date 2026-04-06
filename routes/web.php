@@ -73,8 +73,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
         Route::get('/dashboard/test-requests/{testRequest}/print-lab', [TestRequestController::class, 'showLabDeliveryPrint'])->name('dashboard.test-requests.print-lab');
+        Route::get('/dashboard/test-requests/{testRequest}/print-redelivery-from-lab', [TestRequestController::class, 'showRedeliveryFromLabPrint'])->name('dashboard.test-requests.print-redelivery-from-lab');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
         Route::post('/dashboard/test-requests/{testRequest}/upload-lab-delivery-signed', [TestRequestController::class, 'uploadLabDeliverySigned'])->name('dashboard.test-requests.upload-lab-delivery-signed');
+        Route::post('/dashboard/test-requests/{testRequest}/upload-redelivery-from-lab-signed', [TestRequestController::class, 'uploadRedeliveryFromLabSigned'])->name('dashboard.test-requests.upload-redelivery-from-lab-signed');
         
         // Legacy routes for backward compatibility
         Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');

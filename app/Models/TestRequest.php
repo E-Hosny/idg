@@ -20,6 +20,7 @@ class TestRequest extends Model
         'notes',
         'signed_document_path',
         'lab_delivery_signed_document_path',
+        'redelivery_from_lab_signed_document_path',
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class TestRequest extends Model
     protected $appends = [
         'signed_document_url',
         'lab_delivery_signed_document_url',
+        'redelivery_from_lab_signed_document_url',
     ];
 
     /**
@@ -55,6 +57,14 @@ class TestRequest extends Model
     {
         if ($this->lab_delivery_signed_document_path) {
             return file_url($this->lab_delivery_signed_document_path);
+        }
+        return null;
+    }
+
+    public function getRedeliveryFromLabSignedDocumentUrlAttribute()
+    {
+        if ($this->redelivery_from_lab_signed_document_path) {
+            return file_url($this->redelivery_from_lab_signed_document_path);
         }
         return null;
     }

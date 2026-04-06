@@ -178,6 +178,19 @@
                       class="mr-1 text-[10px] font-bold uppercase tracking-wide opacity-90"
                     >موقع</span>
                   </button>
+                  <button
+                    type="button"
+                    @click="openRedeliveryModal(request)"
+                    :class="redeliveryButtonClass(request)"
+                    :title="request.redelivery_from_lab_signed_document_path ? 'إعادة التسليم للاستقبال — تم رفع الملف' : 'إعادة التسليم للاستقبال'"
+                  >
+                    <i :class="request.redelivery_from_lab_signed_document_path ? 'fas fa-check-circle' : 'fas fa-undo-alt'" class="mr-1"></i>
+                    <span>إعادة للاستقبال</span>
+                    <span
+                      v-if="request.redelivery_from_lab_signed_document_path"
+                      class="mr-1 text-[10px] font-bold uppercase tracking-wide opacity-90"
+                    >موقع</span>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -270,6 +283,84 @@
         </div>
       </div>
     </div>
+
+    <!-- Redelivery lab → reception modal -->
+    <div
+      v-if="redeliveryModalOpen && selectedRedeliveryRequest"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeRedeliveryModal"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden border border-gray-200">
+        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex justify-between items-start gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">إعادة التسليم للاستقبال</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              {{ selectedRedeliveryRequest.receiving_record_no }}
+              <span class="text-gray-400">|</span>
+              #{{ selectedRedeliveryRequest.id }}
+            </p>
+          </div>
+          <button type="button" class="text-gray-400 hover:text-gray-700 p-1 rounded" aria-label="إغلاق" @click="closeRedeliveryModal">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="px-6 py-6 space-y-5">
+          <a
+            :href="`/dashboard/test-requests/${selectedRedeliveryRequest.id}/print-redelivery-from-lab`"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors"
+          >
+            <i class="fas fa-print"></i>
+            <span>الملف للطباعة</span>
+          </a>
+          <div class="rounded-lg border border-dashed border-gray-300 p-4 bg-gray-50/80">
+            <p class="text-xs font-medium text-gray-700 mb-2">رفع الملف بعد التوقيع (PDF)</p>
+            <input
+              ref="redeliveryFileInput"
+              type="file"
+              accept="application/pdf,.pdf"
+              class="hidden"
+              @change="onRedeliveryFileChange"
+            >
+            <div class="flex flex-wrap gap-2 items-center">
+              <button
+                type="button"
+                class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-800 hover:bg-gray-50"
+                @click="$refs.redeliveryFileInput && $refs.redeliveryFileInput.click()"
+              >
+                <i class="fas fa-folder-open ml-2 text-gray-500"></i>
+                اختيار ملف
+              </button>
+              <span v-if="redeliveryPendingFileName" class="text-xs text-gray-600 truncate max-w-[180px]" :title="redeliveryPendingFileName">{{ redeliveryPendingFileName }}</span>
+              <button
+                type="button"
+                :disabled="!redeliveryPendingFileName || redeliveryUploading"
+                class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="submitRedeliveryUpload"
+              >
+                <i v-if="redeliveryUploading" class="fas fa-spinner fa-spin ml-2"></i>
+                <i v-else class="fas fa-cloud-upload-alt ml-2"></i>
+                رفع الملف
+              </button>
+            </div>
+          </div>
+          <a
+            v-if="selectedRedeliveryRequest.redelivery_from_lab_signed_document_path"
+            :href="`/certificate-file/${selectedRedeliveryRequest.redelivery_from_lab_signed_document_path}`"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
+          >
+            <i class="fas fa-file-pdf"></i>
+            <span>عرض الملف الموقع</span>
+          </a>
+          <p v-else class="text-center text-xs text-gray-500">لا يوجد ملف موقع بعد — ارفع ملف PDF بعد التوقيع</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -291,10 +382,88 @@ export default {
       labModalOpen: false,
       selectedLabRequest: null,
       labUploading: false,
-      labPendingFileName: ''
+      labPendingFileName: '',
+      redeliveryModalOpen: false,
+      selectedRedeliveryRequest: null,
+      redeliveryUploading: false,
+      redeliveryPendingFileName: ''
     }
   },
   methods: {
+    redeliveryButtonClass(request) {
+      const base = 'inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded focus:outline-none focus:ring-2 transition-shadow'
+      if (request.redelivery_from_lab_signed_document_path) {
+        return `${base} bg-violet-600 text-white ring-2 ring-violet-300 ring-offset-1 hover:bg-violet-700 focus:ring-violet-400 shadow-sm`
+      }
+      return `${base} bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500`
+    },
+    openRedeliveryModal(request) {
+      this.selectedRedeliveryRequest = { ...request }
+      this.redeliveryPendingFileName = ''
+      this.redeliveryModalOpen = true
+      this.$nextTick(() => {
+        if (this.$refs.redeliveryFileInput) {
+          this.$refs.redeliveryFileInput.value = ''
+        }
+      })
+    },
+    closeRedeliveryModal() {
+      this.redeliveryModalOpen = false
+      this.selectedRedeliveryRequest = null
+      this.redeliveryPendingFileName = ''
+      this.redeliveryUploading = false
+      if (this.$refs.redeliveryFileInput) {
+        this.$refs.redeliveryFileInput.value = ''
+      }
+    },
+    onRedeliveryFileChange(e) {
+      const f = e.target.files && e.target.files[0]
+      this.redeliveryPendingFileName = f ? f.name : ''
+    },
+    submitRedeliveryUpload() {
+      const input = this.$refs.redeliveryFileInput
+      const file = input && input.files && input.files[0]
+      if (!file) {
+        alert('يرجى اختيار ملف PDF أولاً | Please choose a PDF file first.')
+        return
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert('حجم الملف يجب أن يكون أقل من 10 ميجابايت | File size must be less than 10MB.')
+        return
+      }
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert('يُسمح بملفات PDF فقط | Only PDF files are allowed.')
+        return
+      }
+      const id = this.selectedRedeliveryRequest.id
+      const formData = new FormData()
+      formData.append('redelivery_from_lab_signed_document', file)
+      this.redeliveryUploading = true
+      this.$inertia.post(`/dashboard/test-requests/${id}/upload-redelivery-from-lab-signed`, formData, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+          this.redeliveryUploading = false
+          this.redeliveryPendingFileName = ''
+          if (this.$refs.redeliveryFileInput) {
+            this.$refs.redeliveryFileInput.value = ''
+          }
+          const rows = page?.props?.testRequests || this.testRequests
+          const updated = rows.find((r) => r.id === id)
+          if (updated) {
+            this.selectedRedeliveryRequest = { ...updated }
+          }
+        },
+        onError: (errors) => {
+          this.redeliveryUploading = false
+          const msg = errors.redelivery_from_lab_signed_document || errors.error || 'فشل الرفع | Upload failed'
+          alert(Array.isArray(msg) ? msg[0] : msg)
+        },
+        onFinish: () => {
+          this.redeliveryUploading = false
+        }
+      })
+    },
     labDeliveryButtonClass(request) {
       const base = 'inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded focus:outline-none focus:ring-2 transition-shadow'
       if (request.lab_delivery_signed_document_path) {

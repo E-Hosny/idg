@@ -296,6 +296,13 @@ class TestRequestController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $evaluatedPiecesCount = Artifact::where('test_request_id', $testRequest->id)
+            ->whereIn('status', ['evaluated', 'certified'])
+            ->count();
+        $pendingPiecesCount = Artifact::where('test_request_id', $testRequest->id)
+            ->whereIn('status', ['pending', 'under_evaluation'])
+            ->count();
+
         $formattedCustomer = [
             'id' => $customer['id'] ?? $testRequest->qoyod_customer_id,
             'full_name' => $customer['name'] ?? $customer['display_name'] ?? '',
@@ -308,7 +315,13 @@ class TestRequestController extends Controller
             'status' => $customer['status'] ?? 'active',
         ];
 
-        return compact('testRequest', 'formattedCustomer', 'artifacts');
+        return compact(
+            'testRequest',
+            'formattedCustomer',
+            'artifacts',
+            'evaluatedPiecesCount',
+            'pendingPiecesCount'
+        );
     }
 
     /**
@@ -364,6 +377,37 @@ class TestRequestController extends Controller
 
             return redirect()->back()
                 ->withErrors(['error' => 'An error occurred while showing lab delivery file: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Redelivery from lab to reception (after evaluation): same body as lab file, extended bilingual footer with counts.
+     */
+    public function showRedeliveryFromLabPrint(TestRequest $testRequest)
+    {
+        try {
+            \Log::info('Showing redelivery from lab print page', ['test_request_id' => $testRequest->id]);
+
+            $data = $this->buildTestRequestPrintData($testRequest);
+
+            return view('test-request-print', array_merge($data, [
+                'labDeliveryFile' => true,
+                'redeliveryFromLabPrint' => true,
+            ]));
+        } catch (\RuntimeException $e) {
+            \Log::warning('Redelivery from lab print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
+
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing redelivery from lab print page', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'An error occurred while showing redelivery document: ' . $e->getMessage()]);
         }
     }
 
@@ -524,6 +568,62 @@ class TestRequestController extends Controller
     }
 
     /**
+     * Upload signed redelivery-from-lab document (PDF) — Spaces via upload_file().
+     */
+    public function uploadRedeliveryFromLabSigned(Request $request, TestRequest $testRequest)
+    {
+        try {
+            $request->validate([
+                'redelivery_from_lab_signed_document' => [
+                    'required',
+                    'file',
+                    'mimes:pdf',
+                    'max:10240',
+                ],
+            ], [
+                'redelivery_from_lab_signed_document.required' => 'يرجى اختيار ملف PDF | Please select a PDF file.',
+                'redelivery_from_lab_signed_document.mimes' => 'يُسمح بملفات PDF فقط | Only PDF files are allowed.',
+                'redelivery_from_lab_signed_document.max' => 'حجم الملف أقل من 10 ميجابايت | File size must be less than 10MB.',
+            ]);
+
+            if ($testRequest->redelivery_from_lab_signed_document_path) {
+                delete_file_anywhere($testRequest->redelivery_from_lab_signed_document_path);
+            }
+
+            $file = $request->file('redelivery_from_lab_signed_document');
+            $filename = 'redelivery-lab-' . $testRequest->receiving_record_no . '-' . time() . '.pdf';
+            $uploadDir = 'test-requests/redelivery-from-lab-signed';
+
+            $path = upload_file($file, $uploadDir, $filename);
+
+            if (! $path) {
+                throw new \Exception('Failed to store redelivery file to Spaces');
+            }
+
+            if (! $testRequest->update(['redelivery_from_lab_signed_document_path' => $path])) {
+                delete_file_anywhere($path);
+                throw new \Exception('Failed to update database record');
+            }
+
+            \Log::info('Redelivery from lab document uploaded', [
+                'test_request_id' => $testRequest->id,
+                'path' => $path,
+            ]);
+
+            return back()->with('success', 'تم رفع ملف إعادة التسليم للاستقبال بنجاح | Redelivery document uploaded successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Redelivery from lab upload failed', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
      * Delete a test request
      */
     public function destroy(TestRequest $testRequest)
@@ -536,6 +636,9 @@ class TestRequestController extends Controller
             }
             if ($testRequest->lab_delivery_signed_document_path) {
                 delete_file_anywhere($testRequest->lab_delivery_signed_document_path);
+            }
+            if ($testRequest->redelivery_from_lab_signed_document_path) {
+                delete_file_anywhere($testRequest->redelivery_from_lab_signed_document_path);
             }
 
             // Delete associated artifacts
