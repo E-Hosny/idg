@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Artifact;
+use App\Models\TestRequest;
 use App\Models\Category;
 use App\Models\ArtifactEvaluation;
 use App\Models\DiamondEvaluation;
@@ -76,50 +77,92 @@ class DashboardController extends Controller
 
     public function artifacts(Request $request)
     {
-        $query = Artifact::with(['category', 'assignedTo', 'client', 'testRequest']);
-        
-        // إذا تم تحديد status معين، فلتر حسب status
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-        // إذا تم تحديد view=pending، عرض القطع غير المقيمة فقط
-        elseif ($request->get('view') === 'pending') {
-            $query->whereIn('status', ['pending', 'under_evaluation']);
-        }
-        // وإلا عرض جميع القطع (Total Artifacts)
-        
-        // فلترة حسب الكود (Code)
-        if ($request->filled('code')) {
-            $query->where('artifact_code', 'like', '%' . $request->code . '%');
-        }
-        
-        // فلترة حسب رقم طلب الاستلام (Receiving Request No)
-        if ($request->filled('receiving_record_no')) {
-            $query->whereHas('testRequest', function($q) use ($request) {
-                $q->where('receiving_record_no', 'like', '%' . $request->receiving_record_no . '%');
-            });
-        }
-        
-        $artifacts = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
-        
-        // تحديد نوع العرض للصفحة
-        $viewType = $request->get('view', 'all'); // all, pending
-        
-        // حساب الإحصائيات من قاعدة البيانات بالكامل (وليس فقط البيانات المعروضة)
         $stats = [
             'pending' => Artifact::where('status', 'pending')->count(),
             'under_evaluation' => Artifact::where('status', 'under_evaluation')->count(),
             'evaluated' => Artifact::where('status', 'evaluated')->count(),
             'certified' => Artifact::where('status', 'certified')->count(),
         ];
-        
+
+        $query = TestRequest::query()
+            ->whereHas('artifacts')
+            ->withCount([
+                'artifacts as pending_pieces_count' => function ($q) {
+                    $q->whereIn('status', ['pending', 'under_evaluation']);
+                },
+                'artifacts as evaluated_pieces_count' => function ($q) {
+                    $q->whereIn('status', ['evaluated', 'certified']);
+                },
+            ]);
+
+        if ($request->filled('receiving_record_no')) {
+            $query->where('receiving_record_no', 'like', '%' . $request->receiving_record_no . '%');
+        }
+
+        if ($request->filled('customer_code')) {
+            $raw = trim((string) $request->customer_code);
+            $normalized = preg_replace('/\s+/', '', $raw);
+            if ($normalized !== '' && preg_match('/^cu(?:s)?0*(\d+)$/i', $normalized, $m)) {
+                $query->where('qoyod_customer_id', (int) $m[1]);
+            } elseif ($normalized !== '' && ctype_digit($normalized)) {
+                $query->where('qoyod_customer_id', (int) $normalized);
+            }
+        }
+
+        if ($request->get('view') === 'pending') {
+            $query->whereHas('artifacts', function ($q) {
+                $q->whereIn('status', ['pending', 'under_evaluation']);
+            });
+        }
+
+        $receivingRecords = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+
         return Inertia::render('Dashboard/Artifacts/Index', [
-            'artifacts' => $artifacts,
-            'viewType' => $viewType,
+            'receivingRecords' => $receivingRecords,
+            'viewType' => $request->get('view', 'all'),
             'stats' => $stats,
             'filters' => [
-                'code' => $request->get('code', ''),
                 'receiving_record_no' => $request->get('receiving_record_no', ''),
+                'customer_code' => $request->get('customer_code', ''),
+            ],
+        ]);
+    }
+
+    /**
+     * Pieces (artifacts) for a single receiving record / test request.
+     */
+    public function artifactsForReceiving(Request $request, TestRequest $testRequest)
+    {
+        $query = Artifact::with(['category', 'assignedTo', 'client', 'testRequest'])
+            ->where('test_request_id', $testRequest->id);
+
+        if ($request->filled('code')) {
+            $query->where('artifact_code', 'like', '%' . $request->code . '%');
+        }
+
+        if ($request->filled('status')) {
+            if ($request->status === 'pending') {
+                $query->whereIn('status', ['pending', 'under_evaluation']);
+            } elseif ($request->status === 'evaluated') {
+                $query->whereIn('status', ['evaluated', 'certified']);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        $artifacts = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+
+        return Inertia::render('Dashboard/Artifacts/ReceivingShow', [
+            'testRequest' => [
+                'id' => $testRequest->id,
+                'receiving_record_no' => $testRequest->receiving_record_no,
+                'qoyod_customer_id' => $testRequest->qoyod_customer_id,
+                'created_at' => $testRequest->created_at,
+            ],
+            'artifacts' => $artifacts,
+            'filters' => [
+                'code' => $request->get('code', ''),
+                'status' => $request->get('status', ''),
             ],
         ]);
     }

@@ -37,6 +37,7 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::middleware(['auth'])->group(function () {
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/artifacts/receiving/{testRequest}', [DashboardController::class, 'artifactsForReceiving'])->name('dashboard.artifacts.receiving');
     Route::get('/dashboard/artifacts', [DashboardController::class, 'artifacts'])->name('dashboard.artifacts');
     Route::get('/dashboard/evaluations', [DashboardController::class, 'evaluations'])->name('dashboard.evaluations');
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
