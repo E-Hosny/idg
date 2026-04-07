@@ -372,7 +372,7 @@
                   @click="pickRedeliveryUploadBatch(batch.id)"
                 >
                   <i class="fas fa-cloud-upload-alt ml-1"></i>
-                  رفع
+                  رفع الملف الموثق
                 </button>
                 <a
                   v-if="batch.signed_document_path"

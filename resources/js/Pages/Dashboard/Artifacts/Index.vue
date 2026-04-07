@@ -368,7 +368,7 @@
                   @click="pickRedeliveryUploadBatch(batch.id)"
                 >
                   <i class="fas fa-cloud-upload-alt ml-1"></i>
-                  {{ __('Upload file') }}
+                  {{ __('Upload documented file') }}
                 </button>
                 <a
                   v-if="batch.signed_document_path"
@@ -518,6 +518,7 @@ export default {
         'Upload signed PDF': 'رفع الملف بعد التوقيع (PDF)',
         'Choose file': 'اختيار ملف',
         'Upload file': 'رفع الملف',
+        'Upload documented file': 'رفع الملف الموثق',
         'View signed file': 'عرض الملف الموقع',
         'No signed file yet': 'لا يوجد ملف موقع بعد — ارفع ملف PDF بعد التوقيع',
         'Redelivery to reception': 'إعادة التسليم للاستقبال',
