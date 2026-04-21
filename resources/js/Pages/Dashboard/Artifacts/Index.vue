@@ -208,8 +208,7 @@
         <div class="px-6 py-6 space-y-5">
           <a
             :href="`/dashboard/test-requests/${selectedLabRequest.id}/print-lab`"
-            target="_blank"
-            rel="noopener"
+            @click.prevent="openPrintPage(`/dashboard/test-requests/${selectedLabRequest.id}/print-lab`)"
             class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900 transition-colors"
           >
             <i class="fas fa-print"></i>
@@ -353,8 +352,7 @@
               <div class="flex flex-wrap gap-2">
                 <a
                   :href="`/dashboard/test-requests/${selectedRedeliveryRow.id}/redeliveries/${batch.id}/print`"
-                  target="_blank"
-                  rel="noopener"
+                  @click.prevent="openPrintPage(`/dashboard/test-requests/${selectedRedeliveryRow.id}/redeliveries/${batch.id}/print`)"
                   class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-700 text-white text-xs font-semibold hover:bg-slate-800"
                 >
                   <i class="fas fa-print ml-1"></i>
@@ -463,6 +461,21 @@ export default {
   },
 
   methods: {
+    openPrintPage(url, preOpenedWindow = null) {
+      let targetWindow = preOpenedWindow
+      if (!targetWindow || targetWindow.closed) {
+        targetWindow = window.open('', '_blank')
+      }
+
+      if (targetWindow) {
+        targetWindow.location.href = url
+        return true
+      }
+
+      window.location.assign(url)
+      return false
+    },
+
     formatCustomerCode(id) {
       if (id == null || id === '') return '-'
       return `CUS${String(id).padStart(3, '0')}`
@@ -598,39 +611,58 @@ export default {
         this.$refs.redeliveryBatchFileInput.value = ''
       }
     },
-    submitNewRedeliveryBatch() {
+    async submitNewRedeliveryBatch() {
       const tid = this.selectedRedeliveryRow.id
       const d = Number(this.newRedeliveryForm.delivered_pieces_count)
       const r = Number(this.newRedeliveryForm.remaining_pieces_count)
+      const queuedPrintWindow = window.open('', '_blank')
       if (Number.isNaN(d) || Number.isNaN(r) || d < 0 || r < 0) {
+        if (queuedPrintWindow && !queuedPrintWindow.closed) {
+          queuedPrintWindow.close()
+        }
         alert(this.$page.props.locale === 'ar' ? 'أدخل أعدادًا صحيحة' : 'Enter valid counts.')
         return
       }
       this.redeliveryCreating = true
-      this.$inertia.post(`/dashboard/test-requests/${tid}/redeliveries`, {
-        delivered_pieces_count: d,
-        remaining_pieces_count: r
-      }, {
-        preserveScroll: true,
-        onSuccess: (page) => {
-          this.redeliveryCreating = false
-          const rows = page?.props?.receivingRecords?.data || this.receivingRecords.data
-          const updated = rows.find((x) => x.id === tid)
-          if (updated) {
-            this.selectedRedeliveryRow = { ...updated }
-            const last = (updated.redeliveries || [])[0]
-            if (last && last.id) {
-              window.open(`/dashboard/test-requests/${tid}/redeliveries/${last.id}/print`, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes')
+      try {
+        const res = await window.axios.post(
+          `/dashboard/test-requests/${tid}/redeliveries`,
+          {
+            delivered_pieces_count: d,
+            remaining_pieces_count: r
+          },
+          {
+            headers: {
+              Accept: 'application/json'
             }
           }
-        },
-        onError: () => {
-          this.redeliveryCreating = false
-        },
-        onFinish: () => {
-          this.redeliveryCreating = false
+        )
+
+        const redelivery = res?.data?.redelivery
+        const printUrl = res?.data?.print_url || (redelivery?.id ? `/dashboard/test-requests/${tid}/redeliveries/${redelivery.id}/print` : null)
+
+        if (redelivery && this.selectedRedeliveryRow) {
+          const existing = this.selectedRedeliveryRow.redeliveries || []
+          this.selectedRedeliveryRow = {
+            ...this.selectedRedeliveryRow,
+            redeliveries: [redelivery, ...existing]
+          }
         }
-      })
+
+        if (printUrl) {
+          this.openPrintPage(printUrl, queuedPrintWindow)
+        } else if (queuedPrintWindow && !queuedPrintWindow.closed) {
+          queuedPrintWindow.close()
+        }
+      } catch (error) {
+        if (queuedPrintWindow && !queuedPrintWindow.closed) {
+          queuedPrintWindow.close()
+        }
+        const msg = error?.response?.data?.message || (this.$page.props.locale === 'ar' ? 'فشل إنشاء المستند' : 'Failed to create redelivery document.')
+        alert(msg)
+      } finally {
+        this.redeliveryCreating = false
+      }
     },
     pickRedeliveryUploadBatch(batchId) {
       this.redeliveryUploadTargetId = batchId

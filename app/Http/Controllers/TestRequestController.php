@@ -414,6 +414,18 @@ class TestRequestController extends Controller
             'redelivery_id' => $redelivery->id,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Redelivery document created.',
+                'redelivery' => $redelivery,
+                'print_url' => route('dashboard.test-requests.redeliveries.print', [
+                    'testRequest' => $testRequest->id,
+                    'redelivery' => $redelivery->id,
+                ]),
+            ]);
+        }
+
         return back()->with('success', 'تم إنشاء مستند إعادة التسليم | Redelivery document created.');
     }
 
