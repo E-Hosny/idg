@@ -462,17 +462,12 @@ export default {
 
   methods: {
     openPrintPage(url, preOpenedWindow = null) {
-      let targetWindow = preOpenedWindow
-      if (!targetWindow || targetWindow.closed) {
-        targetWindow = window.open('', '_blank')
-      }
-
-      if (targetWindow) {
-        targetWindow.location.href = url
+      if (preOpenedWindow && !preOpenedWindow.closed) {
+        preOpenedWindow.location.href = url
         return true
       }
-
-      window.location.assign(url)
+      // Open print page in the same tab to avoid popup blockers on restricted devices.
+      window.location.href = url
       return false
     },
 
@@ -615,11 +610,7 @@ export default {
       const tid = this.selectedRedeliveryRow.id
       const d = Number(this.newRedeliveryForm.delivered_pieces_count)
       const r = Number(this.newRedeliveryForm.remaining_pieces_count)
-      const queuedPrintWindow = window.open('', '_blank')
       if (Number.isNaN(d) || Number.isNaN(r) || d < 0 || r < 0) {
-        if (queuedPrintWindow && !queuedPrintWindow.closed) {
-          queuedPrintWindow.close()
-        }
         alert(this.$page.props.locale === 'ar' ? 'أدخل أعدادًا صحيحة' : 'Enter valid counts.')
         return
       }
@@ -650,14 +641,9 @@ export default {
         }
 
         if (printUrl) {
-          this.openPrintPage(printUrl, queuedPrintWindow)
-        } else if (queuedPrintWindow && !queuedPrintWindow.closed) {
-          queuedPrintWindow.close()
+          this.openPrintPage(printUrl)
         }
       } catch (error) {
-        if (queuedPrintWindow && !queuedPrintWindow.closed) {
-          queuedPrintWindow.close()
-        }
         const msg = error?.response?.data?.message || (this.$page.props.locale === 'ar' ? 'فشل إنشاء المستند' : 'Failed to create redelivery document.')
         alert(msg)
       } finally {
