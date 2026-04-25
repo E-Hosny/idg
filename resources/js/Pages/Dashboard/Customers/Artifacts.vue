@@ -281,7 +281,7 @@
                           </label>
                           <select
                             v-model="editArtifactData.type"
-                            @change="resetServiceWhenTypeChanges"
+                            @change="handleTypeChange('edit')"
                             required
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           >
@@ -296,7 +296,35 @@
                           <label class="block text-sm font-medium text-gray-700">
                             {{ $page.props.locale === 'ar' ? 'النوع الفرعي' : 'Subtype' }} <span class="text-gray-400">({{ __('Optional') }})</span>
                           </label>
+                          <template v-if="editArtifactData.type === 'Jewellery'">
+                            <select
+                              v-if="editArtifactSubtypeMode === 'list'"
+                              v-model="editArtifactData.subtype"
+                              @change="handleSubtypeSelectionChange('edit')"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            >
+                              <option value="" disabled>{{ $page.props.locale === 'ar' ? 'اختر النوع الفرعي' : 'Select subtype' }}</option>
+                              <option v-for="option in jewellerySubtypeOptions" :key="'e-' + option" :value="option">{{ option }}</option>
+                              <option value="__manual__">{{ $page.props.locale === 'ar' ? 'إدخال يدوي...' : 'Manual entry...' }}</option>
+                            </select>
+                            <div v-else class="space-y-2">
+                              <input
+                                v-model="editArtifactData.subtype"
+                                type="text"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                                :placeholder="$page.props.locale === 'ar' ? 'أدخل النوع الفرعي يدوياً' : 'Enter subtype manually'"
+                              />
+                              <button
+                                type="button"
+                                class="text-xs text-green-700 hover:text-green-900 underline"
+                                @click="editArtifactSubtypeMode = 'list'"
+                              >
+                                {{ $page.props.locale === 'ar' ? 'العودة للقائمة' : 'Back to list' }}
+                              </button>
+                            </div>
+                          </template>
                           <input
+                            v-else
                             v-model="editArtifactData.subtype"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
@@ -478,7 +506,7 @@
                           </label>
                           <select
                             v-model="newArtifact.type"
-                            @change="resetServiceWhenTypeChanges"
+                            @change="handleTypeChange('new')"
                             required
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           >
@@ -493,7 +521,35 @@
                           <label class="block text-sm font-medium text-gray-700">
                             {{ $page.props.locale === 'ar' ? 'النوع الفرعي' : 'Subtype' }} <span class="text-gray-400">({{ $page.props.locale === 'ar' ? 'اختياري' : 'Optional' }})</span>
                           </label>
+                          <template v-if="newArtifact.type === 'Jewellery'">
+                            <select
+                              v-if="newArtifactSubtypeMode === 'list'"
+                              v-model="newArtifact.subtype"
+                              @change="handleSubtypeSelectionChange('new')"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            >
+                              <option value="" disabled>{{ $page.props.locale === 'ar' ? 'اختر النوع الفرعي' : 'Select subtype' }}</option>
+                              <option v-for="option in jewellerySubtypeOptions" :key="'n-' + option" :value="option">{{ option }}</option>
+                              <option value="__manual__">{{ $page.props.locale === 'ar' ? 'إدخال يدوي...' : 'Manual entry...' }}</option>
+                            </select>
+                            <div v-else class="space-y-2">
+                              <input
+                                v-model="newArtifact.subtype"
+                                type="text"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                                :placeholder="$page.props.locale === 'ar' ? 'أدخل النوع الفرعي يدوياً' : 'Enter subtype manually'"
+                              />
+                              <button
+                                type="button"
+                                class="text-xs text-green-700 hover:text-green-900 underline"
+                                @click="newArtifactSubtypeMode = 'list'"
+                              >
+                                {{ $page.props.locale === 'ar' ? 'العودة للقائمة' : 'Back to list' }}
+                              </button>
+                            </div>
+                          </template>
                           <input
+                            v-else
                             v-model="newArtifact.subtype"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
@@ -732,6 +788,8 @@ export default {
       showAddArtifactModal: false,
       updatingArtifact: false,
       addingArtifact: false,
+      newArtifactSubtypeMode: 'list',
+      editArtifactSubtypeMode: 'list',
       selectedArtifact: null,
       selectedCustomerForArtifact: null,
       editArtifactData: {
@@ -778,6 +836,21 @@ export default {
         { value: '48 hours', label: this.$page.props.locale === 'ar' ? '48 ساعة' : '48 hours' },
         { value: '72 hours', label: this.$page.props.locale === 'ar' ? '72 ساعة' : '72 hours' },
         { value: 'Specific Date', label: this.$page.props.locale === 'ar' ? 'تاريخ محدد' : 'Specific Date' },
+      ],
+      jewellerySubtypeOptions: [
+        'Ring', 'Solitaire Ring', 'Wedding Band', 'Earrings', 'Pearl Earrings', 'Diamond Studs',
+        'Precious Gemstone Earrings', 'Necklace', 'Pendant Necklace', 'Diamond Necklaces',
+        'Chain Necklace', 'Pearl Strand Necklace', 'Gemstones Strand Necklace', 'Diamons Strand Necklace',
+        'Choker', 'Tennis necklace', 'Multi-Strand Necklace', 'Beaded Necklace', 'Beaded Bracelet',
+        'Diamond Bracelets', 'Tennis Bracelet', 'Pendant', 'Solitaire Pendant', 'Gemstone Pendant',
+        'Diamond Pendant', 'Medalion Pendant', 'Locket', 'Charm (various shapes)', 'Charm Bracelet',
+        'Bangle', 'Thin Bracelet', 'Watch', 'Watch + Bracelet Sets', 'Desk Cocks', 'Wall Clock',
+        'Timepieces with diamonds', 'Luxury Clocks', 'brooch', 'Lapel Pin', 'Stick Pin',
+        'Tiara / Crown/Taj', 'Hair PIns', 'Hair Clips', 'Nose Pin', 'Nose Ring', 'Anklet',
+        'Toe Ring', 'Armlet', 'Waist Chain', 'Cufflin ks', 'Tie Pin', 'Chain', 'Gold Coins',
+        'Gold Bars', 'Commemorative Medallions', 'Silver Coins', 'Fabergé-style Eggs',
+        'Ornaments', 'Luxry Desk Ornaments', 'Accesories', 'Cufflins', 'Sunglasses',
+        'Pens', 'Lighters', 'Key chains', 'Desk Accessories', 'Vases', 'Trays', 'Tableware'
       ]
     }
   },
@@ -802,6 +875,7 @@ export default {
       console.log('addArtifact clicked, customer ID:', this.customer?.id)
       if (this.customer?.id) {
         this.selectedCustomerForArtifact = this.customer
+        this.newArtifactSubtypeMode = 'list'
         this.showAddArtifactModal = true
       } else {
         console.log('No customer ID available')
@@ -862,6 +936,7 @@ export default {
         notes: artifact.notes || '',
         quantity: currentQuantity
       }
+      this.editArtifactSubtypeMode = this.resolveSubtypeMode(this.editArtifactData.type, this.editArtifactData.subtype)
       this.showEditArtifactModal = true
     },
     
@@ -898,8 +973,29 @@ export default {
       }
     },
     
-    resetServiceWhenTypeChanges() {
-      this.newArtifact.service = ''
+    resolveSubtypeMode(type, subtypeValue) {
+      if (type !== 'Jewellery') return 'manual'
+      if (this.jewellerySubtypeOptions.includes(subtypeValue)) return 'list'
+      return subtypeValue ? 'manual' : 'list'
+    },
+    handleTypeChange(target) {
+      if (target === 'new') {
+        this.newArtifact.service = ''
+        this.newArtifactSubtypeMode = this.resolveSubtypeMode(this.newArtifact.type, this.newArtifact.subtype)
+        return
+      }
+      this.editArtifactData.service = ''
+      this.editArtifactSubtypeMode = this.resolveSubtypeMode(this.editArtifactData.type, this.editArtifactData.subtype)
+    },
+    handleSubtypeSelectionChange(target) {
+      if (target === 'new' && this.newArtifact.subtype === '__manual__') {
+        this.newArtifact.subtype = ''
+        this.newArtifactSubtypeMode = 'manual'
+      }
+      if (target === 'edit' && this.editArtifactData.subtype === '__manual__') {
+        this.editArtifactData.subtype = ''
+        this.editArtifactSubtypeMode = 'manual'
+      }
     },
     
     getServiceOptions(type) {
