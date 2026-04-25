@@ -35,7 +35,10 @@
             </div>
             <div>
               <label class="block text-gray-700">Colour</label>
-              <input type="text" v-model="form.colour" class="input" />
+              <select v-model="form.colour" class="input">
+                <option value="">{{ locale === 'ar' ? 'اختر اللون' : 'Select Colour' }}</option>
+                <option v-for="option in colourOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              </select>
             </div>
             <div>
               <label class="block text-gray-700">Transparency</label>
@@ -60,7 +63,10 @@
             </div>
             <div>
               <label class="block text-gray-700">Phenomena</label>
-              <input type="text" v-model="form.phenomena" class="input" />
+              <select v-model="form.phenomena" class="input">
+                <option value="">{{ locale === 'ar' ? 'اختر الظاهرة' : 'Select Phenomena' }}</option>
+                <option v-for="option in phenomenaOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              </select>
             </div>
             <div>
               <label class="block text-gray-700">Saturation</label>
@@ -74,10 +80,17 @@
               <input type="text" v-model="form.measurements" class="input" placeholder="e.g. 7.2 x 5.1 x 3.0" />
             </div>
             <div>
-              <label class="block text-gray-700">Shape/Cut</label>
-              <select v-model="form.shape_cut" class="input">
+              <label class="block text-gray-700">Shape</label>
+              <select v-model="form.shape" class="input">
                 <option value="">{{ locale === 'ar' ? 'اختر الشكل' : 'Select Shape' }}</option>
                 <option v-for="option in shapeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700">Cut</label>
+              <select v-model="form.cut" class="input">
+                <option value="">{{ locale === 'ar' ? 'اختر القطع' : 'Select Cut' }}</option>
+                <option v-for="option in cutOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </div>
           </div>
@@ -117,7 +130,10 @@
         <!-- 6. Inclusion (Magnification) -->
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٦. التضمين (التكبير)' : '6. Inclusion (Magnification)' }}</h2>
-          <textarea v-model="form.inclusion" class="input" rows="2"></textarea>
+          <select v-model="form.inclusion" class="input">
+            <option value="">{{ locale === 'ar' ? 'اختر التضمينات' : 'Select Inclusion' }}</option>
+            <option v-for="option in inclusionOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+          </select>
         </section>
 
         <!-- 7. Specific Gravity -->
@@ -172,6 +188,20 @@
             </label>
           </div>
           <div class="mt-2">
+            <label class="block text-gray-700">Group</label>
+            <select v-model="form.stone_group" class="input">
+              <option value="">{{ locale === 'ar' ? 'اختر المجموعة' : 'Select Group' }}</option>
+              <option v-for="option in groupOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="mt-2">
+            <label class="block text-gray-700">Species</label>
+            <select v-model="form.species" class="input">
+              <option value="">{{ locale === 'ar' ? 'اختر النوع الأساسي' : 'Select Species' }}</option>
+              <option v-for="option in speciesOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="mt-2">
             <label class="block text-gray-700">Variety</label>
             <select v-model="form.variety" class="input">
               <option value="">{{ locale === 'ar' ? 'اختر النوع' : 'Select Variety' }}</option>
@@ -179,10 +209,17 @@
             </select>
           </div>
           <div class="mt-2">
-            <label class="block text-gray-700">Species/Group</label>
-            <select v-model="form.species_group" class="input">
-              <option value="">{{ locale === 'ar' ? 'اختر مجموعة الأنواع' : 'Select Species Group' }}</option>
-              <option v-for="option in speciesOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            <label class="block text-gray-700">Treatment</label>
+            <select v-model="form.treatment" class="input">
+              <option value="">{{ locale === 'ar' ? 'اختر المعالجة' : 'Select Treatment' }}</option>
+              <option v-for="option in treatmentOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+          <div class="mt-2">
+            <label class="block text-gray-700">Gemstone Type</label>
+            <select v-model="form.gemstone_type" class="input">
+              <option value="">{{ locale === 'ar' ? 'اختر نوع الحجر' : 'Select Gemstone Type' }}</option>
+              <option v-for="option in gemstoneTypeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
             </select>
           </div>
         </section>
@@ -290,6 +327,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { usePage, useForm } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import { gemstoneEvaluationOptions } from '@/constants/gemstoneEvaluationOptions';
 
 const props = defineProps({ 
   artifact: Object,
@@ -350,6 +388,27 @@ const formatDate = (date) => {
   return date
 }
 
+const splitShapeCut = (value) => {
+  if (!value || typeof value !== 'string') return { shape: '', cut: '' }
+  const parts = value.split('/').map((part) => part.trim()).filter(Boolean)
+  return {
+    shape: parts[0] || '',
+    cut: parts[1] || ''
+  }
+}
+
+const splitSpeciesGroup = (value) => {
+  if (!value || typeof value !== 'string') return { group: '', species: '' }
+  const parts = value.split('/').map((part) => part.trim()).filter(Boolean)
+  return {
+    group: parts[0] || '',
+    species: parts[1] || ''
+  }
+}
+
+const existingShapeCut = splitShapeCut(props.existingEvaluation?.shape_cut)
+const existingSpeciesGroup = splitSpeciesGroup(props.existingEvaluation?.species_group)
+
 const form = useForm({
   test_date: formatDate(props.existingEvaluation?.test_date),
   test_location: props.existingEvaluation?.test_location || '',
@@ -362,6 +421,8 @@ const form = useForm({
   phenomena: props.existingEvaluation?.phenomena || '',
   saturation: props.existingEvaluation?.saturation || '',
   measurements: props.existingEvaluation?.measurements || '',
+  shape: props.existingEvaluation?.shape || existingShapeCut.shape,
+  cut: props.existingEvaluation?.cut || existingShapeCut.cut,
   shape_cut: props.existingEvaluation?.shape_cut || '',
   pleochroism: props.existingEvaluation?.pleochroism || '',
   optic_character: props.existingEvaluation?.optic_character || '',
@@ -374,8 +435,12 @@ const form = useForm({
   fluorescence_long: props.existingEvaluation?.fluorescence_long || '',
   fluorescence_short: props.existingEvaluation?.fluorescence_short || '',
   result: props.existingEvaluation?.result || '',
+  stone_group: props.existingEvaluation?.stone_group || existingSpeciesGroup.group,
+  species: props.existingEvaluation?.species || existingSpeciesGroup.species,
   variety: props.existingEvaluation?.variety || '',
   species_group: props.existingEvaluation?.species_group || '',
+  treatment: props.existingEvaluation?.treatment || '',
+  gemstone_type: props.existingEvaluation?.gemstone_type || '',
   comments: props.existingEvaluation?.comments || '',
   grader_name: props.existingEvaluation?.grader_name || user.name,
   grader_date: formatDate(props.existingEvaluation?.grader_date),
@@ -413,80 +478,38 @@ onMounted(() => {
   });
 });
 
-const transparencyOptions = [
-  { value: 'Transparent', label: locale === 'ar' ? 'شفاف' : 'Transparent' },
-  { value: 'Translucent', label: locale === 'ar' ? 'شبه شفاف' : 'Translucent' },
-  { value: 'Opaque', label: locale === 'ar' ? 'معتم' : 'Opaque' },
-];
-const lustreOptions = [
-  { value: 'Vitreous', label: locale === 'ar' ? 'زجاجي' : 'Vitreous' },
-  { value: 'Resinous', label: locale === 'ar' ? 'راتنجي' : 'Resinous' },
-  { value: 'Pearly', label: locale === 'ar' ? 'لؤلؤي' : 'Pearly' },
-  { value: 'Greasy', label: locale === 'ar' ? 'دهني' : 'Greasy' },
-  { value: 'Silky', label: locale === 'ar' ? 'حريري' : 'Silky' },
-  { value: 'Adamantine', label: locale === 'ar' ? 'ألماسي' : 'Adamantine' },
-  { value: 'Dull', label: locale === 'ar' ? 'باهت' : 'Dull' },
-  { value: 'Other', label: locale === 'ar' ? 'أخرى' : 'Other' },
-];
-const toneOptions = [
-  { value: 'Light', label: locale === 'ar' ? 'فاتح' : 'Light' },
-  { value: 'Medium', label: locale === 'ar' ? 'متوسط' : 'Medium' },
-  { value: 'Dark', label: locale === 'ar' ? 'غامق' : 'Dark' },
-];
+const toSelectOptions = (items) => items.map((item) => ({ value: item, label: item }))
+
+const colourOptions = toSelectOptions(gemstoneEvaluationOptions.colours)
+const transparencyOptions = toSelectOptions(gemstoneEvaluationOptions.transparency)
+const lustreOptions = toSelectOptions(gemstoneEvaluationOptions.lustres)
+const toneOptions = toSelectOptions(gemstoneEvaluationOptions.tones)
 const saturationOptions = [
   { value: 'Weak', label: locale === 'ar' ? 'ضعيف' : 'Weak' },
   { value: 'Moderate', label: locale === 'ar' ? 'متوسط' : 'Moderate' },
   { value: 'Strong', label: locale === 'ar' ? 'قوي' : 'Strong' },
 ];
-const shapeOptions = [
-  { value: 'Round', label: locale === 'ar' ? 'دائري' : 'Round' },
-  { value: 'Oval', label: locale === 'ar' ? 'بيضاوي' : 'Oval' },
-  { value: 'Cushion', label: locale === 'ar' ? 'وسادة' : 'Cushion' },
-  { value: 'Pear', label: locale === 'ar' ? 'كمثري' : 'Pear' },
-  { value: 'Marquise', label: locale === 'ar' ? 'ماركيز' : 'Marquise' },
-  { value: 'Emerald', label: locale === 'ar' ? 'زمردي' : 'Emerald' },
-  { value: 'Princess', label: locale === 'ar' ? 'برنسيس' : 'Princess' },
-  { value: 'Other', label: locale === 'ar' ? 'أخرى' : 'Other' },
-];
+const phenomenaOptions = toSelectOptions(gemstoneEvaluationOptions.phenomena)
+const shapeOptions = toSelectOptions(gemstoneEvaluationOptions.shapes)
+const cutOptions = toSelectOptions(gemstoneEvaluationOptions.cuts)
 const pleochroismOptions = [
   { value: 'Strong', label: locale === 'ar' ? 'قوي' : 'Strong' },
   { value: 'Moderate', label: locale === 'ar' ? 'متوسط' : 'Moderate' },
   { value: 'Weak', label: locale === 'ar' ? 'ضعيف' : 'Weak' },
   { value: 'None', label: locale === 'ar' ? 'لا يوجد' : 'None' },
 ];
-const opticCharacterOptions = [
-  { value: 'Uniaxial', label: locale === 'ar' ? 'أحادي المحور' : 'Uniaxial' },
-  { value: 'Biaxial', label: locale === 'ar' ? 'ثنائي المحور' : 'Biaxial' },
-  { value: 'Isotropic', label: locale === 'ar' ? 'متساوي الخواص' : 'Isotropic' },
-  { value: 'Other', label: locale === 'ar' ? 'أخرى' : 'Other' },
-];
-const fluorescenceOptions = [
-  { value: 'Strong', label: locale === 'ar' ? 'قوي' : 'Strong' },
-  { value: 'Moderate', label: locale === 'ar' ? 'متوسط' : 'Moderate' },
-  { value: 'Weak', label: locale === 'ar' ? 'ضعيف' : 'Weak' },
-  { value: 'Inert', label: locale === 'ar' ? 'خامل' : 'Inert' },
-];
-const varietyOptions = [
-  { value: 'Ruby', label: locale === 'ar' ? 'ياقوت' : 'Ruby' },
-  { value: 'Sapphire', label: locale === 'ar' ? 'ياقوت أزرق' : 'Sapphire' },
-  { value: 'Emerald', label: locale === 'ar' ? 'زمرد' : 'Emerald' },
-  { value: 'Spinel', label: locale === 'ar' ? 'سبينل' : 'Spinel' },
-  { value: 'Topaz', label: locale === 'ar' ? 'توباز' : 'Topaz' },
-  { value: 'Quartz', label: locale === 'ar' ? 'كوارتز' : 'Quartz' },
-  { value: 'Other', label: locale === 'ar' ? 'أخرى' : 'Other' },
-];
-const speciesOptions = [
-  { value: 'Corundum', label: locale === 'ar' ? 'كوراندوم' : 'Corundum' },
-  { value: 'Beryl', label: locale === 'ar' ? 'بيريل' : 'Beryl' },
-  { value: 'Spinel', label: locale === 'ar' ? 'سبينل' : 'Spinel' },
-  { value: 'Quartz', label: locale === 'ar' ? 'كوارتز' : 'Quartz' },
-  { value: 'Topaz', label: locale === 'ar' ? 'توباز' : 'Topaz' },
-  { value: 'Other', label: locale === 'ar' ? 'أخرى' : 'Other' },
-];
+const opticCharacterOptions = toSelectOptions(gemstoneEvaluationOptions.opticCharacters)
+const fluorescenceOptions = toSelectOptions(gemstoneEvaluationOptions.fluorescence)
+const inclusionOptions = toSelectOptions(gemstoneEvaluationOptions.inclusions)
+const groupOptions = toSelectOptions(gemstoneEvaluationOptions.groups)
+const speciesOptions = toSelectOptions(gemstoneEvaluationOptions.species)
+const varietyOptions = toSelectOptions(gemstoneEvaluationOptions.varieties)
+const treatmentOptions = toSelectOptions(gemstoneEvaluationOptions.treatments)
+const gemstoneTypeOptions = toSelectOptions(gemstoneEvaluationOptions.gemstoneTypes)
 
 function onFileChange(event, field) {
   const file = event.target.files[0];
-  form.value[field] = file;
+  form[field] = file;
 }
 
 function submitEvaluation() {
@@ -497,6 +520,9 @@ function submitEvaluation() {
   
   console.log('Submitting evaluation data:', form.data());
   
+  form.shape_cut = [form.shape, form.cut].filter(Boolean).join(' / ')
+  form.species_group = [form.stone_group, form.species].filter(Boolean).join(' / ')
+
   if (props.isEditing && props.existingEvaluation) {
     // Update existing evaluation
     const hasFiles = form.image1 instanceof File || form.image2 instanceof File
