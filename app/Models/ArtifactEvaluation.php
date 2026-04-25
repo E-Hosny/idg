@@ -36,6 +36,7 @@ class ArtifactEvaluation extends Model
         // General evaluation fields
         'test_date',
         'test_location',
+        'item_id',
         'weight',
         'colour',
         'transparency',
@@ -68,6 +69,8 @@ class ArtifactEvaluation extends Model
         'grader_name',
         'grader_date',
         'analytical_interpretation',
+        'image1_path',
+        'image2_path',
         'retaining_place',
         'retained_by',
         'retained_date',

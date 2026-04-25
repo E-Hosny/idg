@@ -86,7 +86,7 @@
           <!-- Metal Type -->
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Metal:</label>
-            <div class="flex flex-wrap gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
               <label v-for="metal in metalTypes" :key="metal.value" class="flex items-center gap-2">
                 <input type="checkbox" v-model="form.metal_types" :value="metal.value" />
                 {{ metal.label }}
@@ -97,7 +97,7 @@
           <!-- Stamp -->
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Stamp:</label>
-            <div class="flex flex-wrap gap-4">
+            <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
               <label v-for="stamp in stampOptions" :key="stamp" class="flex items-center gap-2">
                 <input type="checkbox" v-model="form.stamps" :value="stamp" />
                 {{ stamp }}
@@ -147,19 +147,17 @@
           </div>
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Need to be Unmount?</label>
-            <div class="flex gap-4">
+            <div class="flex flex-wrap gap-4 items-center">
               <label class="flex items-center gap-2">
                 <input type="radio" v-model="form.need_unmount" value="Yes" />
                 Yes
               </label>
+              <span class="text-sm text-gray-700">Reason:</span>
+              <input type="text" v-model="form.unmount_reason" class="input flex-1 min-w-[220px]" />
               <label class="flex items-center gap-2">
                 <input type="radio" v-model="form.need_unmount" value="No" />
                 No
               </label>
-            </div>
-            <div v-if="form.need_unmount === 'Yes'" class="mt-2">
-              <label class="block text-gray-700">Reason:</label>
-              <input type="text" v-model="form.unmount_reason" class="input" />
             </div>
           </div>
         </section>
@@ -255,7 +253,7 @@
             <!-- Shape -->
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Shape:</label>
-              <div class="flex flex-wrap gap-4">
+              <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                 <label v-for="shape in diamondShapes" :key="shape" class="flex items-center gap-2">
                   <input type="checkbox" v-model="form.side_stones_shapes" :value="shape" />
                   {{ shape }}
@@ -266,7 +264,7 @@
             <!-- Colour -->
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Colour:</label>
-              <div class="flex flex-wrap gap-4">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <label v-for="colour in diamondColours" :key="colour" class="flex items-center gap-2">
                   <input type="checkbox" v-model="form.side_stones_colours" :value="colour" />
                   {{ colour }}
@@ -277,7 +275,7 @@
             <!-- Clarity -->
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Clarity:</label>
-              <div class="flex flex-wrap gap-4">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <label v-for="clarity in diamondClarities" :key="clarity" class="flex items-center gap-2">
                   <input type="checkbox" v-model="form.side_stones_clarities" :value="clarity" />
                   {{ clarity }}
@@ -346,13 +344,13 @@
           </div>
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Conclusion:</label>
-            <div class="flex gap-4">
+            <div class="flex gap-6">
               <label class="flex items-center gap-2">
-                <input type="radio" v-model="form.coloured_stones_conclusion" value="Natural" />
+                <input type="checkbox" :checked="form.coloured_stones_conclusion === 'Natural'" @change="setColouredConclusion('Natural')" />
                 Natural
               </label>
               <label class="flex items-center gap-2">
-                <input type="radio" v-model="form.coloured_stones_conclusion" value="Synthetic" />
+                <input type="checkbox" :checked="form.coloured_stones_conclusion === 'Synthetic'" @change="setColouredConclusion('Synthetic')" />
                 Synthetic
               </label>
             </div>
@@ -715,15 +713,6 @@ export default {
       checked_by: props.existingEvaluation?.checked_by || '',
       report_number: props.existingEvaluation?.report_number || '',
 
-      // Metal Analysis
-      metal_analysis: props.existingEvaluation?.metal_analysis || {
-        au_percent: '',
-        au_ppm: '',
-        ag_percent: '',
-        ag_ppm: '',
-        pt_percent: '',
-        pt_ppm: ''
-      },
     })
 
     // Watch for changes in existingEvaluation and update form
@@ -757,14 +746,18 @@ export default {
       { value: 'W', label: 'White Gold (W)' },
       { value: 'Y', label: 'Yellow Gold (Y)' },
       { value: 'P', label: 'Pink Gold (P)' },
-      { value: 'PT', label: 'Platinum (PT)' },
-      { value: 'SL', label: 'Silver (SL)' }
+      { value: 'SL', label: 'Silver (SL)' },
+      { value: 'OTHER', label: '' }
     ]
-    const stampOptions = ['18K', '22K', '24K', '375', '585', '750', '916', '925', 'N/A']
-    const diamondShapes = ['RBC', 'Princess', 'Baguette', 'T. Baguette', 'Emerald', 'Marquise', 'Pear', 'Oval']
+    const stampOptions = ['18K', '750', '21K', '916', '22K', '925', '24K', '375', '585', 'N/A']
+    const diamondShapes = ['RBC', 'Princess', 'Baguette', 'T. Baguette', 'Emerald', 'Marquise', 'Pear', 'Oval', 'Heart', 'Triangle', 'Asscher', 'Cushion', 'Radiant', 'Octagon']
     const diamondColours = ['D-E-F', 'E-F', 'F-G', 'G-H', 'H-I', 'I-J', 'J-K']
-    const diamondClarities = ['IF-VVS', 'VVS', 'VVS-VS', 'VS', 'VS-SI', 'SI', 'SI-I']
+    const diamondClarities = ['IF-VS', 'VVS', 'VVS-VS', 'VS', 'VS-SI', 'SI', 'SI-I', 'I']
     const resultOptions = ['Reject', 'Hold', 'Fail', 'Pass']
+
+    const setColouredConclusion = (value) => {
+      form.coloured_stones_conclusion = form.coloured_stones_conclusion === value ? '' : value
+    }
 
     const submitEvaluation = () => {
       if (!artifact.value?.id) {
@@ -827,6 +820,7 @@ export default {
       diamondColours,
       diamondClarities,
       resultOptions,
+      setColouredConclusion,
       submitEvaluation
     }
   }

@@ -562,6 +562,7 @@ class DashboardController extends Controller
             $validatedData = $request->validate([
                 'test_date' => 'nullable|date',
                 'test_location' => 'nullable|string|max:255',
+                'item_id' => 'nullable|string|max:255',
                 'weight' => 'nullable|numeric|min:0',
                 'colour' => 'nullable|string|max:100',
                 'transparency' => 'nullable|string|max:50',
@@ -594,6 +595,8 @@ class DashboardController extends Controller
                 'grader_name' => 'nullable|string|max:255',
                 'grader_date' => 'nullable|date',
                 'analytical_interpretation' => 'nullable|string|max:2000',
+                'image1' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:10240',
+                'image2' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:10240',
                 'retaining_place' => 'nullable|string|max:255',
                 'retained_by' => 'nullable|string|max:255',
                 'retained_date' => 'nullable|date',
@@ -626,6 +629,7 @@ class DashboardController extends Controller
         $validatedData['is_final'] = true;
         $validatedData['detailed_notes'] = ['en' => '', 'ar' => ''];
         $validatedData['supporting_documents'] = [];
+        $validatedData = $this->processGeneralEvaluationFiles($request, $artifact, $validatedData);
 
         \Log::info('Final data to be saved:', $validatedData);
 
@@ -1904,6 +1908,7 @@ class DashboardController extends Controller
             $validatedData = $this->validateJewelleryEvaluation($request);
         } else {
             $validatedData = $this->validateGeneralEvaluation($request);
+            $validatedData = $this->processGeneralEvaluationFiles($request, $artifact, $validatedData, $evaluation);
         }
 
         // Update the evaluation
@@ -2098,8 +2103,8 @@ class DashboardController extends Controller
             'grader_name' => 'nullable|string|max:255',
             'grader_date' => 'nullable|date',
             'analytical_interpretation' => 'nullable|string',
-            'image1' => 'nullable|string',
-            'image2' => 'nullable|string',
+            'image1' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:10240',
+            'image2' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:10240',
             
             // Retaining Information
             'retaining_place' => 'nullable|string|max:255',
@@ -2128,10 +2133,20 @@ class DashboardController extends Controller
             
             // Product Information
             'product_number' => 'nullable|string|max:255',
-            'product_type' => 'nullable|string|max:255',
-            'metal_type' => 'nullable|string|max:255',
-            'stamp' => 'nullable|string|max:255',
-            'total_weight' => 'nullable|numeric|min:0',
+            'style_number' => 'nullable|string|max:255',
+            'ref_number' => 'nullable|string|max:255',
+            'gross_weight' => 'nullable|numeric|min:0',
+            'net_weight' => 'nullable|numeric|min:0',
+            'product_types' => 'nullable|array',
+            'metal_types' => 'nullable|array',
+            'stamps' => 'nullable|array',
+            'hpht_screen' => 'nullable|in:Natural,Lab-Grown',
+            'hpht_diamond_pcs' => 'nullable|integer|min:0',
+            'cvd_check' => 'nullable|in:Natural,Lab-Grown',
+            'cvd_diamond_pcs' => 'nullable|integer|min:0',
+            'need_unmount' => 'nullable|in:Yes,No',
+            'unmount_reason' => 'nullable|string|max:255',
+            'xrf_data' => 'nullable|array',
             
             // Diamond/s
             'side_stones_weight_type' => 'nullable|string|max:255',
@@ -2192,6 +2207,39 @@ class DashboardController extends Controller
             // Metal Analysis
             'metal_analysis' => 'nullable|array',
         ]);
+    }
+
+    private function processGeneralEvaluationFiles(Request $request, Artifact $artifact, array $payload, ?ArtifactEvaluation $existingEvaluation = null): array
+    {
+        unset($payload['image1'], $payload['image2']);
+
+        foreach (['image1', 'image2'] as $field) {
+            if (! $request->hasFile($field)) {
+                continue;
+            }
+
+            $filename = sprintf(
+                '%s-%s-%s-%s.%s',
+                $field,
+                $artifact->artifact_code ?: $artifact->id,
+                now()->format('YmdHis'),
+                uniqid(),
+                $request->file($field)->getClientOriginalExtension()
+            );
+
+            $path = upload_file($request->file($field), 'artifact-evaluations/gemstones', $filename);
+            if (! $path) {
+                throw new \RuntimeException("Failed to upload {$field}.");
+            }
+
+            $pathField = "{$field}_path";
+            if ($existingEvaluation && ! empty($existingEvaluation->{$pathField})) {
+                delete_file_anywhere($existingEvaluation->{$pathField});
+            }
+            $payload[$pathField] = $path;
+        }
+
+        return $payload;
     }
 
     /**
