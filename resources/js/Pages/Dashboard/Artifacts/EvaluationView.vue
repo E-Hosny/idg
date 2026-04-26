@@ -102,6 +102,7 @@
             <div class="field"><label>Diamond Wt</label><p>{{ renderValue(evaluation.side_stones_weight) }}</p></div>
             <div class="field"><label>Diamond Pcs</label><p>{{ renderValue(evaluation.side_stones_pieces) }}</p></div>
             <div class="field"><label>Side Shapes</label><p>{{ renderArray(evaluation.side_stones_shapes) }}</p></div>
+            <div class="field"><label>Octagonal (detail)</label><p>{{ renderValue(evaluation.side_stones_shape_octagonal_detail) }}</p></div>
             <div class="field"><label>Side Colours</label><p>{{ renderArray(evaluation.side_stones_colours) }}</p></div>
             <div class="field"><label>Side Clarities</label><p>{{ renderArray(evaluation.side_stones_clarities) }}</p></div>
             <div class="field"><label>Centre Weight</label><p>{{ renderValue(evaluation.centre_stone_weight) }}</p></div>
@@ -115,10 +116,12 @@
           <h2 class="section-title">6. Coloured Gemstones</h2>
           <div class="grid-2">
             <div class="field"><label>Weight</label><p>{{ renderValue(evaluation.coloured_stones_weight) }}</p></div>
-            <div class="field"><label>Shape</label><p>{{ renderValue(evaluation.coloured_stones_shape) }}</p></div>
+            <div class="field"><label>Shape</label><p>{{ colouredGemField(evaluation.coloured_stones_shape, 'shape') }}</p></div>
+            <div class="field"><label>Cut</label><p>{{ colouredGemField(evaluation.coloured_stones_cut, 'cut') }}</p></div>
             <div class="field"><label>No. of Stones</label><p>{{ renderValue(evaluation.coloured_stones_count) }}</p></div>
             <div class="field"><label>Group</label><p>{{ renderValue(evaluation.coloured_stones_group) }}</p></div>
-            <div class="field"><label>Species/Variety</label><p>{{ renderValue(evaluation.coloured_stones_species) }}</p></div>
+            <div class="field"><label>Species</label><p>{{ colouredGemField(evaluation.coloured_stones_species, 'species') }}</p></div>
+            <div class="field"><label>Variety</label><p>{{ colouredGemField(evaluation.coloured_stones_variety, 'variety') }}</p></div>
             <div class="field"><label>Conclusion</label><p>{{ renderValue(evaluation.coloured_stones_conclusion) }}</p></div>
             <div class="field md:col-span-2"><label>Note</label><p>{{ renderValue(evaluation.coloured_stones_note) }}</p></div>
           </div>
@@ -237,6 +240,13 @@
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import {
+  colouredGemStoneShapes,
+  colouredGemStoneCuts,
+  colouredGemStoneSpecies,
+  colouredGemStoneVarieties,
+  labelFromListSelection,
+} from '@/constants/jewelleryColouredGemOptions'
 
 const route = window.route
 
@@ -273,6 +283,20 @@ export default {
     renderArray(value) {
       if (!Array.isArray(value) || value.length === 0) return '-'
       return value.join(', ')
+    },
+    colouredGemField(stored, kind) {
+      const map = {
+        shape: colouredGemStoneShapes,
+        cut: colouredGemStoneCuts,
+        species: colouredGemStoneSpecies,
+        variety: colouredGemStoneVarieties,
+      }
+      const list = map[kind] || []
+      const t = labelFromListSelection(stored, list)
+      if (t === null || t === undefined || t === '') {
+        return '-'
+      }
+      return String(t)
     },
     renderBoolean(value) {
       if (value === null || value === undefined || value === '') return '-'

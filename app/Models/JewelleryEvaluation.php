@@ -50,6 +50,7 @@ class JewelleryEvaluation extends Model
         'side_stones_shapes',
         'side_stones_colours',
         'side_stones_clarities',
+        'side_stones_shape_octagonal_detail',
         
         // Diamond/s - Centre Stone
         'centre_stone_weight',
@@ -60,9 +61,11 @@ class JewelleryEvaluation extends Model
         // Coloured Gemstones
         'coloured_stones_weight',
         'coloured_stones_shape',
+        'coloured_stones_cut',
         'coloured_stones_count',
         'coloured_stones_group',
         'coloured_stones_species',
+        'coloured_stones_variety',
         'coloured_stones_conclusion',
         'coloured_stones_note',
         
@@ -143,6 +146,7 @@ class JewelleryEvaluation extends Model
         'side_stones_shapes' => 'array',
         'side_stones_colours' => 'array',
         'side_stones_clarities' => 'array',
+        'side_stones_shape_octagonal_detail' => 'string',
         
         'centre_stone_weight' => 'decimal:3',
         'centre_stone_shape' => 'string',
@@ -151,9 +155,11 @@ class JewelleryEvaluation extends Model
         
         'coloured_stones_weight' => 'decimal:3',
         'coloured_stones_shape' => 'string',
+        'coloured_stones_cut' => 'string',
         'coloured_stones_count' => 'integer',
         'coloured_stones_group' => 'string',
         'coloured_stones_species' => 'string',
+        'coloured_stones_variety' => 'string',
         'coloured_stones_conclusion' => 'string',
         'coloured_stones_note' => 'string',
         

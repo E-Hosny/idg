@@ -254,10 +254,23 @@
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Shape:</label>
               <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <label v-for="shape in diamondShapes" :key="shape" class="flex items-center gap-2">
-                  <input type="checkbox" v-model="form.side_stones_shapes" :value="shape" />
-                  {{ shape }}
-                </label>
+                <template v-for="shape in diamondShapes" :key="shape">
+                  <label v-if="shape !== 'Octagonal'" class="flex items-center gap-2">
+                    <input type="checkbox" v-model="form.side_stones_shapes" :value="shape" />
+                    {{ shape }}
+                  </label>
+                  <div v-else class="flex flex-wrap items-center gap-2 col-span-2 md:col-span-1 min-w-0">
+                    <label class="inline-flex items-center gap-2 shrink-0">
+                      <input type="checkbox" v-model="form.side_stones_shapes" :value="shape" />
+                      {{ shape }}
+                    </label>
+                    <input
+                      type="text"
+                      v-model="form.side_stones_shape_octagonal_detail"
+                      class="input !w-auto min-w-[6rem] max-w-full flex-1"
+                    />
+                  </div>
+                </template>
               </div>
             </div>
 
@@ -320,14 +333,24 @@
         <!-- 6. Coloured Gemstones -->
         <section class="border-b pb-6">
           <h2 class="text-lg font-semibold text-green-700 mb-4">6. Coloured Gemstones</h2>
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label class="block text-gray-700">Weight (ct)</label>
               <input type="number" v-model="form.coloured_stones_weight" class="input" step="0.01" min="0" />
             </div>
             <div>
               <label class="block text-gray-700">Shape</label>
-              <input type="text" v-model="form.coloured_stones_shape" class="input" />
+              <select v-model="colouredStonesShapeIdx" class="input">
+                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
+                <option v-for="(opt, i) in colouredGemStoneShapes" :key="'cgs-'+i" :value="String(i)">{{ opt }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700">Cut</label>
+              <select v-model="colouredStonesCutIdx" class="input">
+                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
+                <option v-for="(opt, i) in colouredGemStoneCuts" :key="'cgc-'+i" :value="String(i)">{{ opt }}</option>
+              </select>
             </div>
             <div>
               <label class="block text-gray-700">No. of Stones</label>
@@ -338,8 +361,18 @@
               <input type="text" v-model="form.coloured_stones_group" class="input" />
             </div>
             <div>
-              <label class="block text-gray-700">Species/Variety</label>
-              <input type="text" v-model="form.coloured_stones_species" class="input" />
+              <label class="block text-gray-700">Species</label>
+              <select v-model="colouredStonesSpeciesIdx" class="input">
+                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
+                <option v-for="(opt, i) in colouredGemStoneSpecies" :key="'cgsp-'+i" :value="String(i)">{{ opt }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700">Variety</label>
+              <select v-model="colouredStonesVarietyIdx" class="input">
+                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
+                <option v-for="(opt, i) in colouredGemStoneVarieties" :key="'cgv-'+i" :value="String(i)">{{ opt }}</option>
+              </select>
             </div>
           </div>
           <div class="mt-4">
@@ -553,6 +586,14 @@
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted } from 'vue'
+import {
+  colouredGemStoneShapes,
+  colouredGemStoneCuts,
+  colouredGemStoneSpecies,
+  colouredGemStoneVarieties,
+  encodeListSelection,
+  decodeListSelectionToIndex,
+} from '@/constants/jewelleryColouredGemOptions'
 
 const route = window.route
 
@@ -570,6 +611,35 @@ export default {
     const loading = ref(false)
     const today = new Date().toISOString().split('T')[0]
     const { auth, locale } = usePage().props
+
+    const idxToStr = (idx) => (idx === '' || idx == null ? '' : String(idx))
+
+    const colouredStonesShapeIdx = ref(
+      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_shape, colouredGemStoneShapes))
+    )
+    const colouredStonesCutIdx = ref(
+      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_cut, colouredGemStoneCuts))
+    )
+    const colouredStonesSpeciesIdx = ref(
+      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_species, colouredGemStoneSpecies))
+    )
+    const colouredStonesVarietyIdx = ref(
+      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_variety, colouredGemStoneVarieties))
+    )
+
+    watch(
+      () => props.existingEvaluation,
+      (ev) => {
+        if (!ev) {
+          return
+        }
+        colouredStonesShapeIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_shape, colouredGemStoneShapes))
+        colouredStonesCutIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_cut, colouredGemStoneCuts))
+        colouredStonesSpeciesIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_species, colouredGemStoneSpecies))
+        colouredStonesVarietyIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_variety, colouredGemStoneVarieties))
+      },
+      { deep: true }
+    )
 
     // Safely access artifact data
     const artifact = computed(() => props.artifact || {})
@@ -659,7 +729,12 @@ export default {
       side_stones_weight_type: props.existingEvaluation?.side_stones_weight_type || '',
       side_stones_weight: props.existingEvaluation?.side_stones_weight || '',
       side_stones_pieces: props.existingEvaluation?.side_stones_pieces || '',
-      side_stones_shapes: props.existingEvaluation?.side_stones_shapes || [],
+      side_stones_shapes: (() => {
+        const raw = props.existingEvaluation?.side_stones_shapes || []
+        if (!Array.isArray(raw)) return []
+        return raw.map((s) => (s === 'Octagon' ? 'Octagonal' : s))
+      })(),
+      side_stones_shape_octagonal_detail: props.existingEvaluation?.side_stones_shape_octagonal_detail || '',
       side_stones_colours: props.existingEvaluation?.side_stones_colours || [],
       side_stones_clarities: props.existingEvaluation?.side_stones_clarities || [],
       centre_stone_weight: props.existingEvaluation?.centre_stone_weight || '',
@@ -670,9 +745,11 @@ export default {
       // Coloured Gemstones
       coloured_stones_weight: props.existingEvaluation?.coloured_stones_weight || '',
       coloured_stones_shape: props.existingEvaluation?.coloured_stones_shape || '',
+      coloured_stones_cut: props.existingEvaluation?.coloured_stones_cut || '',
       coloured_stones_count: props.existingEvaluation?.coloured_stones_count || '',
       coloured_stones_group: props.existingEvaluation?.coloured_stones_group || '',
       coloured_stones_species: props.existingEvaluation?.coloured_stones_species || '',
+      coloured_stones_variety: props.existingEvaluation?.coloured_stones_variety || '',
       coloured_stones_conclusion: props.existingEvaluation?.coloured_stones_conclusion || '',
       coloured_stones_note: props.existingEvaluation?.coloured_stones_note || '',
 
@@ -750,7 +827,7 @@ export default {
       { value: 'OTHER', label: '' }
     ]
     const stampOptions = ['18K', '750', '21K', '916', '22K', '925', '24K', '375', '585', 'N/A']
-    const diamondShapes = ['RBC', 'Princess', 'Baguette', 'T. Baguette', 'Emerald', 'Marquise', 'Pear', 'Oval', 'Heart', 'Triangle', 'Asscher', 'Cushion', 'Radiant', 'Octagon']
+    const diamondShapes = ['RBC', 'Princess', 'Baguette', 'T. Baguette', 'Emerald', 'Marquise', 'Pear', 'Oval', 'Heart', 'Triangle', 'Asscher', 'Cushion', 'Radiant', 'Octagonal']
     const diamondColours = ['D-E-F', 'E-F', 'F-G', 'G-H', 'H-I', 'I-J', 'J-K']
     const diamondClarities = ['IF-VS', 'VVS', 'VVS-VS', 'VS', 'VS-SI', 'SI', 'SI-I', 'I']
     const resultOptions = ['Reject', 'Hold', 'Fail', 'Pass']
@@ -764,6 +841,11 @@ export default {
         alert('Error: Artifact data not available')
         return
       }
+
+      form.coloured_stones_shape = encodeListSelection(colouredStonesShapeIdx.value, colouredGemStoneShapes)
+      form.coloured_stones_cut = encodeListSelection(colouredStonesCutIdx.value, colouredGemStoneCuts)
+      form.coloured_stones_species = encodeListSelection(colouredStonesSpeciesIdx.value, colouredGemStoneSpecies)
+      form.coloured_stones_variety = encodeListSelection(colouredStonesVarietyIdx.value, colouredGemStoneVarieties)
       
       loading.value = true
       
@@ -813,6 +895,15 @@ export default {
       form,
       loading,
       today,
+      locale,
+      colouredStonesShapeIdx,
+      colouredStonesCutIdx,
+      colouredStonesSpeciesIdx,
+      colouredStonesVarietyIdx,
+      colouredGemStoneShapes,
+      colouredGemStoneCuts,
+      colouredGemStoneSpecies,
+      colouredGemStoneVarieties,
       productTypes,
       metalTypes,
       stampOptions,

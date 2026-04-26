@@ -693,6 +693,7 @@ class DashboardController extends Controller
             'side_stones_shapes' => 'nullable|array',
             'side_stones_colours' => 'nullable|array',
             'side_stones_clarities' => 'nullable|array',
+            'side_stones_shape_octagonal_detail' => 'nullable|string|max:255',
             
             // Diamond/s - Centre Stone
             'centre_stone_weight' => 'nullable|numeric|min:0',
@@ -702,10 +703,12 @@ class DashboardController extends Controller
             
             // Colored Stones Information
             'coloured_stones_weight' => 'nullable|numeric|min:0',
-            'coloured_stones_shape' => 'nullable|string|max:255',
+            'coloured_stones_shape' => 'nullable|string|max:500',
+            'coloured_stones_cut' => 'nullable|string|max:500',
             'coloured_stones_count' => 'nullable|integer|min:0',
             'coloured_stones_group' => 'nullable|string|max:255',
-            'coloured_stones_species' => 'nullable|string|max:255',
+            'coloured_stones_species' => 'nullable|string|max:500',
+            'coloured_stones_variety' => 'nullable|string|max:500',
             'coloured_stones_conclusion' => 'nullable|in:Natural,Synthetic',
             'coloured_stones_note' => 'nullable|string|max:1000',
             
@@ -2155,6 +2158,7 @@ class DashboardController extends Controller
             'side_stones_shapes' => 'nullable|array',
             'side_stones_colours' => 'nullable|array',
             'side_stones_clarities' => 'nullable|array',
+            'side_stones_shape_octagonal_detail' => 'nullable|string|max:255',
             'centre_stone_weight' => 'nullable|numeric|min:0',
             'centre_stone_shape' => 'nullable|string|max:255',
             'centre_stone_colour' => 'nullable|string|max:255',
@@ -2162,10 +2166,12 @@ class DashboardController extends Controller
             
             // Coloured Gemstones
             'coloured_stones_weight' => 'nullable|numeric|min:0',
-            'coloured_stones_shape' => 'nullable|string|max:255',
+            'coloured_stones_shape' => 'nullable|string|max:500',
+            'coloured_stones_cut' => 'nullable|string|max:500',
             'coloured_stones_count' => 'nullable|integer|min:0',
             'coloured_stones_group' => 'nullable|string|max:255',
-            'coloured_stones_species' => 'nullable|string|max:255',
+            'coloured_stones_species' => 'nullable|string|max:500',
+            'coloured_stones_variety' => 'nullable|string|max:500',
             'coloured_stones_conclusion' => 'nullable|string|max:255',
             'coloured_stones_note' => 'nullable|string',
             
