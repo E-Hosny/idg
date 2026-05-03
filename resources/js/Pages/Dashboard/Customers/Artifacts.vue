@@ -304,7 +304,7 @@
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                             >
                               <option value="" disabled>{{ $page.props.locale === 'ar' ? 'اختر النوع الفرعي' : 'Select subtype' }}</option>
-                              <option v-for="option in jewellerySubtypeOptions" :key="'e-' + option" :value="option">{{ option }}</option>
+                              <option v-for="(option, idx) in jewellerySubtypeOptions" :key="'e-subtype-' + idx" :value="option">{{ option }}</option>
                               <option value="__manual__">{{ $page.props.locale === 'ar' ? 'إدخال يدوي...' : 'Manual entry...' }}</option>
                             </select>
                             <div v-else class="space-y-2">
@@ -529,7 +529,7 @@
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                             >
                               <option value="" disabled>{{ $page.props.locale === 'ar' ? 'اختر النوع الفرعي' : 'Select subtype' }}</option>
-                              <option v-for="option in jewellerySubtypeOptions" :key="'n-' + option" :value="option">{{ option }}</option>
+                              <option v-for="(option, idx) in jewellerySubtypeOptions" :key="'n-subtype-' + idx" :value="option">{{ option }}</option>
                               <option value="__manual__">{{ $page.props.locale === 'ar' ? 'إدخال يدوي...' : 'Manual entry...' }}</option>
                             </select>
                             <div v-else class="space-y-2">
@@ -837,20 +837,79 @@ export default {
         { value: '72 hours', label: this.$page.props.locale === 'ar' ? '72 ساعة' : '72 hours' },
         { value: 'Specific Date', label: this.$page.props.locale === 'ar' ? 'تاريخ محدد' : 'Specific Date' },
       ],
+      // Sub Types worksheet order (71 rows; duplicate entries kept as in source).
       jewellerySubtypeOptions: [
-        'Ring', 'Solitaire Ring', 'Wedding Band', 'Earrings', 'Pearl Earrings', 'Diamond Studs',
-        'Precious Gemstone Earrings', 'Necklace', 'Pendant Necklace', 'Diamond Necklaces',
-        'Chain Necklace', 'Pearl Strand Necklace', 'Gemstones Strand Necklace', 'Diamons Strand Necklace',
-        'Choker', 'Tennis necklace', 'Multi-Strand Necklace', 'Beaded Necklace', 'Beaded Bracelet',
-        'Diamond Bracelets', 'Tennis Bracelet', 'Pendant', 'Solitaire Pendant', 'Gemstone Pendant',
-        'Diamond Pendant', 'Medalion Pendant', 'Locket', 'Charm (various shapes)', 'Charm Bracelet',
-        'Bangle', 'Thin Bracelet', 'Watch', 'Watch + Bracelet Sets', 'Desk Cocks', 'Wall Clock',
-        'Timepieces with diamonds', 'Luxury Clocks', 'brooch', 'Lapel Pin', 'Stick Pin',
-        'Tiara / Crown/Taj', 'Hair PIns', 'Hair Clips', 'Nose Pin', 'Nose Ring', 'Anklet',
-        'Toe Ring', 'Armlet', 'Waist Chain', 'Cufflin ks', 'Tie Pin', 'Chain', 'Gold Coins',
-        'Gold Bars', 'Commemorative Medallions', 'Silver Coins', 'Fabergé-style Eggs',
-        'Ornaments', 'Luxry Desk Ornaments', 'Accesories', 'Cufflins', 'Sunglasses',
-        'Pens', 'Lighters', 'Key chains', 'Desk Accessories', 'Vases', 'Trays', 'Tableware'
+        'Ring',
+        'Solitaire Ring',
+        'Wedding Band',
+        'Earrings',
+        'Pearl Earrings',
+        'Diamond Studs',
+        'Precious Gemstone Earrings',
+        'Necklace',
+        'Pendant Necklace',
+        'Diamond Necklaces',
+        'Chain Necklace',
+        'Pearl Strand Necklace',
+        'Gemstones Strand Necklace',
+        'Diamonds Strand Necklace',
+        'Choker',
+        'Tennis Necklace',
+        'Multi-Strand Necklace',
+        'Beaded Necklace',
+        'Beaded Bracelet',
+        'Diamond Bracelets',
+        'Tennis Bracelets',
+        'Pendant',
+        'Solitaire Pendant',
+        'Gemstone Pendant',
+        'Diamond Pendant',
+        'Medallion Pendant',
+        'Locket',
+        'Charm (various shapes)',
+        'Charm Bracelet',
+        'Bangle',
+        'Tennis Bracelet',
+        'Chain Bracelet',
+        'Watch',
+        'Watch + Bracelet Sets',
+        'Desk Clocks',
+        'Wall Clock',
+        'Timepieces with diamonds',
+        'Luxury Clocks',
+        'Brooch',
+        'Lapel Pin',
+        'Stick Pin',
+        'Tiara / Crown/Taj',
+        'Hair Pins',
+        'Hair Clips',
+        'Nose Pin',
+        'Nose Ring',
+        'Anklet',
+        'Toe Ring',
+        'Armlet',
+        'Waist Chain',
+        'Cufflinks',
+        'Tie Pin',
+        'Chain',
+        'Gold Coins',
+        'Gold Bars',
+        'Commemorative Medallions',
+        'Silver Coins',
+        'Fabergé-style Eggs',
+        'Ornaments',
+        'Luxury Desk Ornaments',
+        'Accessories',
+        'Cufflinks',
+        'Sunglasses',
+        'Pens',
+        'Lighters',
+        'Keychains',
+        'Desk Accessories',
+        'Vases',
+        'Trays',
+        'Tableware',
+        'Luxury Objects'
       ]
     }
   },
