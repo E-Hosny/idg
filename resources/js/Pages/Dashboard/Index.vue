@@ -1,8 +1,8 @@
 <template>
   <DashboardLayout :pageTitle="__('Dashboard')">
     <div class="space-y-6" :class="{ 'font-arabic': $page.props.locale === 'ar' }">
-      <!-- Statistics Cards -->
-      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Statistics Cards (lab / admin only — not receptionist) -->
+      <div v-if="canAccessLabWorkspace" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Total Items -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
@@ -148,11 +148,11 @@
             {{ __('Quick Actions') }}
           </h3>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <button v-if="canAccessLabWorkspace" type="button" class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
               <i class="fas fa-plus mr-2 text-green-600"></i>
               {{ __('Add New Item') }}
             </button>
-            <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <button v-if="canAccessLabWorkspace" type="button" class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
               <i class="fas fa-search mr-2 text-blue-600"></i>
               {{ __('Search Items') }}
             </button>
@@ -187,6 +187,11 @@ export default {
     myPendingEvaluations: Array,
     evaluationStats: Array,
     categoryStats: Array,
+  },
+  computed: {
+    canAccessLabWorkspace() {
+      return this.$page.props.auth?.user?.role !== 'receptionist'
+    },
   },
   mounted() {
     this.initEvaluationChart()

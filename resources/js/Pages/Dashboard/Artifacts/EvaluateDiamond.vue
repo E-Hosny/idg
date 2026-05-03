@@ -58,16 +58,13 @@
               <label class="block text-gray-700">Shape</label>
               <select v-model="form.shape" class="input">
                 <option value="">Select Shape</option>
-                <option value="Round Brilliant">Round Brilliant</option>
-                <option value="Princess">Princess</option>
-                <option value="Emerald">Emerald</option>
-                <option value="Oval">Oval</option>
-                <option value="Marquise">Marquise</option>
-                <option value="Pear">Pear</option>
-                <option value="Cushion">Cushion</option>
-                <option value="Radiant">Radiant</option>
-                <option value="Asscher">Asscher</option>
-                <option value="Heart">Heart</option>
+                <option
+                  v-for="(shape, idx) in diamondShapeOptions"
+                  :key="'diamond-shape-' + idx"
+                  :value="shape"
+                >
+                  {{ shape }}
+                </option>
               </select>
             </div>
             <div class="md:col-span-2">
@@ -494,6 +491,7 @@
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted } from 'vue'
+import { diamondShapeOptions } from '@/constants/diamondEvaluationOptions'
 
 export default {
   components: { DashboardLayout, Link },
@@ -745,6 +743,7 @@ export default {
       form,
       loading,
       today,
+      diamondShapeOptions,
       gradeOptions,
       fluorescenceStrengths,
       resultOptions,

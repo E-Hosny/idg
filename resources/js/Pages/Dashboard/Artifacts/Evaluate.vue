@@ -130,10 +130,20 @@
         <!-- 6. Inclusion (Magnification) -->
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٦. التضمين (التكبير)' : '6. Inclusion (Magnification)' }}</h2>
-          <select v-model="form.inclusion" class="input">
-            <option value="">{{ locale === 'ar' ? 'اختر التضمينات' : 'Select Inclusion' }}</option>
-            <option v-for="option in inclusionOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-          </select>
+          <div class="grid grid-cols-1 gap-3">
+            <div>
+              <label class="block text-gray-700 mb-1">{{ locale === 'ar' ? 'اختر من القائمة' : 'Select from list' }}</label>
+              <select v-model="inclusionSelectModel" class="input">
+                <option value="">{{ locale === 'ar' ? 'اختر التضمينات' : 'Select Inclusion' }}</option>
+                <option v-for="option in inclusionOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                <option value="__manual__">{{ locale === 'ar' ? 'إدخال يدوي…' : 'Other / manual entry…' }}</option>
+              </select>
+            </div>
+            <div v-if="inclusionManualMode">
+              <label class="block text-gray-700 mb-1">{{ locale === 'ar' ? 'تفاصيل التضمين (يدوي)' : 'Inclusion details (manual)' }}</label>
+              <textarea v-model="form.inclusion" class="input" rows="2" :placeholder="locale === 'ar' ? 'اكتب وصف التضمين…' : 'Describe inclusion…'"></textarea>
+            </div>
+          </div>
         </section>
 
         <!-- 7. Specific Gravity -->
@@ -198,14 +208,14 @@
             <label class="block text-gray-700">Species</label>
             <select v-model="form.species" class="input">
               <option value="">{{ locale === 'ar' ? 'اختر النوع الأساسي' : 'Select Species' }}</option>
-              <option v-for="option in speciesOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              <option v-for="(option, idx) in speciesOptions" :key="'species-' + idx" :value="option.value">{{ option.label }}</option>
             </select>
           </div>
           <div class="mt-2">
             <label class="block text-gray-700">Variety</label>
             <select v-model="form.variety" class="input">
               <option value="">{{ locale === 'ar' ? 'اختر النوع' : 'Select Variety' }}</option>
-              <option v-for="option in varietyOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              <option v-for="(option, idx) in varietyOptions" :key="'variety-' + idx" :value="option.value">{{ option.label }}</option>
             </select>
           </div>
           <div class="mt-2">
@@ -501,6 +511,53 @@ const pleochroismOptions = [
 const opticCharacterOptions = toSelectOptions(gemstoneEvaluationOptions.opticCharacters)
 const fluorescenceOptions = toSelectOptions(gemstoneEvaluationOptions.fluorescence)
 const inclusionOptions = toSelectOptions(gemstoneEvaluationOptions.inclusions)
+
+const inclusionManualMode = ref(false)
+const inclusionKnownSet = new Set(gemstoneEvaluationOptions.inclusions.map((s) => s.trim().toLowerCase()))
+
+function syncInclusionUiFromFormValue(val) {
+  const raw = typeof val === 'string' ? val.trim() : ''
+  if (!raw) {
+    inclusionManualMode.value = false
+    return
+  }
+  const isListed = inclusionKnownSet.has(raw.toLowerCase())
+  inclusionManualMode.value = !isListed
+}
+
+syncInclusionUiFromFormValue(form.inclusion)
+
+watch(() => form.inclusion, (v) => syncInclusionUiFromFormValue(v))
+
+watch(
+  () => props.existingEvaluation?.inclusion,
+  (v) => {
+    if (v === undefined) return
+    form.inclusion = v || ''
+    syncInclusionUiFromFormValue(form.inclusion)
+  },
+  { immediate: false },
+)
+
+const inclusionSelectModel = computed({
+  get() {
+    if (inclusionManualMode.value) return '__manual__'
+    const v = typeof form.inclusion === 'string' ? form.inclusion.trim() : ''
+    return v && inclusionKnownSet.has(v.toLowerCase()) ? form.inclusion : ''
+  },
+  set(sel) {
+    if (sel === '__manual__') {
+      inclusionManualMode.value = true
+      const cur = typeof form.inclusion === 'string' ? form.inclusion.trim() : ''
+      if (cur && !inclusionKnownSet.has(cur.toLowerCase())) return
+      form.inclusion = ''
+      return
+    }
+    inclusionManualMode.value = false
+    form.inclusion = sel || ''
+  },
+})
+
 const groupOptions = toSelectOptions(gemstoneEvaluationOptions.groups)
 const speciesOptions = toSelectOptions(gemstoneEvaluationOptions.species)
 const varietyOptions = toSelectOptions(gemstoneEvaluationOptions.varieties)

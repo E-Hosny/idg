@@ -37,9 +37,23 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::middleware(['auth'])->group(function () {
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/artifacts/receiving/{testRequest}', [DashboardController::class, 'artifactsForReceiving'])->name('dashboard.artifacts.receiving');
-    Route::get('/dashboard/artifacts', [DashboardController::class, 'artifacts'])->name('dashboard.artifacts');
-    Route::get('/dashboard/evaluations', [DashboardController::class, 'evaluations'])->name('dashboard.evaluations');
+
+    Route::middleware('restrict.receptionist.artifacts')->group(function () {
+        Route::get('/dashboard/artifacts/receiving/{testRequest}', [DashboardController::class, 'artifactsForReceiving'])->name('dashboard.artifacts.receiving');
+        Route::get('/dashboard/artifacts', [DashboardController::class, 'artifacts'])->name('dashboard.artifacts');
+        Route::get('/dashboard/evaluations', [DashboardController::class, 'evaluations'])->name('dashboard.evaluations');
+        Route::put('/dashboard/artifacts/{artifact}', [DashboardController::class, 'updateArtifact'])->name('dashboard.artifacts.update');
+        Route::delete('/dashboard/artifacts/{artifact}', [DashboardController::class, 'deleteArtifact'])->name('dashboard.artifacts.delete');
+        Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
+        Route::post('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'storeEvaluation'])->name('dashboard.artifacts.evaluate.store');
+        Route::get('/dashboard/artifacts/{artifact}/evaluation', [\App\Http\Controllers\DashboardController::class, 'showEvaluation'])->name('dashboard.artifacts.evaluation.show');
+        Route::get('/dashboard/evaluated-artifacts', [\App\Http\Controllers\DashboardController::class, 'evaluatedArtifacts'])->name('dashboard.evaluated-artifacts');
+        Route::get('/artifacts/{artifact}/edit-evaluation', [\App\Http\Controllers\DashboardController::class, 'editEvaluation'])->name('artifacts.edit-evaluation');
+        Route::put('/artifacts/{artifact}/update-evaluation', [\App\Http\Controllers\DashboardController::class, 'updateEvaluation'])->name('artifacts.update-evaluation');
+        Route::get('/diamond-evaluations/{evaluation}/edit', [\App\Http\Controllers\DashboardController::class, 'editDiamondEvaluation'])->name('diamond-evaluations.edit');
+        Route::put('/diamond-evaluations/{evaluation}', [\App\Http\Controllers\DashboardController::class, 'updateDiamondEvaluation'])->name('diamond-evaluations.update');
+    });
+
     Route::get('/dashboard/categories', [DashboardController::class, 'categories'])->name('dashboard.categories');
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('dashboard.analytics');
     // Customer routes - Restricted for lab role
@@ -222,14 +236,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/quotes/{quote}', [DashboardController::class, 'showQuote'])->name('dashboard.quotes.show');
     Route::get('/dashboard/quotes/{quote}/print', [DashboardController::class, 'printQuote'])->name('dashboard.quotes.print');
     Route::get('/dashboard/quotes/{quote}/qoyod-pdf', [DashboardController::class, 'getQoyodQuotePdf'])->name('dashboard.quotes.qoyod-pdf');
-    Route::put('/dashboard/artifacts/{artifact}', [DashboardController::class, 'updateArtifact'])->name('dashboard.artifacts.update');
-    Route::delete('/dashboard/artifacts/{artifact}', [DashboardController::class, 'deleteArtifact'])->name('dashboard.artifacts.delete');
-    Route::get('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'evaluate'])->name('dashboard.artifacts.evaluate');
-    Route::post('/dashboard/artifacts/{artifact}/evaluate', [\App\Http\Controllers\DashboardController::class, 'storeEvaluation'])->name('dashboard.artifacts.evaluate.store');
-    Route::get('/dashboard/artifacts/{artifact}/evaluation', [\App\Http\Controllers\DashboardController::class, 'showEvaluation'])->name('dashboard.artifacts.evaluation.show');
-    
-    Route::get('/dashboard/evaluated-artifacts', [\App\Http\Controllers\DashboardController::class, 'evaluatedArtifacts'])->name('dashboard.evaluated-artifacts');
-    
+
     // Reception routes - Restricted for lab role
     Route::middleware('restrict.lab')->group(function () {
         Route::get('/reception', [ReceptionController::class, 'index'])->name('reception.index');
@@ -257,13 +264,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/artifacts/{artifact}/download-qr', [\App\Http\Controllers\CertificateController::class, 'downloadQR'])->name('artifacts.download-qr');
     Route::post('/artifacts/{artifact}/upload-certificate', [\App\Http\Controllers\CertificateController::class, 'uploadCertificate'])->name('artifacts.upload-certificate');
     Route::delete('/artifacts/{artifact}/delete-certificate', [\App\Http\Controllers\CertificateController::class, 'deleteCertificate'])->name('artifacts.delete-certificate');
-    
-    // Evaluation editing routes
-    Route::get('/artifacts/{artifact}/edit-evaluation', [\App\Http\Controllers\DashboardController::class, 'editEvaluation'])->name('artifacts.edit-evaluation');
-    Route::put('/artifacts/{artifact}/update-evaluation', [\App\Http\Controllers\DashboardController::class, 'updateEvaluation'])->name('artifacts.update-evaluation');
-    Route::get('/diamond-evaluations/{evaluation}/edit', [\App\Http\Controllers\DashboardController::class, 'editDiamondEvaluation'])->name('diamond-evaluations.edit');
-    Route::put('/diamond-evaluations/{evaluation}', [\App\Http\Controllers\DashboardController::class, 'updateDiamondEvaluation'])->name('diamond-evaluations.update');
-    
+
     // Public certificate route (no auth required)
     Route::get('/public/certificate/{certificate}', [\App\Http\Controllers\PublicCertificateController::class, 'show'])->name('public.certificate.show');
 });

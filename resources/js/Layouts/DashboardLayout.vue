@@ -26,6 +26,7 @@
               </Link>
 
               <Link 
+                v-if="$page.props.auth.user?.role !== 'receptionist'"
                 :href="$route('dashboard.artifacts')" 
                 class="sidebar-link"
                 :class="{ 'active': $page.component.startsWith('Dashboard/Artifacts') }"
@@ -35,6 +36,7 @@
               </Link>
 
               <Link 
+                v-if="$page.props.auth.user?.role !== 'receptionist'"
                 :href="$route('dashboard.evaluations')" 
                 class="sidebar-link"
                 :class="{ 'active': $page.component.startsWith('Dashboard/Evaluations') }"
