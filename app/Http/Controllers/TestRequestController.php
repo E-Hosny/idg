@@ -376,7 +376,7 @@ class TestRequestController extends Controller
         } catch (\RuntimeException $e) {
             \Log::warning('Lab delivery print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 
-            return redirect()->route('dashboard.customers')
+            return redirect()->route($this->labWorkflowErrorFallbackRoute())
                 ->withErrors(['error' => $e->getMessage()]);
         } catch (\Exception $e) {
             \Log::error('Error showing lab delivery print page', [
@@ -454,7 +454,7 @@ class TestRequestController extends Controller
         } catch (\RuntimeException $e) {
             \Log::warning('Redelivery print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 
-            return redirect()->route('dashboard.customers')
+            return redirect()->route($this->labWorkflowErrorFallbackRoute())
                 ->withErrors(['error' => $e->getMessage()]);
         } catch (\Exception $e) {
             \Log::error('Error showing redelivery print page', [
@@ -785,6 +785,14 @@ class TestRequestController extends Controller
             $resultDate->addDay();
         }
         return $resultDate;
+    }
+
+    /**
+     * Lab role cannot access dashboard.customers; use Items page when redirecting after print errors.
+     */
+    private function labWorkflowErrorFallbackRoute(): string
+    {
+        return auth()->user()?->role === 'lab' ? 'dashboard.artifacts' : 'dashboard.customers';
     }
 
 }

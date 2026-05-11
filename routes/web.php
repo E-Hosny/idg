@@ -86,17 +86,19 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'destroy'])->name('dashboard.test-requests.destroy');
         Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
-        Route::get('/dashboard/test-requests/{testRequest}/print-lab', [TestRequestController::class, 'showLabDeliveryPrint'])->name('dashboard.test-requests.print-lab');
-        Route::post('/dashboard/test-requests/{testRequest}/redeliveries', [TestRequestController::class, 'storeRedelivery'])->name('dashboard.test-requests.redeliveries.store');
-        Route::get('/dashboard/test-requests/{testRequest}/redeliveries/{redelivery}/print', [TestRequestController::class, 'showRedeliveryPrint'])->name('dashboard.test-requests.redeliveries.print');
-        Route::post('/dashboard/test-requests/{testRequest}/redeliveries/{redelivery}/upload-signed', [TestRequestController::class, 'uploadRedeliverySigned'])->name('dashboard.test-requests.redeliveries.upload-signed');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
-        Route::post('/dashboard/test-requests/{testRequest}/upload-lab-delivery-signed', [TestRequestController::class, 'uploadLabDeliverySigned'])->name('dashboard.test-requests.upload-lab-delivery-signed');
         
         // Legacy routes for backward compatibility
         Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');
     });
-    
+
+    // Lab workflows from Items dashboard (print lab file, redelivery batches): allowed for lab + reception + admin (auth only).
+    Route::get('/dashboard/test-requests/{testRequest}/print-lab', [TestRequestController::class, 'showLabDeliveryPrint'])->name('dashboard.test-requests.print-lab');
+    Route::post('/dashboard/test-requests/{testRequest}/redeliveries', [TestRequestController::class, 'storeRedelivery'])->name('dashboard.test-requests.redeliveries.store');
+    Route::get('/dashboard/test-requests/{testRequest}/redeliveries/{redelivery}/print', [TestRequestController::class, 'showRedeliveryPrint'])->name('dashboard.test-requests.redeliveries.print');
+    Route::post('/dashboard/test-requests/{testRequest}/redeliveries/{redelivery}/upload-signed', [TestRequestController::class, 'uploadRedeliverySigned'])->name('dashboard.test-requests.redeliveries.upload-signed');
+    Route::post('/dashboard/test-requests/{testRequest}/upload-lab-delivery-signed', [TestRequestController::class, 'uploadLabDeliverySigned'])->name('dashboard.test-requests.upload-lab-delivery-signed');
+
     // Refresh products from Qoyod (clear cache and fetch new)
     Route::post('/dashboard/api/refresh-products', [DashboardController::class, 'refreshProducts'])->name('dashboard.api.refresh-products');
     
