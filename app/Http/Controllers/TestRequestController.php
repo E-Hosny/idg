@@ -7,6 +7,7 @@ use App\Models\TestRequestRedelivery;
 use App\Models\Artifact;
 use App\Services\QoyodService;
 use App\Services\FileService;
+use App\Services\WorkflowNotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -100,6 +101,12 @@ class TestRequestController extends Controller
             ]);
             
             \Log::info('Created new test request', ['test_request' => $testRequest]);
+
+            app(WorkflowNotificationService::class)->notifyLab(
+                'test_request_created',
+                $testRequest,
+                auth()->user()
+            );
 
             // Redirect to the new test request
             return redirect()->route('dashboard.test-requests.show', $testRequest->id)
@@ -414,6 +421,13 @@ class TestRequestController extends Controller
             'redelivery_id' => $redelivery->id,
         ]);
 
+        app(WorkflowNotificationService::class)->notifyReception(
+            'redelivery_created',
+            $testRequest,
+            auth()->user(),
+            ['batch_id' => $redelivery->id]
+        );
+
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
@@ -611,6 +625,12 @@ class TestRequestController extends Controller
                 'path' => $path,
             ]);
 
+            app(WorkflowNotificationService::class)->notifyLab(
+                'lab_delivery_uploaded',
+                $testRequest->fresh(),
+                auth()->user()
+            );
+
             return back()->with('success', 'تم رفع ملف التسليم للمختبر بنجاح | Lab delivery file uploaded successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
@@ -671,6 +691,13 @@ class TestRequestController extends Controller
                 'redelivery_id' => $redelivery->id,
                 'path' => $path,
             ]);
+
+            app(WorkflowNotificationService::class)->notifyReception(
+                'redelivery_file_uploaded',
+                $testRequest,
+                auth()->user(),
+                ['batch_id' => $redelivery->id]
+            );
 
             return back()->with('success', 'تم رفع ملف إعادة التسليم بنجاح | Redelivery file uploaded successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {

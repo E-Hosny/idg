@@ -35,7 +35,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        app()->setLocale(session('locale', config('app.locale')));
+        $locale = session('locale')
+            ?? $request->user()?->preferredLocale()
+            ?? config('app.locale');
+        if (! in_array($locale, ['en', 'ar'], true)) {
+            $locale = 'en';
+        }
+        app()->setLocale($locale);
         return [
             ...parent::share($request),
             'auth' => [
@@ -46,7 +52,7 @@ class HandleInertiaRequests extends Middleware
                     'role' => $request->user()->role,
                 ] : null,
             ],
-            'locale' => app()->getLocale(),
+            'locale' => $locale,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
@@ -57,6 +63,9 @@ class HandleInertiaRequests extends Middleware
                 'url' => config('app.url'),
             ],
             'csrf_token' => csrf_token(),
+            'notifications' => fn () => $request->user()?->receivesWorkflowNotifications()
+                ? ['unread_count' => $request->user()->unreadNotifications()->count()]
+                : null,
         ];
     }
 }

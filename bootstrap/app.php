@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'restrict.lab' => \App\Http\Middleware\RestrictLabRole::class,
             'restrict.receptionist.artifacts' => \App\Http\Middleware\RestrictReceptionistFromArtifacts::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

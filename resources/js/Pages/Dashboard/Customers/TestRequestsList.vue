@@ -12,7 +12,8 @@
                Customer | العميل: {{ customer.name || customer.display_name }}
              </p>
           </div>
-          <div class="flex gap-3">
+          <div class="flex gap-3 items-center">
+            <NotificationBell />
             <button
               @click="createNewRequest"
               class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white text-base font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200 shadow-md hover:shadow-lg"
@@ -393,8 +394,13 @@
 </template>
 
 <script>
+import NotificationBell from '@/components/NotificationBell.vue'
+
 export default {
   name: 'TestRequestsList',
+  components: {
+    NotificationBell,
+  },
   props: {
     customer: {
       type: Object,

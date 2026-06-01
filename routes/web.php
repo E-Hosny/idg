@@ -6,6 +6,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\TestRequestController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MailTestController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\TestSpaceController;
 
 // Public routes
@@ -37,6 +40,25 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::middleware(['auth'])->group(function () {
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::middleware('admin')->prefix('dashboard/mail-test')->name('dashboard.mail-test.')->group(function () {
+        Route::get('/', [MailTestController::class, 'show'])->name('show');
+        Route::post('/send', [MailTestController::class, 'send'])->name('send');
+    });
+
+    Route::middleware('admin')->prefix('dashboard/users')->name('dashboard.users.')->group(function () {
+        Route::get('/', [UserManagementController::class, 'index'])->name('index');
+        Route::post('/', [UserManagementController::class, 'store'])->name('store');
+        Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('dashboard/notifications')->name('dashboard.notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+    });
 
     Route::middleware('restrict.receptionist.artifacts')->group(function () {
         Route::get('/dashboard/artifacts/receiving/{testRequest}', [DashboardController::class, 'artifactsForReceiving'])->name('dashboard.artifacts.receiving');
@@ -337,9 +359,14 @@ Route::get('/test-pdf-file/{filename}', function($filename) {
 
 // Language switcher
 Route::get('/lang/{locale}', function ($locale) {
-    if (in_array($locale, ['en', 'ar'])) {
+    if (in_array($locale, ['en', 'ar'], true)) {
         session(['locale' => $locale]);
+
+        if (auth()->check()) {
+            auth()->user()->update(['locale' => $locale]);
+        }
     }
+
     return redirect()->back();
 })->name('lang.switch');
 

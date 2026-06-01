@@ -15,6 +15,8 @@
         "mpdf/mpdf": "^8.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-translatable": "^6.11",
+        "symfony/http-client": "^7.4",
+        "symfony/mailgun-mailer": "^7.4",
         "tightenco/ziggy": "^2.5"
     },
     "require-dev": {

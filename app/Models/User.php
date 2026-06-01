@@ -20,6 +20,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'notification_email',
+        'locale',
         'password',
         'role',
     ];
@@ -47,8 +49,51 @@ class User extends Authenticatable
         ];
     }
 
-    public function isReceptionist()
+    public function isReceptionist(): bool
     {
         return $this->role === 'receptionist';
+    }
+
+    public function isLab(): bool
+    {
+        return $this->role === 'lab';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function receivesWorkflowNotifications(): bool
+    {
+        return in_array($this->role, ['receptionist', 'lab', 'admin'], true);
+    }
+
+    /**
+     * Email used for workflow notification mail channel (falls back to login email).
+     */
+    public function routeNotificationForMail(): string
+    {
+        return $this->notification_email ?: $this->email;
+    }
+
+    public function hasDeliverableNotificationEmail(): bool
+    {
+        return filter_var($this->routeNotificationForMail(), FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    public function effectiveNotificationEmail(): string
+    {
+        return $this->routeNotificationForMail();
+    }
+
+    public function usesLoginEmailForNotifications(): bool
+    {
+        return blank($this->notification_email);
+    }
+
+    public function preferredLocale(): string
+    {
+        return in_array($this->locale, ['ar', 'en'], true) ? $this->locale : 'en';
     }
 }

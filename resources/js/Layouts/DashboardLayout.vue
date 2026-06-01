@@ -83,6 +83,26 @@
                 <span class="ml-3">{{ __('Customers') }}</span>
               </Link>
 
+              <Link
+                v-if="$page.props.auth.user?.role === 'admin'"
+                :href="$route('dashboard.users.index')"
+                class="sidebar-link"
+                :class="{ 'active': $page.component === 'Dashboard/Users/Index' }"
+              >
+                <i class="fas fa-users-cog w-5 h-5 ml-3"></i>
+                <span class="ml-3">{{ __('Users') }}</span>
+              </Link>
+
+              <Link
+                v-if="$page.props.auth.user?.role === 'admin'"
+                :href="$route('dashboard.mail-test.show')"
+                class="sidebar-link"
+                :class="{ 'active': $page.component === 'Dashboard/MailTest' }"
+              >
+                <i class="fas fa-envelope w-5 h-5 ml-3"></i>
+                <span class="ml-3">{{ __('Test Email') }}</span>
+              </Link>
+
             </div>
           </nav>
 
@@ -137,6 +157,8 @@
           </div>
 
           <div class="ml-4 flex items-center md:ml-6 space-x-4">
+            <NotificationBell />
+
             <!-- Language Switcher -->
             <div class="relative" ref="languageDropdown">
               <button 
@@ -220,10 +242,12 @@
 
 <script>
 import { Link } from '@inertiajs/vue3'
+import NotificationBell from '@/components/NotificationBell.vue'
 
 export default {
   components: {
-    Link
+    Link,
+    NotificationBell,
   },
   props: {
     pageTitle: {
@@ -277,6 +301,8 @@ export default {
           'Profile': 'Profile',
           'Settings': 'Settings',
           'Logout': 'Logout',
+          'Test Email': 'Test Email',
+          'Users': 'Users',
         },
         ar: {
           'Items Dashboard': 'لوحة تحكم العناصر',
@@ -290,6 +316,8 @@ export default {
           'Profile': 'الملف الشخصي',
           'Settings': 'الإعدادات',
           'Logout': 'تسجيل الخروج',
+          'Test Email': 'اختبار البريد',
+          'Users': 'المستخدمون',
         }
       }
 
