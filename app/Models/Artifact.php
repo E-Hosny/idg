@@ -98,6 +98,16 @@ class Artifact extends Model
         return $this->hasMany(JewelleryEvaluation::class);
     }
 
+    public function preciousMetalsEvaluations(): HasMany
+    {
+        return $this->hasMany(PreciousMetalsEvaluation::class);
+    }
+
+    public function isPreciousMetalsType(): bool
+    {
+        return $this->type === 'Precious & Non-Precious Metals';
+    }
+
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
@@ -181,11 +191,12 @@ class Artifact extends Model
             'Colored Gemstones', 'Other Colored Gemstones' => 'GR',
             'Colorless Diamonds' => 'DR',
             'Jewellery' => 'JR',
+            'Precious & Non-Precious Metals' => 'MR',
             default => 'IDG-' . date('Y') . '-'
         };
         
         // إذا كان النوع من الأنواع الجديدة، استخدم الصيغة الجديدة
-        if (in_array($type, ['Colored Gemstones', 'Other Colored Gemstones', 'Colorless Diamonds', 'Jewellery'])) {
+        if (in_array($type, ['Colored Gemstones', 'Other Colored Gemstones', 'Colorless Diamonds', 'Jewellery', 'Precious & Non-Precious Metals'])) {
             return \DB::transaction(function () use ($prefix) {
                 // توليد 10 أرقام عشوائية
                 $randomNumbers = str_pad(mt_rand(1, 9999999999), 10, '0', STR_PAD_LEFT);

@@ -63,9 +63,10 @@
                 <span class="ml-3">{{ __('Analytics') }}</span>
               </Link>
 
-              <Link 
-                v-if="$page.props.auth.user?.role !== 'lab'"
-                :href="$route('reception.index')" 
+              <!-- Reception nav: set showReceptionNav to true to restore -->
+              <Link
+                v-if="showReceptionNav && $page.props.auth.user?.role !== 'lab'"
+                :href="$route('reception.index')"
                 class="sidebar-link"
                 :class="{ 'active': $page.component.startsWith('Reception') }"
               >
@@ -91,16 +92,6 @@
               >
                 <i class="fas fa-users-cog w-5 h-5 ml-3"></i>
                 <span class="ml-3">{{ __('Users') }}</span>
-              </Link>
-
-              <Link
-                v-if="$page.props.auth.user?.role === 'admin'"
-                :href="$route('dashboard.mail-test.show')"
-                class="sidebar-link"
-                :class="{ 'active': $page.component === 'Dashboard/MailTest' }"
-              >
-                <i class="fas fa-envelope w-5 h-5 ml-3"></i>
-                <span class="ml-3">{{ __('Test Email') }}</span>
               </Link>
 
             </div>
@@ -260,6 +251,7 @@ export default {
       sidebarOpen: false,
       languageDropdownOpen: false,
       userDropdownOpen: false,
+      showReceptionNav: false,
     }
   },
   mounted() {
@@ -301,7 +293,6 @@ export default {
           'Profile': 'Profile',
           'Settings': 'Settings',
           'Logout': 'Logout',
-          'Test Email': 'Test Email',
           'Users': 'Users',
         },
         ar: {
@@ -316,7 +307,6 @@ export default {
           'Profile': 'الملف الشخصي',
           'Settings': 'الإعدادات',
           'Logout': 'تسجيل الخروج',
-          'Test Email': 'اختبار البريد',
           'Users': 'المستخدمون',
         }
       }

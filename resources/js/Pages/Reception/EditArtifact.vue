@@ -119,6 +119,7 @@
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import { watch } from 'vue'
+import { getTypeOptions, getServiceOptions as getServicesForType, ARTIFACT_TYPE_PRECIOUS_METALS } from '@/constants/artifactTypes'
 
 export default {
   components: { DashboardLayout, Link },
@@ -130,7 +131,7 @@ export default {
       type: props.artifact.type,
       service: props.artifact.service || '',
       weight: props.artifact.weight || '',
-      weight_unit: props.artifact.weight_unit || (props.artifact.type === 'Jewellery' ? 'gm' : 'ct'),
+      weight_unit: props.artifact.weight_unit || (['Jewellery', ARTIFACT_TYPE_PRECIOUS_METALS].includes(props.artifact.type) ? 'gm' : 'ct'),
       price: props.artifact.price || '',
       delivery_type: props.artifact.delivery_type || '',
       notes: props.artifact.notes || ''
@@ -139,10 +140,10 @@ export default {
     // مراقب تغيير نوع القطعة لتحديث وحدة الوزن
     watch(() => form.type, (newType) => {
       if (newType) {
-        if (newType === 'Jewellery') {
-          form.weight_unit = 'gm'; // مجوهرات: جرام
+        if (newType === 'Jewellery' || newType === ARTIFACT_TYPE_PRECIOUS_METALS) {
+          form.weight_unit = 'gm'
         } else {
-          form.weight_unit = 'ct'; // باقي الأنواع: قيراط
+          form.weight_unit = 'ct'
         }
       }
     });
@@ -162,12 +163,7 @@ export default {
       return this.$page.props.locale || 'en'
     },
     typeOptions() {
-      return [
-        { value: 'Colored Gemstones', label: this.locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
-        { value: 'Other Colored Gemstones', label: this.locale === 'ar' ? 'أحجار كريمة ملونة أخرى' : 'Other Colored Gemstones' },
-        { value: 'Colorless Diamonds', label: this.locale === 'ar' ? 'ألماس عديم اللون' : 'Colorless Diamonds' },
-        { value: 'Jewellery', label: this.locale === 'ar' ? 'مجوهرات' : 'Jewellery' },
-      ]
+      return getTypeOptions(this.locale === 'ar' ? 'ar' : 'en')
     },
     weightUnitOptions() {
       return [
@@ -211,37 +207,7 @@ export default {
       return this.locale === 'ar' ? t[key] || key : key
     },
     getServiceOptions(artifactType) {
-      const allServices = [
-        { value: 'Regular - ID Report', label: this.locale === 'ar' ? 'عادي - تقرير هوية' : 'Regular - ID Report' },
-        { value: 'Regular - ID + Origin', label: this.locale === 'ar' ? 'عادي - هوية + أصل' : 'Regular - ID + Origin' },
-        { value: 'Mini Card Report - ID Report', label: this.locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
-        { value: 'Mini Card Report - ID + Origin', label: this.locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
-        { value: 'Regular - Diamond Grading Report', label: this.locale === 'ar' ? 'عادي - تقرير تصنيف الألماس' : 'Regular - Diamond Grading Report' },
-        { value: 'Mini Card Report - Mini Report', label: this.locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مصغر' : 'Mini Card Report - Mini Report' },
-        { value: 'Regular - Jewellery Report', label: this.locale === 'ar' ? 'عادي - تقرير المجوهرات' : 'Regular - Jewellery Report' },
-        { value: 'Mini Card Report - Mini Jewellery Report', label: this.locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر' : 'Mini Card Report - Mini Jewellery Report' },
-      ]
-
-      switch (artifactType) {
-        case 'Colored Gemstones':
-          return allServices.filter(service => 
-            service.value.includes('ID Report') || service.value.includes('ID + Origin')
-          )
-        case 'Other Colored Gemstones':
-          return allServices.filter(service => 
-            service.value.includes('ID Report') && !service.value.includes('ID + Origin')
-          )
-        case 'Colorless Diamonds':
-          return allServices.filter(service => 
-            service.value.includes('Diamond Grading Report') || service.value.includes('Mini Report')
-          )
-        case 'Jewellery':
-          return allServices.filter(service => 
-            service.value.includes('Jewellery Report')
-          )
-        default:
-          return []
-      }
+      return getServicesForType(artifactType, this.locale === 'ar' ? 'ar' : 'en')
     },
          async calculatePrice() {
        if (!this.form.type || !this.form.service || !this.form.weight) {

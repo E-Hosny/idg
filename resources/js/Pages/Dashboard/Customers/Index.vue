@@ -1659,7 +1659,41 @@
                           <label class="block text-sm font-medium text-gray-700">
                             {{ __('Subtype') }} <span class="text-gray-400">({{ __('Optional') }})</span>
                           </label>
+                          <template v-if="newArtifact.type === ARTIFACT_TYPE_PRECIOUS_METALS">
+                            <select
+                              v-if="newArtifactSubtypeMode === 'list'"
+                              v-model="newArtifact.subtype"
+                              @change="handleSubtypeSelectionChange"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                            >
+                              <option value="" disabled>{{ $page.props.locale === 'ar' ? 'اختر النوع الفرعي' : 'Select subtype' }}</option>
+                              <option
+                                v-for="option in localizedPreciousMetalsSubtypeOptions"
+                                :key="option.value"
+                                :value="option.value"
+                              >
+                                {{ option.label }}
+                              </option>
+                              <option value="__manual__">{{ $page.props.locale === 'ar' ? 'إدخال يدوي...' : 'Manual entry...' }}</option>
+                            </select>
+                            <div v-else class="space-y-2">
+                              <input
+                                v-model="newArtifact.subtype"
+                                type="text"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                                :placeholder="$page.props.locale === 'ar' ? 'أدخل النوع الفرعي يدوياً' : 'Enter subtype manually'"
+                              />
+                              <button
+                                type="button"
+                                class="text-xs text-green-700 hover:text-green-900 underline"
+                                @click="newArtifactSubtypeMode = 'list'"
+                              >
+                                {{ $page.props.locale === 'ar' ? 'العودة للقائمة' : 'Back to list' }}
+                              </button>
+                            </div>
+                          </template>
                           <input
+                            v-else
                             v-model="newArtifact.subtype"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
@@ -1813,6 +1847,13 @@
 
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
+import {
+  getTypeOptions,
+  getServiceOptions as getServicesForType,
+  getPreciousMetalsSubtypeOptions,
+  preciousMetalsSubtypeValues,
+  ARTIFACT_TYPE_PRECIOUS_METALS,
+} from '@/constants/artifactTypes'
 
 export default {
   components: {
@@ -1927,13 +1968,8 @@ export default {
         price: '',
         quantity: 1 // Default to 1, will create sub-codes if > 1
       },
-      // Artifact options (copied from NewClient.vue)
-      typeOptions: [
-        { value: 'Colored Gemstones', label: this.$page.props.locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
-        { value: 'Other Colored Gemstones', label: this.$page.props.locale === 'ar' ? 'أحجار كريمة ملونة أخرى' : 'Other Colored Gemstones' },
-        { value: 'Colorless Diamonds', label: this.$page.props.locale === 'ar' ? 'ألماس عديم اللون' : 'Colorless Diamonds' },
-        { value: 'Jewellery', label: this.$page.props.locale === 'ar' ? 'مجوهرات' : 'Jewellery' },
-      ],
+      ARTIFACT_TYPE_PRECIOUS_METALS,
+      newArtifactSubtypeMode: 'list',
       weightUnitOptions: [
         { value: 'ct', label: this.$page.props.locale === 'ar' ? 'قيراط' : 'ct' },
         { value: 'gm', label: this.$page.props.locale === 'ar' ? 'جرام' : 'gm' },
@@ -1992,7 +2028,13 @@ export default {
       }
 
       return filtered
-    }
+    },
+    typeOptions() {
+      return getTypeOptions(this.$page.props.locale === 'ar' ? 'ar' : 'en')
+    },
+    localizedPreciousMetalsSubtypeOptions() {
+      return getPreciousMetalsSubtypeOptions(this.$page.props.locale === 'ar' ? 'ar' : 'en')
+    },
   },
   methods: {
     copyBillingToShipping() {
@@ -2371,6 +2413,7 @@ export default {
       this.selectedCustomerForArtifact = customer
       this.newArtifact = {
         type: '',
+        subtype: '',
         service: '',
         weight: '',
         weight_unit: 'ct',
@@ -2378,42 +2421,23 @@ export default {
         notes: '',
         price: ''
       }
+      this.newArtifactSubtypeMode = 'list'
       this.showAddArtifactModal = true
     },
     
     getServiceOptions(artifactType) {
-      const locale = this.$page.props.locale || 'en'
-      const allServices = [
-        { value: 'Regular - ID Report', label: locale === 'ar' ? 'عادي - تقرير هوية' : 'Regular - ID Report' },
-        { value: 'Regular - ID + Origin', label: locale === 'ar' ? 'عادي - هوية + أصل' : 'Regular - ID + Origin' },
-        { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
-        { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
-        { value: 'Regular - Diamond Grading Report', label: locale === 'ar' ? 'عادي - تقرير تصنيف الألماس' : 'Regular - Diamond Grading Report' },
-        { value: 'Mini Card Report - Mini Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مصغر' : 'Mini Card Report - Mini Report' },
-        { value: 'Regular - Jewellery Report', label: locale === 'ar' ? 'عادي - تقرير المجوهرات' : 'Regular - Jewellery Report' },
-        { value: 'Mini Card Report - Mini Jewellery Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر' : 'Mini Card Report - Mini Jewellery Report' },
-      ]
+      return getServicesForType(artifactType, this.$page.props.locale === 'ar' ? 'ar' : 'en')
+    },
 
-      // Filter services based on artifact type
-      switch (artifactType) {
-        case 'Colored Gemstones':
-          return allServices.filter(service => 
-            service.value.includes('ID Report') || service.value.includes('ID + Origin')
-          )
-        case 'Other Colored Gemstones':
-          return allServices.filter(service => 
-            service.value.includes('ID Report') && !service.value.includes('ID + Origin')
-          )
-        case 'Colorless Diamonds':
-          return allServices.filter(service => 
-            service.value.includes('Diamond Grading Report') || service.value.includes('Mini Report')
-          )
-        case 'Jewellery':
-          return allServices.filter(service => 
-            service.value.includes('Jewellery Report')
-          )
-        default:
-          return []
+    resolveSubtypeMode(subtypeValue) {
+      if (preciousMetalsSubtypeValues.includes(subtypeValue)) return 'list'
+      return subtypeValue ? 'manual' : 'list'
+    },
+
+    handleSubtypeSelectionChange() {
+      if (this.newArtifact.subtype === '__manual__') {
+        this.newArtifact.subtype = ''
+        this.newArtifactSubtypeMode = 'manual'
       }
     },
     
@@ -2425,8 +2449,14 @@ export default {
         this.newArtifact.service = ''
       }
       
-      // Update weight unit based on type
-      if (this.newArtifact.type === 'Jewellery') {
+      if (this.newArtifact.type === ARTIFACT_TYPE_PRECIOUS_METALS) {
+        this.newArtifactSubtypeMode = this.resolveSubtypeMode(this.newArtifact.subtype)
+      } else {
+        this.newArtifact.subtype = ''
+        this.newArtifactSubtypeMode = 'list'
+      }
+
+      if (this.newArtifact.type === 'Jewellery' || this.newArtifact.type === ARTIFACT_TYPE_PRECIOUS_METALS) {
         this.newArtifact.weight_unit = 'gm'
       } else {
         this.newArtifact.weight_unit = 'ct'

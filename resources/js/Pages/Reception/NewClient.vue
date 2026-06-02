@@ -176,6 +176,7 @@
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import { watch } from 'vue'
+import { getTypeOptions, getServiceOptions as getServicesForType, ARTIFACT_TYPE_PRECIOUS_METALS } from '@/constants/artifactTypes'
 
 export default {
   components: { DashboardLayout, Link },
@@ -203,55 +204,8 @@ export default {
     }, { deep: true });
     const locale = window?.Inertia?.page?.props?.locale || 'en';
     // Type options
-    const typeOptions = [
-      { value: 'Colored Gemstones', label: locale === 'ar' ? 'أحجار كريمة ملونة' : 'Colored Gemstones' },
-      { value: 'Other Colored Gemstones', label: locale === 'ar' ? 'أحجار كريمة ملونة أخرى' : 'Other Colored Gemstones' },
-      { value: 'Colorless Diamonds', label: locale === 'ar' ? 'ألماس عديم اللون' : 'Colorless Diamonds' },
-      { value: 'Jewellery', label: locale === 'ar' ? 'مجوهرات' : 'Jewellery' },
-    ];
-    // Service options - ديناميكية بناءً على نوع القطعة
-    const getServiceOptions = (artifactType) => {
-      const allServices = [
-        { value: 'Regular - ID Report', label: locale === 'ar' ? 'عادي - تقرير هوية' : 'Regular - ID Report' },
-        { value: 'Regular - ID + Origin', label: locale === 'ar' ? 'عادي - هوية + أصل' : 'Regular - ID + Origin' },
-        { value: 'Mini Card Report - ID Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير هوية' : 'Mini Card Report - ID Report' },
-        { value: 'Mini Card Report - ID + Origin', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - هوية + أصل' : 'Mini Card Report - ID + Origin' },
-        { value: 'Regular - Diamond Grading Report', label: locale === 'ar' ? 'عادي - تقرير تصنيف الألماس' : 'Regular - Diamond Grading Report' },
-        { value: 'Mini Card Report - Mini Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مصغر' : 'Mini Card Report - Mini Report' },
-        { value: 'Regular - Jewellery Report', label: locale === 'ar' ? 'عادي - تقرير المجوهرات' : 'Regular - Jewellery Report' },
-        { value: 'Mini Card Report - Mini Jewellery Report', label: locale === 'ar' ? 'تقرير بطاقة مصغرة - تقرير مجوهرات مصغر' : 'Mini Card Report - Mini Jewellery Report' },
-      ];
-
-      // تصفية الخدمات حسب نوع القطعة
-      switch (artifactType) {
-        case 'Colored Gemstones':
-          // يحتوي على جميع خدمات ID Report و ID + Origin
-          return allServices.filter(service => 
-            service.value.includes('ID Report') || service.value.includes('ID + Origin')
-          );
-        
-        case 'Other Colored Gemstones':
-          // يحتوي على ID Report فقط (لا يحتوي على ID + Origin)
-          return allServices.filter(service => 
-            service.value.includes('ID Report') && !service.value.includes('ID + Origin')
-          );
-        
-        case 'Colorless Diamonds':
-          // يحتوي على Diamond Grading Report و Mini Report فقط
-          return allServices.filter(service => 
-            service.value.includes('Diamond Grading Report') || service.value.includes('Mini Report')
-          );
-        
-        case 'Jewellery':
-          // يحتوي على Jewellery Report و Mini Jewellery Report فقط
-          return allServices.filter(service => 
-            service.value.includes('Jewellery Report')
-          );
-        
-        default:
-          return [];
-      }
-    };
+    const typeOptions = getTypeOptions(locale === 'ar' ? 'ar' : 'en')
+    const getServiceOptions = (artifactType) => getServicesForType(artifactType, locale === 'ar' ? 'ar' : 'en')
     // Weight unit options
     const weightUnitOptions = [
       { value: 'ct', label: locale === 'ar' ? 'قيراط' : 'ct' },
@@ -269,10 +223,10 @@ export default {
     // تحديث وحدة الوزن تلقائياً عند تغيير نوع القطعة
     const updateWeightUnit = (artifactIndex, newType) => {
       const artifact = form.artifacts[artifactIndex];
-      if (newType === 'Jewellery') {
-        artifact.weight_unit = 'gm'; // مجوهرات: جرام
+      if (newType === 'Jewellery' || newType === ARTIFACT_TYPE_PRECIOUS_METALS) {
+        artifact.weight_unit = 'gm'
       } else {
-        artifact.weight_unit = 'ct'; // باقي الأنواع: قيراط
+        artifact.weight_unit = 'ct'
       }
     };
 

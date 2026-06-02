@@ -293,6 +293,7 @@ class DashboardController extends Controller
             'Colored Gemstones', 'Other Colored Gemstones' => 'Dashboard/Artifacts/Evaluate',
             'Colorless Diamonds' => 'Dashboard/Artifacts/EvaluateDiamond',
             'Jewellery' => 'Dashboard/Artifacts/EvaluateJewellery',
+            'Precious & Non-Precious Metals' => 'Dashboard/Artifacts/EvaluatePreciousMetals',
             default => 'Dashboard/Artifacts/Evaluate'
         };
 
@@ -304,15 +305,19 @@ class DashboardController extends Controller
                 ->latest()
                 ->first();
         } elseif ($artifact->type === 'Jewellery') {
-            // للمجوهرات، احمّل من جدول jewellery_evaluations
             $existingEvaluation = $artifact->jewelleryEvaluations()
+                ->where('evaluator_id', auth()->id())
+                ->latest()
+                ->first();
+        } elseif ($artifact->type === 'Precious & Non-Precious Metals') {
+            $existingEvaluation = $artifact->preciousMetalsEvaluations()
                 ->where('evaluator_id', auth()->id())
                 ->latest()
                 ->first();
         }
 
         return Inertia::render($evaluationPage, [
-            'artifact' => $artifact,
+            'artifact' => $artifact->load(['testRequest', 'client']),
             'existingEvaluation' => $existingEvaluation,
         ]);
     }
@@ -344,6 +349,9 @@ class DashboardController extends Controller
                 \Log::info('Processing jewellery evaluation');
                 $this->storeJewelleryEvaluation($request, $artifact);
                 $message = 'Jewellery evaluation saved successfully!';
+            } elseif ($artifact->type === 'Precious & Non-Precious Metals') {
+                app(\App\Services\PreciousMetalsEvaluationService::class)->store($request, $artifact);
+                $message = 'Precious metals evaluation saved successfully!';
             } else {
                 \Log::info('Processing general evaluation for type: ' . $artifact->type);
                 // Colored Gemstones & Other Colored Gemstones
@@ -787,12 +795,17 @@ class DashboardController extends Controller
                 ->first();
             $evaluationPage = 'Dashboard/Artifacts/DiamondEvaluationView';
         } elseif ($artifact->type === 'Jewellery') {
-            // للمجوهرات، احمّل من جدول jewellery_evaluations
             $evaluation = $artifact->jewelleryEvaluations()
                 ->with('evaluator')
                 ->latest()
                 ->first();
             $evaluationPage = 'Dashboard/Artifacts/EvaluationView';
+        } elseif ($artifact->type === 'Precious & Non-Precious Metals') {
+            $evaluation = $artifact->preciousMetalsEvaluations()
+                ->with('evaluator')
+                ->latest()
+                ->first();
+            $evaluationPage = 'Dashboard/Artifacts/PreciousMetalsEvaluationView';
         } else {
             // للأنواع الأخرى
             $evaluation = $artifact->evaluations()
@@ -1314,8 +1327,7 @@ class DashboardController extends Controller
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
 
-            // Generate artifact code
-            $artifactCode = 'GR' . str_pad(rand(1, 9999999999), 9, '0', STR_PAD_LEFT);
+            $artifactCode = \App\Models\Artifact::generateArtifactCode($validatedData['type']);
             
             // Create artifact with Qoyod customer ID
             $artifact = \App\Models\Artifact::create([
@@ -1850,11 +1862,15 @@ class DashboardController extends Controller
                 ->first();
             $evaluationPage = 'Dashboard/Artifacts/EvaluateDiamond';
         } elseif ($artifact->type === 'Jewellery') {
-            // للمجوهرات، احمّل من جدول jewellery_evaluations
             $evaluation = $artifact->jewelleryEvaluations()
                 ->latest()
                 ->first();
             $evaluationPage = 'Dashboard/Artifacts/EvaluateJewellery';
+        } elseif ($artifact->type === 'Precious & Non-Precious Metals') {
+            $evaluation = $artifact->preciousMetalsEvaluations()
+                ->latest()
+                ->first();
+            $evaluationPage = 'Dashboard/Artifacts/EvaluatePreciousMetals';
         } else if (in_array($artifact->type, ['Colored Gemstones'])) {
             $evaluation = $artifact->evaluations()
                 ->latest()
@@ -1898,6 +1914,8 @@ class DashboardController extends Controller
         $evaluation = null;
         if ($artifact->type === 'Jewellery') {
             $evaluation = $artifact->jewelleryEvaluations()->latest()->first();
+        } elseif ($artifact->type === 'Precious & Non-Precious Metals') {
+            $evaluation = $artifact->preciousMetalsEvaluations()->latest()->first();
         } else {
             $evaluation = $artifact->evaluations()->latest()->first();
         }
@@ -1909,13 +1927,14 @@ class DashboardController extends Controller
         // Validate the request based on artifact type
         if ($artifact->type === 'Jewellery') {
             $validatedData = $this->validateJewelleryEvaluation($request);
+            $evaluation->update($validatedData);
+        } elseif ($artifact->type === 'Precious & Non-Precious Metals') {
+            app(\App\Services\PreciousMetalsEvaluationService::class)->update($request, $evaluation);
         } else {
             $validatedData = $this->validateGeneralEvaluation($request);
             $validatedData = $this->processGeneralEvaluationFiles($request, $artifact, $validatedData, $evaluation);
+            $evaluation->update($validatedData);
         }
-
-        // Update the evaluation
-        $evaluation->update($validatedData);
 
         // Log the update
         \Log::info('Evaluation updated successfully:', [

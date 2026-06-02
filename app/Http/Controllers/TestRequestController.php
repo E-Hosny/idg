@@ -278,6 +278,7 @@ class TestRequestController extends Controller
             $validated['qoyod_customer_id'] = $testRequest->qoyod_customer_id;
             $validated['test_request_id'] = $testRequest->id;
             $validated['status'] = 'pending';
+            $validated['artifact_code'] = Artifact::generateArtifactCode($validated['type']);
 
             $artifact = Artifact::create($validated);
 
