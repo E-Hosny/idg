@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\ArtifactEvaluation;
 use App\Models\DiamondEvaluation;
 use App\Models\User;
+use App\Models\HiddenQoyodCustomer;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Services\PricingService;
@@ -886,6 +887,9 @@ class DashboardController extends Controller
             
             $customers = $response['data'] ?? [];
             $meta = $response['meta'] ?? [];
+
+            $customers = $this->filterVisibleCustomers($customers);
+            $meta['total'] = count($customers);
             
             return Inertia::render('Dashboard/Customers/Index', [
                 'customers' => $customers,
@@ -919,6 +923,69 @@ class DashboardController extends Controller
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
         }
+    }
+
+    public function customerVisibility(Request $request)
+    {
+        try {
+            $qoyodService = new \App\Services\QoyodService();
+            $response = $qoyodService->getCustomers();
+            $customers = $response['data'] ?? [];
+            $hiddenIds = HiddenQoyodCustomer::hiddenIds();
+
+            $customers = array_map(function ($customer) use ($hiddenIds) {
+                $customer['is_hidden'] = in_array((int) ($customer['id'] ?? 0), $hiddenIds, true);
+
+                return $customer;
+            }, $customers);
+
+            return Inertia::render('Dashboard/Customers/Visibility', [
+                'customers' => $customers,
+                'hiddenCount' => count($hiddenIds),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error loading customer visibility page', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return Inertia::render('Dashboard/Customers/Visibility', [
+                'customers' => [],
+                'hiddenCount' => 0,
+                'error' => 'Failed to load customers from Qoyod.',
+            ]);
+        }
+    }
+
+    public function hideCustomers(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_ids' => ['required', 'array', 'min:1'],
+            'customer_ids.*' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $count = HiddenQoyodCustomer::hideMany($validated['customer_ids'], $request->user()->id);
+
+        return redirect()
+            ->route('dashboard.customers.visibility.index')
+            ->with('success', $count > 0
+                ? "تم إخفاء {$count} عميل | {$count} customer(s) hidden."
+                : 'لم يتم إخفاء عملاء جدد | No new customers were hidden.');
+    }
+
+    public function unhideCustomers(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_ids' => ['required', 'array', 'min:1'],
+            'customer_ids.*' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $count = HiddenQoyodCustomer::showMany($validated['customer_ids']);
+
+        return redirect()
+            ->route('dashboard.customers.visibility.index')
+            ->with('success', $count > 0
+                ? "تم إظهار {$count} عميل | {$count} customer(s) restored."
+                : 'لم يتم إظهار عملاء | No customers were restored.');
     }
 
     public function showCustomer($customerId)
@@ -3520,5 +3587,19 @@ class DashboardController extends Controller
                 'message' => 'Error refreshing products: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function filterVisibleCustomers(array $customers): array
+    {
+        $hiddenIds = HiddenQoyodCustomer::hiddenIds();
+
+        if ($hiddenIds === []) {
+            return $customers;
+        }
+
+        return array_values(array_filter(
+            $customers,
+            fn ($customer) => ! in_array((int) ($customer['id'] ?? 0), $hiddenIds, true)
+        ));
     }
 }

@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'restrict.lab' => \App\Http\Middleware\RestrictLabRole::class,
             'restrict.receptionist.artifacts' => \App\Http\Middleware\RestrictReceptionistFromArtifacts::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'customer.visible' => \App\Http\Middleware\EnsureQoyodCustomerVisible::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

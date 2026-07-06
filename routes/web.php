@@ -53,6 +53,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
     });
 
+    Route::middleware('admin')->prefix('dashboard/customers/visibility')->name('dashboard.customers.visibility.')->group(function () {
+        Route::get('/', [DashboardController::class, 'customerVisibility'])->name('index');
+        Route::post('/hide', [DashboardController::class, 'hideCustomers'])->name('hide');
+        Route::post('/show', [DashboardController::class, 'unhideCustomers'])->name('show');
+    });
+
     Route::prefix('dashboard/notifications')->name('dashboard.notifications.')->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
         Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
@@ -85,23 +91,28 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/dashboard/customers/artifacts', [DashboardController::class, 'storeCustomerArtifact'])->name('dashboard.customers.artifacts.store');
         
         // Customer specific routes (more specific first)
-        Route::get('/dashboard/customers/{customer}/artifacts', [DashboardController::class, 'customerArtifacts'])->name('dashboard.customers.artifacts.index');
-        Route::get('/dashboard/customers/{customer}/add-artifact', [DashboardController::class, 'showAddArtifact'])->name('dashboard.customers.add-artifact');
-        Route::post('/dashboard/customers/{customer}/store-artifact', [DashboardController::class, 'storeArtifactForCustomer'])->name('dashboard.customers.store-artifact');
-        Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
-        Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
-        Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');
-        Route::get('/dashboard/customers/{customer}/invoices', [DashboardController::class, 'listCustomerInvoices'])->name('dashboard.customers.invoices');
-        Route::get('/dashboard/customers/{customer}/create-invoice', [DashboardController::class, 'showCreateInvoice'])->name('dashboard.customers.create-invoice');
-        Route::post('/dashboard/customers/{customer}/store-invoice', [DashboardController::class, 'storeInvoice'])->name('dashboard.customers.store-invoice');
-        Route::get('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'showInvoice'])->name('dashboard.customers.invoices.show');
-        Route::get('/dashboard/customers/{customer}/invoices/{invoice}/edit', [DashboardController::class, 'editInvoice'])->name('dashboard.customers.invoices.edit');
-        Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
-        Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
-        
-        // Test Request routes
-        Route::get('/dashboard/customers/{customer}/test-requests', [TestRequestController::class, 'listAllRequests'])->name('dashboard.customers.test-requests.index');
-        Route::get('/dashboard/customers/{customer}/test-requests/create', [TestRequestController::class, 'createNew'])->name('dashboard.customers.test-requests.create');
+        Route::middleware('customer.visible')->group(function () {
+            Route::get('/dashboard/customers/{customer}/artifacts', [DashboardController::class, 'customerArtifacts'])->name('dashboard.customers.artifacts.index');
+            Route::get('/dashboard/customers/{customer}/add-artifact', [DashboardController::class, 'showAddArtifact'])->name('dashboard.customers.add-artifact');
+            Route::post('/dashboard/customers/{customer}/store-artifact', [DashboardController::class, 'storeArtifactForCustomer'])->name('dashboard.customers.store-artifact');
+            Route::get('/dashboard/customers/{customer}/quotes', [DashboardController::class, 'listCustomerQuotes'])->name('dashboard.customers.quotes');
+            Route::get('/dashboard/customers/{customer}/create-quote', [DashboardController::class, 'showCreateQuote'])->name('dashboard.customers.create-quote');
+            Route::post('/dashboard/customers/{customer}/store-quote', [DashboardController::class, 'storeQuote'])->name('dashboard.customers.store-quote');
+            Route::get('/dashboard/customers/{customer}/invoices', [DashboardController::class, 'listCustomerInvoices'])->name('dashboard.customers.invoices');
+            Route::get('/dashboard/customers/{customer}/create-invoice', [DashboardController::class, 'showCreateInvoice'])->name('dashboard.customers.create-invoice');
+            Route::post('/dashboard/customers/{customer}/store-invoice', [DashboardController::class, 'storeInvoice'])->name('dashboard.customers.store-invoice');
+            Route::get('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'showInvoice'])->name('dashboard.customers.invoices.show');
+            Route::get('/dashboard/customers/{customer}/invoices/{invoice}/edit', [DashboardController::class, 'editInvoice'])->name('dashboard.customers.invoices.edit');
+            Route::get('/dashboard/customers/{customer}/invoices/{invoice}/pdf', [DashboardController::class, 'downloadInvoicePdf'])->name('dashboard.customers.invoices.pdf');
+            Route::delete('/dashboard/customers/{customer}/invoices/{invoice}', [DashboardController::class, 'deleteInvoice'])->name('dashboard.customers.invoices.delete');
+            
+            // Test Request routes
+            Route::get('/dashboard/customers/{customer}/test-requests', [TestRequestController::class, 'listAllRequests'])->name('dashboard.customers.test-requests.index');
+            Route::get('/dashboard/customers/{customer}/test-requests/create', [TestRequestController::class, 'createNew'])->name('dashboard.customers.test-requests.create');
+            
+            // Legacy routes for backward compatibility
+            Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');
+        });
         Route::get('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'show'])->name('dashboard.test-requests.show');
         Route::post('/dashboard/test-requests/{testRequest}/artifacts', [TestRequestController::class, 'storeArtifact'])->name('dashboard.test-requests.store-artifact');
         Route::put('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'update'])->name('dashboard.test-requests.update');
@@ -109,9 +120,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
-        
-        // Legacy routes for backward compatibility
-        Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');
     });
 
     // Lab workflows from Items dashboard (print lab file, redelivery batches): allowed for lab + reception + admin (auth only).
@@ -252,9 +260,11 @@ Route::middleware(['auth'])->group(function () {
         }
     })->name('api.qoyod.invoices.delete');
     
-    Route::get('/dashboard/customers/{customer}', [DashboardController::class, 'showCustomer'])->name('dashboard.customers.show');
-    Route::put('/dashboard/customers/{customer}', [DashboardController::class, 'updateCustomer'])->name('dashboard.customers.update');
-    Route::delete('/dashboard/customers/{customer}', [DashboardController::class, 'deleteCustomer'])->name('dashboard.customers.delete');
+    Route::middleware('customer.visible')->group(function () {
+        Route::get('/dashboard/customers/{customer}', [DashboardController::class, 'showCustomer'])->name('dashboard.customers.show');
+        Route::put('/dashboard/customers/{customer}', [DashboardController::class, 'updateCustomer'])->name('dashboard.customers.update');
+        Route::delete('/dashboard/customers/{customer}', [DashboardController::class, 'deleteCustomer'])->name('dashboard.customers.delete');
+    });
     
     // Quote viewing routes
     Route::get('/dashboard/quotes/{quote}', [DashboardController::class, 'showQuote'])->name('dashboard.quotes.show');
