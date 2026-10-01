@@ -265,19 +265,32 @@
             border-bottom: 1px solid #333 !important;
         }
 
-        /* Terms & Conditions: readable + justified (matches formal document layout) */
+        /* Terms & Conditions: EN left/LTR, AR right/RTL (ignore page RTL flips) */
         .terms-conditions-print {
             font-size: 9px;
+            direction: ltr;
+        }
+
+        .terms-conditions-print thead th:first-child,
+        .terms-conditions-print tbody td:first-child {
+            direction: ltr !important;
+            text-align: left !important;
+            unicode-bidi: isolate;
+        }
+
+        .terms-conditions-print thead th:last-child,
+        .terms-conditions-print tbody td:last-child {
+            direction: rtl !important;
+            text-align: right !important;
+            unicode-bidi: isolate;
         }
 
         .terms-conditions-print tbody td {
             vertical-align: top !important;
-            text-align: justify !important;
             line-height: 1.45 !important;
         }
 
         .terms-conditions-print thead th {
-            text-align: center !important;
             font-size: 10px;
         }
 
@@ -737,7 +750,7 @@
         @if(empty($labDeliveryFile))
         <div style="margin-top: 15px;">
             <div class="section-title">الشروط والأحكام | Terms and Conditions</div>
-            <table class="items-table terms-conditions-print">
+            <table class="items-table terms-conditions-print" dir="ltr">
                 <thead>
                     <tr style="background-color: #f3f4f6;">
                         <th style="width: 50%; text-align: left; padding: 8px;">Terms and Conditions:</th>
@@ -748,75 +761,91 @@
                     <!-- Term 1 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            IDG Laboratory Reports provide an independent, professional opinion on the characteristics of the submitted item(s) at the time of examination. Reports are not guarantees, valuations, or appraisals, consistent with international laboratory standards. Reports represent the expert judgment of qualified gemologists using advanced instrumentation and internationally accepted grading systems. IDG examines items as received, without altering, cleaning, or removing settings. Where full access to all facets or inclusions is prevented by mounting, grading accuracy may be affected. In such cases, the Laboratory is not responsible for any limitations affecting the examination results.
+                            IDG Laboratory Reports represent an independent professional opinion based on non-destructive examinations performed on the submitted item(s) as received, using advanced laboratory equipment and the expert judgment of qualified gemologists. Reports are not guarantees, appraisals, or valuations. IDG Laboratory does not alter, clean, or remove settings without the Client's prior written authorization. Where the condition or mounting of an item limits examination, such limitations will be stated in the report, and IDG Laboratory shall not be liable for any resulting impact on the accuracy of the findings.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            يصدر مختبر IDG تقارير تتضمن رأيًا مهنيًا مستقلًا بشأن خصائص القطعة أو القطع المقدمة، وذلك في وقت إجراء الفحص. ولا تُعدّ هذه التقارير ضمانًا، كما لا تُعتبر تحديدًا للقيمة أو تقييمًا سعريًا، وذلك بما يتوافق مع معايير المختبرات الدولية.<br><br>
-                            وتعكس هذه التقارير خبرة وتقدير أخصائيي الأحجار الكريمة المؤهلين، اعتمادًا على أجهزة متطورة وأنظمة تصنيف معترف بها دوليًا. ويقوم المختبر بفحص القطع بالحالة التي تُرد بها، دون إجراء أي تعديل أو تنظيف أو فكّ للتثبيت.<br><br>
-                            وفي حال تعذّر الوصول الكامل إلى جميع الأوجه أو الشوائب بسبب وجود التثبيت، فقد تتأثر دقة التصنيف. وفي مثل هذه الحالات، لا يتحمل المختبر مسؤولية أي قيود تؤثر في نتائج الفحص.
+                            تمثل تقارير مختبر IDG رأياً فنياً مستقلاً يستند إلى الفحص غير الإتلافي للعينات المقدمة بالحالة التي استلمها بها المختبر، وذلك باستخدام أجهزة مخبرية متقدمة والخبرة المهنية لأخصائيي الأحجار الكريمة المؤهلين. ولا تُعد هذه التقارير ضماناً أو تقييماً مالياً أو تثميناً للقيمة. لا يقوم مختبر IDG بتعديل أو تنظيف أو فك الأحجار أو أجزاء المجوهرات دون الحصول على موافقة خطية مسبقة من العميل. وفي حال كانت حالة العينة أو طريقة تركيبها تحد من إمكانية الفحص، فسيتم توضيح هذه القيود في التقرير، ولا يتحمل مختبر IDG أي مسؤولية عن أي تأثير قد تسببه تلك القيود على دقة أو شمولية نتائج الفحص.
                         </td>
                     </tr>
                     <!-- Term 2 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            IDG Laboratory may issue a Certificate/Report upon the client’s request only when the tested Stone(s), Diamond(s), and/or Jewellery are determined to be of natural origin.
+                            IDG Laboratory issues Certificates / Reports only for items determined to be of natural origin. If examination indicates a synthetic origin, undisclosed treatment, or inconclusive results using non-destructive methods, IDG may issue a report stating the findings and any limitations or provide a Verification Letter. Any identified treatments will be disclosed in the Comments section of the report. IDG Laboratory shall not be liable for any consequences resulting from the Client's decision not to authorize additional testing.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            يصدر مختبر IDG شهادة أو تقرير للقطع المقدمة بناءً على طلب العميل، وذلك فقط عندما يثبت الفحص أن الأحجار أو الألماس و/أو المجوهرات المقدمة ذات منشأ طبيعي.
+                            يصدر مختبر IDG الشهادات أو التقارير فقط للعينات التي يثبت أنها ذات منشأ طبيعي. وإذا أظهر الفحص أن العينة ذات منشأ صناعي، أو تحتوي على معالجة غير مفصح عنها، أو تعذر التوصل إلى نتيجة حاسمة باستخدام طرق الفحص غير الإتلافية، فيجوز للمختبر إصدار تقرير يوضح نتائج الفحص والقيود ذات الصلة، أو إصدار خطاب تحقق حسب الحالة. يتم الإفصاح عن أي معالجات يتم اكتشافها في قسم الملاحظات في التقرير. ولا يتحمل مختبر IDG أي مسؤولية عن أي نتائج أو تبعات تترتب على قرار العميل بعدم الموافقة على إجراء اختبارات إضافية عند الحاجة.
                         </td>
                     </tr>
                     <!-- Term 3 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            The submitted Stone(s), Diamond(s), and/or Jewellery represent only the specific item(s) examined and will be returned to the client together with the issued Certificate/Report, unless the client requests otherwise. The Laboratory bears no responsibility for the origin, ownership, or source of the submitted item(s). The client confirms that the submitted item is legally owned and free of disputes.
+                            The Client warrants that all submitted stone(s), diamond(s), jewellery, or articles are lawfully owned or submitted with the owner's authorization and are free from legal claims or disputes. IDG Laboratory's findings and Certificates/Reports apply only to the specific item(s) examined. Unless otherwise instructed in writing, the examined item(s) will be returned with the issued Certificate/Report. IDG Laboratory accepts no liability for the origin, ownership, or any legal disputes relating to the submitted item(s). The Client shall indemnify IDG Laboratory against any claims arising from false or incomplete ownership declarations.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            الأحجار أو الألماس أو المجوهرات المقدمة تمثل فقط العناصر المحددة التي تم فحصها وسيتم إعادتها للعميل مع الشهادة/التقرير الصادر، ما لم يطلب العميل خلاف ذلك. لا يتحمل المختبر أي مسؤولية عن أصل أو ملكية أو مصدر العنصر المقدم. يؤكد العميل أن المنتج المقدم مملوك قانونيا وخالي من النزاعات.
+                            يقر العميل ويضمن أن جميع الأحجار الكريمة أو الألماس أو المجوهرات أو القطع المقدمة مملوكة له ملكية نظامية أو تم تقديمها بموافقة وتفويض من مالكها، وأنها خالية من أي مطالبات أو نزاعات قانونية. وتنطبق نتائج الفحص والشهادات أو التقارير الصادرة عن مختبر IDG حصرياً على العينة أو العينات التي تم فحصها. وما لم يوجه العميل تعليمات خطية بخلاف ذلك، فسيتم إعادة العينة أو العينات المفحوصة مع الشهادة أو التقرير الصادر. ولا يتحمل مختبر IDG أي مسؤولية تتعلق بمنشأ العينة أو ملكيتها أو أي مطالبات أو نزاعات قانونية مرتبطة بها. كما يلتزم العميل بتعويض وإبراء ذمة مختبر IDG من أي مطالبات أو مسؤوليات تنشأ نتيجة تقديم معلومات غير صحيحة أو غير مكتملة بشأن ملكية العينة أو صلاحية تقديمها للمختبر.
                         </td>
                     </tr>
                     <!-- Term 4 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            Any information provided to the Laboratory that originates from sources other than the client shall be treated as confidential and shall remain the exclusive property of the original source. Such information shall not be disclosed or used by the Laboratory without the prior written consent of the original source.
+                            Any information, documents, or materials provided to IDG Laboratory by a source other than the Client shall remain the confidential property of the original source. IDG Laboratory shall not disclose or use such information except as necessary to perform the requested services, with the original source's written authorization, or as required by law. The Client warrants that they are authorized to submit any third-party information and agrees to indemnify IDG Laboratory against any claims arising from unauthorized submission of such information. Unless otherwise instructed in writing, IDG Laboratory will return the examined item(s) with the issued Report(s). The Client must collect the item(s) within ninety (90) days of the Report issuance date. Unclaimed items may be subject to storage fees. Items remaining unclaimed for two (2) years may be disposed of in accordance with applicable law after reasonable attempts to contact the Client. IDG Laboratory shall not be liable for any loss or damage resulting from storage or the Client's failure to collect the item(s).
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            أي معلومات تقدم للمختبر وتنشأ من مصادر غير العميل ستعامل بسرية وتظل ملكية حصرية للمصدر الأصلي. لا يجوز الكشف عن هذه المعلومات أو استخدامها من قبل المختبر دون موافقة خطية مسبقة من المصدر الأصلي.
+                            تظل أي معلومات أو مستندات أو مواد يتم تزويد مختبر IDG بها من قبل جهة غير العميل ملكاً سرياً للجهة الأصلية المقدمة لها. ولا يجوز لمختبر IDG الإفصاح عن تلك المعلومات أو استخدامها إلا بالقدر اللازم لتنفيذ الخدمات المطلوبة، أو بموجب موافقة خطية من الجهة الأصلية، أو إذا كان ذلك مطلوباً بموجب الأنظمة واللوائح المعمول بها. ويقر العميل ويضمن أنه مخول نظاماً بتقديم أي معلومات أو مستندات تخص أطرافاً أخرى، كما يلتزم بتعويض وإبراء ذمة مختبر IDG من أي مطالبات أو مسؤوليات تنشأ نتيجة تقديم معلومات أو مستندات تخص الغير دون الحصول على التفويض أو الصلاحية. ما لم يوجه العميل تعليمات خطية بخلاف ذلك، سيقوم مختبر IDG بإعادة العينة أو العينات المفحوصة مع التقرير أو التقارير الصادرة. ويلتزم العميل باستلام العينة أو العينات خلال تسعين (90) يوماً من تاريخ إصدار التقرير. ويجوز للمختبر فرض رسوم تخزين على العينات التي لا يتم استلامها خلال هذه المدة. أما العينات التي تبقى دون استلام لمدة سنتين (2)، فيجوز للمختبر التصرف فيها وفقاً للأنظمة واللوائح المعمول بها، وذلك بعد بذل محاولات معقولة للتواصل مع العميل. ولا يتحمل مختبر IDG أي مسؤولية عن أي خسائر أو أضرار تنتج عن التخزين أو فشل العميل في استلام العينة أو العينات.
                         </td>
                     </tr>
                     <!-- Term 5 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            All tested item(s) shall be returned to the client together with the Report(s). The client is required to collect the item(s) within ninety (90) days from the date of report issuance. Should the item(s) remain uncollected beyond this period, the Laboratory reserves the right, at its sole discretion, to charge a storage fee, retain the item(s) for research or educational purposes, or dispose of the item(s) without any further notice or liability to the client.
+                            IDG Lab's delivery timelines are estimates only. Turnaround may be delayed due to sample condition, extra analyses, client-approved work, specialist referrals, instrument downtime, logistics, customs, or force majeure. If a material delay occurs, the Lab will notify the client with a revised estimate. IDG Lab accepts no liability for any loss or cost arising from such delays unless otherwise agreed in writing.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            يجب إعادة جميع العناصر المختبرة إلى العميل مع التقرير. يطلب من العميل استلام العناصر خلال (90) يوما من تاريخ إصدار التقرير. إذا بقيت العناصر غير المستلمة بعد هذه الفترة، يحتفظ المختبر بالحق، حسب تقديره الوحيد، في فرض رسوم تخزين، أو الاحتفاظ بالعناصر لأغراض البحث أو التعليم، أو التخلص من العناصر دون أي إشعار أو مسؤولية إضافية تجاه العميل.
+                            تُعد المدد الزمنية التي يحددها مختبر IDG لإنجاز الخدمات تقديرية فقط، وقد تتأخر عملية إصدار النتائج أو التقارير بسبب حالة العينة، أو الحاجة إلى إجراء تحاليل إضافية، أو أعمال يوافق عليها العميل، أو إحالة العينة إلى متخصصين، أو تعطل الأجهزة، أو مشكلات النقل أو التخليص الجمركي، أو حالات القوة القاهرة. وفي حال حدوث تأخير جوهري، سيقوم المختبر بإبلاغ العميل وتزويده بمدة زمنية تقديرية محدثة لإنجاز الخدمة. ولا يتحمل مختبر IDG أي مسؤولية عن أي خسائر أو تكاليف تنشأ نتيجة هذا التأخير، ما لم يتم الاتفاق على خلاف ذلك بموجب اتفاقية خطية.
                         </td>
                     </tr>
                     <!-- Term 6 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            Delivery timelines provided by the Laboratory are estimates only. In the event of any delay, the Laboratory will notify the client accordingly.
+                            The Client acknowledges that IDG Laboratory performs non-destructive examinations only. All findings, Certificates, Reports, and Verification Letters are based solely on non-destructive analyses and the professional judgment of qualified gemologists. IDG Laboratory does not warrant results that require destructive testing. Any destructive or invasive testing will only be performed with the Client's prior written authorization under a separate written agreement.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            جداول التسليم للتقارير التي يحددها المختبر هي تقديرات فقط. في حال حدوث أي تأخير، سيقوم المختبر بإبلاغ العميل بناء على ذلك.
+                            يقر العميل بأن مختبر IDG يجري الفحوصات باستخدام طرق غير إتلافية فقط. وتستند جميع النتائج والشهادات والتقارير وخطابات التحقق الصادرة عن المختبر حصرياً إلى الفحوصات غير الإتلافية وإلى الرأي المهني لأخصائيي الأحجار الكريمة المؤهلين. ولا يضمن مختبر IDG أي نتائج تتطلب إجراء اختبارات إتلافية. ولا يجوز إجراء أي اختبار إتلافي أو تدخل في العينة إلا بعد الحصول على موافقة خطية مسبقة من العميل وبموجب اتفاقية خطية منفصلة.
                         </td>
                     </tr>
                     <!-- Term 7 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            Submission of any item to IDG constitutes acceptance of these Terms &amp; Conditions. For more about IDGL’s terms and conditions, please visit our website. https://idg-lab.com.sa/
+                            The IDG report bears the IDG Laboratory / SAAC / ILAC accreditation mark. The Client shall not reproduce, alter, edit, or use this report, any part of it, or the accreditation mark for advertising or promotional purposes without IDG Laboratory's prior written approval. IDG Laboratory reserves the right to declare a report void if unauthorized reproduction, alteration, or misuse is detected.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            تقديم أي عنصر إلى IDG يعد قبولا لهذه الشروط والأحكام. لمزيد من المعلومات حول شروط وأحكام IDGL، يرجى زيارة موقعنا الإلكتروني. https://idg-lab.com.sa
+                            يحمل تقرير IDG شعار اعتماد مختبر IDG و SAAC و ILAC. ولا يجوز للعميل نسخ هذا التقرير أو إعادة إنتاجه أو تعديله أو تحريره أو استخدامه، كلياً أو جزئياً، أو استخدام شعار الاعتماد لأغراض إعلانية أو ترويجية دون الحصول على موافقة خطية مسبقة من مختبر IDG. ويحتفظ مختبر IDG بحقه في اعتبار التقرير لاغياً إذا تبين وجود أي نسخ أو تعديل أو استخدام غير مصرح به للتقرير أو لشعار الاعتماد.
                         </td>
                     </tr>
-                    <!-- Term 8 — declaration -->
+                    <!-- Term 8 -->
                     <tr class="terms-conditions-row">
                         <td style="padding: 8px 6px;">
-                            I/We acknowledge and agree to the Laboratory’s special terms governing the examination and certification/report of Diamond(s), Coloured Stone(s), Jewellery, and Precious Metal(s). By submitting the above-mentioned item(s), I/We confirm that they are deposited under these stated conditions, and my/our signature constitutes full acceptance of these terms.
+                            Mounted items are examined at IDG Laboratory's discretion and only to the extent permitted by their setting. Some tests or measurements may be limited or not possible, and the report will state any examination limitations. IDG Laboratory shall not be liable for any reduction in accuracy resulting from such limitations.
                         </td>
                         <td style="padding: 8px 6px;" dir="rtl">
-                            أقر وأوافق على الشروط الخاصة بالمختبر التي تحكم فحص واعتماد/تقرير الألماس (أو الأحجار) الملونة، والمجوهرات، والمعادن الثمينة. من خلال تقديم العنصر المذكور أعلاه، أؤكد أنا/نحن أنها مودعة بموجب هذه الشروط، وتوقيعي يشكل قبولا كاملا لهذه الشروط.
+                            يتم فحص القطع المركبة (المجوهرات المثبت بها أحجار) وفقاً لتقدير مختبر IDG، وبالقدر الذي تسمح به طريقة التركيب. وقد تكون بعض الاختبارات أو القياسات محدودة أو غير ممكنة بسبب التركيب، وسيتم توضيح جميع قيود الفحص في التقرير. ولا يتحمل مختبر IDG أي مسؤولية عن أي انخفاض في دقة النتائج أو محدودية الاستنتاجات الناتجة عن هذه القيود.
+                        </td>
+                    </tr>
+                    <!-- Term 9 -->
+                    <tr class="terms-conditions-row">
+                        <td style="padding: 8px 6px;">
+                            IDG Lab does not accept articles that are plated, coated, laminated or filled, as these fall outside the scope of ISO 23345:2021. Where coating or non-homogeneity is detected or suspected during the pre-test check, testing is stopped and the item is returned to the customer with the reason recorded. All reports state that results relate only to the items tested and to the surface analysed.
+                        </td>
+                        <td style="padding: 8px 6px;" dir="rtl">
+                            لا يقبل مختبر IDG القطع المطلية أو المغطاة أو المصفحة أو المملوءة، لكونها تقع خارج نطاق تطبيق المواصفة ISO 23345:2021. وفي حال اكتشاف أو الاشتباه بوجود طلاء أو عدم تجانس في العينة أثناء الفحص الأولي قبل الاختبار، يتم إيقاف الفحص وإعادة القطعة إلى العميل، مع توثيق سبب الرفض. وتنص جميع التقارير على أن نتائج الفحص تنطبق فقط على العينة أو القطعة التي تم اختبارها، وعلى السطح الذي تم تحليله.
+                        </td>
+                    </tr>
+                    <!-- Term 10 — acknowledgement -->
+                    <tr class="terms-conditions-row">
+                        <td style="padding: 8px 6px;">
+                            By submitting the item(s), I/We acknowledge and accept IDG Laboratory's Terms and Conditions governing the examination, testing, and issuance of Certificates/Reports for Diamonds, Coloured Stones, Jewellery, and Precious Metals. My/Our signature on this submission form constitutes full and binding acceptance of these Terms and Conditions. All applicable terms and conditions are available on our official website: idg.sa.
+                        </td>
+                        <td style="padding: 8px 6px;" dir="rtl">
+                            يُعد تقديم العينة أو العينات إلى مختبر IDG إقراراً/نقراً بأنني/بأننا قد اطلعنا على الشروط والأحكام الخاصة بالمختبر، وأوافق/نوافق عليها، والتي تنظم إجراءات الفحص والاختبار وإصدار الشهادات والتقارير الخاصة بالألماس والأحجار الكريمة الملونة والمجوهرات والمعادن الثمينة. ويعد توقيعي/توقيعنا على نموذج تقديم العينات موافقة نهائية وملزمة على جميع هذه الشروط والأحكام. جميع الشروط والأحكام المعمول بها متاحة على موقعنا الإلكتروني idg.sa.
                         </td>
                     </tr>
                 </tbody>
