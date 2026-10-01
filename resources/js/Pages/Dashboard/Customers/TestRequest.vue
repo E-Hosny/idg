@@ -131,6 +131,38 @@
           </div>
         </div>
 
+        <!-- Draft status + confirm (matches document chrome; single confirm CTA) -->
+        <div
+          v-if="isDraft"
+          class="mb-6 print:hidden border-2 border-gray-400 bg-white px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div class="flex items-start gap-3 text-left sm:text-start">
+            <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center border border-gray-400 bg-gray-100 text-gray-700">
+              <i class="fas fa-file-alt"></i>
+            </span>
+            <div>
+              <p class="text-base font-semibold text-black">
+                Draft | مسودة
+              </p>
+              <p class="text-sm text-gray-600 mt-1 max-w-2xl">
+                Confirm when ready to submit as pending and notify the lab.
+                | أكّد عند الجاهزية لاعتماده معلّقاً وإشعار المختبر.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            @click="confirmTestRequest"
+            :disabled="confirming"
+            class="inline-flex items-center justify-center px-8 py-3 bg-green-700 text-white text-lg font-semibold hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-60 transition-colors duration-200 shadow-md hover:shadow-lg shrink-0"
+          >
+            <i class="fas fa-check mr-3 text-xl"></i>
+            <span>{{ confirming ? 'Confirming...' : 'Confirm Request' }}</span>
+            <span class="mx-3">|</span>
+            <span>{{ confirming ? 'جارٍ الاعتماد...' : 'اعتماد الطلب' }}</span>
+          </button>
+        </div>
+
         <!-- Action Buttons - Hidden when printing -->
         <div class="text-center border-t-2 border-gray-300 pt-6 print:hidden">
           <div class="flex justify-center gap-4 flex-wrap">
@@ -837,10 +869,14 @@ export default {
     localizedPreciousMetalsSubtypeOptions() {
       return getPreciousMetalsSubtypeOptions(this.$page.props.locale === 'ar' ? 'ar' : 'en')
     },
+    isDraft() {
+      return this.testRequest?.status === 'draft'
+    },
   },
   data() {
     return {
       editingTestRequest: false,
+      confirming: false,
       editTestRequestData: {
         received_in: '',
         delivery_date: '',
@@ -916,6 +952,21 @@ export default {
           }
         })
       }
+    },
+
+    confirmTestRequest() {
+      if (!this.testRequest?.id || this.confirming || !this.isDraft) {
+        return
+      }
+      if (!confirm('اعتماد الطلب؟ سيتم إرسال الإشعارات للمختبر.\nConfirm this request? Lab notifications will be sent.')) {
+        return
+      }
+      this.confirming = true
+      this.$inertia.post(`/dashboard/test-requests/${this.testRequest.id}/confirm`, {}, {
+        onFinish: () => {
+          this.confirming = false
+        }
+      })
     },
     
     addArtifact() {

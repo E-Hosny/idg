@@ -742,6 +742,7 @@ export default {
     },
     getStatusClass(status) {
       const classes = {
+        'draft': 'bg-gray-100 text-gray-800',
         'pending': 'bg-yellow-100 text-yellow-800',
         'under_evaluation': 'bg-blue-100 text-blue-800',
         'evaluated': 'bg-purple-100 text-purple-800',
@@ -753,6 +754,7 @@ export default {
     },
     getStatusLabel(status) {
       const labels = {
+        'draft': 'مسودة | Draft',
         'pending': 'قيد الانتظار | Pending',
         'under_evaluation': 'قيد التقييم | Under Evaluation',
         'evaluated': 'تم التقييم | Evaluated',

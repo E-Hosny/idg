@@ -32,8 +32,9 @@ class TestRequestController extends Controller
                     ->withErrors(['error' => 'Customer not found in Qoyod.']);
             }
 
-            // Get all test requests for this customer
+            // Get confirmed test requests only (drafts are hidden until approved)
             $testRequests = TestRequest::where('qoyod_customer_id', $customerId)
+                ->where('status', '!=', 'draft')
                 ->with(['redeliveries' => fn ($q) => $q->orderByDesc('id')])
                 ->withCount([
                     'artifacts as pending_pieces_count' => function ($q) {
@@ -73,12 +74,12 @@ class TestRequestController extends Controller
     }
 
     /**
-     * Create a new test request for a customer
+     * Open a draft test request for a customer (no notifications until confirmed).
      */
     public function createNew($customerId)
     {
         try {
-            \Log::info('Creating new test request for customer', ['customer_id' => $customerId]);
+            \Log::info('Opening draft test request for customer', ['customer_id' => $customerId]);
             
             // Get customer info from Qoyod
             $qoyodService = new QoyodService();
@@ -90,30 +91,30 @@ class TestRequestController extends Controller
                     ->withErrors(['error' => 'Customer not found in Qoyod.']);
             }
 
-            // Create new test request
-            $testRequest = TestRequest::create([
-                'qoyod_customer_id' => $customerId,
-                'receiving_record_no' => TestRequest::generateReceivingRecordNo(),
-                'received_date' => now()->toDateString(),
-                'received_in' => 'الرياض',
-                'received_by' => auth()->user() ? auth()->user()->name : null,
-                'status' => 'pending'
-            ]);
-            
-            \Log::info('Created new test request', ['test_request' => $testRequest]);
+            // Reuse an existing unfinished draft for this customer when available
+            $testRequest = TestRequest::where('qoyod_customer_id', $customerId)
+                ->where('status', 'draft')
+                ->orderByDesc('id')
+                ->first();
 
-            app(WorkflowNotificationService::class)->notifyLab(
-                'test_request_created',
-                $testRequest,
-                auth()->user()
-            );
+            if (! $testRequest) {
+                $testRequest = TestRequest::create([
+                    'qoyod_customer_id' => $customerId,
+                    'receiving_record_no' => TestRequest::generateReceivingRecordNo(),
+                    'received_date' => now()->toDateString(),
+                    'received_in' => 'الرياض',
+                    'received_by' => auth()->user() ? auth()->user()->name : null,
+                    'status' => 'draft',
+                ]);
 
-            // Redirect to the new test request
+                \Log::info('Created draft test request', ['test_request_id' => $testRequest->id]);
+            }
+
             return redirect()->route('dashboard.test-requests.show', $testRequest->id)
-                ->with('success', 'تم إنشاء طلب اختبار جديد بنجاح! | New test request created successfully!');
+                ->with('success', 'مسودة طلب اختبار جاهزة للتعبئة. اضغط اعتماد عند الانتهاء. | Draft ready — confirm when finished.');
 
         } catch (\Exception $e) {
-            \Log::error('Error creating new test request', [
+            \Log::error('Error creating draft test request', [
                 'customer_id' => $customerId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -121,6 +122,43 @@ class TestRequestController extends Controller
 
             return redirect()->back()
                 ->withErrors(['error' => 'An error occurred while creating test request.']);
+        }
+    }
+
+    /**
+     * Confirm a draft test request: mark as pending and notify lab.
+     */
+    public function confirm(TestRequest $testRequest)
+    {
+        try {
+            if ($testRequest->status !== 'draft') {
+                return redirect()->route('dashboard.test-requests.show', $testRequest->id)
+                    ->withErrors(['error' => 'هذا الطلب معتمد مسبقاً | This request is already confirmed.']);
+            }
+
+            $testRequest->update(['status' => 'pending']);
+
+            app(WorkflowNotificationService::class)->notifyLab(
+                'test_request_created',
+                $testRequest->fresh(),
+                auth()->user()
+            );
+
+            \Log::info('Test request confirmed', [
+                'test_request_id' => $testRequest->id,
+                'confirmed_by' => auth()->id(),
+            ]);
+
+            return redirect()->route('dashboard.customers.test-requests.index', $testRequest->qoyod_customer_id)
+                ->with('success', 'تم اعتماد طلب الاختبار وإرسال الإشعارات | Test request confirmed and notifications sent.');
+        } catch (\Exception $e) {
+            \Log::error('Error confirming test request', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to confirm test request.']);
         }
     }
 
@@ -223,9 +261,16 @@ class TestRequestController extends Controller
             $validated = $request->validate([
                 'received_in' => 'nullable|string|max:255',
                 'delivery_date' => 'nullable|date',
-                'status' => 'required|in:pending,under_evaluation,evaluated,certified,delivered',
+                'status' => 'required|in:draft,pending,under_evaluation,evaluated,certified,delivered,signed',
                 'notes' => 'nullable|string'
             ]);
+
+            // Drafts stay drafts until explicitly confirmed via confirm()
+            if ($testRequest->status === 'draft') {
+                $validated['status'] = 'draft';
+            } elseif (($validated['status'] ?? null) === 'draft') {
+                unset($validated['status']);
+            }
 
             $testRequest->update($validated);
 

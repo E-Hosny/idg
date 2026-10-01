@@ -114,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/dashboard/customers/{customer}/test-request', [TestRequestController::class, 'legacyShow'])->name('dashboard.customers.test-request');
         });
         Route::get('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'show'])->name('dashboard.test-requests.show');
+        Route::post('/dashboard/test-requests/{testRequest}/confirm', [TestRequestController::class, 'confirm'])->name('dashboard.test-requests.confirm');
         Route::post('/dashboard/test-requests/{testRequest}/artifacts', [TestRequestController::class, 'storeArtifact'])->name('dashboard.test-requests.store-artifact');
         Route::put('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'update'])->name('dashboard.test-requests.update');
         Route::delete('/dashboard/test-requests/{testRequest}', [TestRequestController::class, 'destroy'])->name('dashboard.test-requests.destroy');

@@ -86,6 +86,7 @@ class DashboardController extends Controller
         ];
 
         $query = TestRequest::query()
+            ->where('status', '!=', 'draft')
             ->whereHas('artifacts')
             ->with(['redeliveries' => fn ($q) => $q->orderByDesc('id')])
             ->withCount([
