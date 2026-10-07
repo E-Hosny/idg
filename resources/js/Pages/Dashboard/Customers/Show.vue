@@ -77,6 +77,10 @@
                 <div class="text-base text-gray-900">{{ customer?.organization || '-' }}</div>
               </div>
               <div>
+                <div class="text-sm font-medium text-gray-500">{{ $t('messages.Company Representative Name') }}</div>
+                <div class="text-base text-gray-900">{{ customer?.company_representative_name || '-' }}</div>
+              </div>
+              <div>
                 <div class="text-sm font-medium text-gray-500">{{ __('Customer Code') }}</div>
                 <div class="text-base text-gray-900" dir="ltr">{{ customer?.code || customer?.id || '-' }}</div>
               </div>

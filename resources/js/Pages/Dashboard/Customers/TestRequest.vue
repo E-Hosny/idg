@@ -104,14 +104,6 @@
                     </div>
                   </div>
                   
-                  <!-- Received By -->
-                  <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-bold text-black text-base print:text-sm">{{ __('Received By') }}</span>
-                      <span class="text-black text-lg print:text-sm font-medium">{{ received_by || '-' }}</span>
-                    </div>
-                  </div>
-                  
                   <!-- Received In -->
                   <div class="bg-gray-50 border border-gray-300 p-3 print:p-2">
                     <div class="flex items-center justify-between">
@@ -427,8 +419,8 @@
         </div>
 
         <!-- Delivery Documentation: 2×6 grid (matches print form) -->
-        <div class="bg-white shadow-lg print:shadow-none mb-6 print:mb-3 overflow-hidden">
-          <table class="w-full border-collapse border-2 border-black delivery-doc-table" dir="ltr">
+        <div class="bg-white shadow-lg print:shadow-none mb-6 print:mb-3 overflow-hidden print:overflow-visible">
+          <table class="w-full border-collapse border-2 border-black delivery-doc-table page-break-inside-avoid" dir="ltr">
             <thead>
               <tr>
                 <th
@@ -442,21 +434,23 @@
             <tbody>
               <tr>
                 <td
-                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle w-[15%]"
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-center align-middle w-[15%]"
                 >
                   Delivered by:<br />سلّم بواسطة
                 </td>
-                <td class="border border-black p-2 print:p-1.5 align-middle min-h-[3rem] print:min-h-[2.5rem] w-[17%] bg-white" />
+                <td class="border border-black p-2 print:p-1.5 align-middle min-h-[3rem] print:min-h-[2.5rem] w-[17%] bg-white text-sm print:text-xs font-medium text-black text-center">
+                  {{ customer?.company_representative_name || '-' }}
+                </td>
                 <td
-                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle w-[13%]"
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-center align-middle w-[13%]"
                 >
                   Signature:<br />التوقيع
                 </td>
-                <td class="border border-black p-2 print:p-1.5 align-middle w-[20%] bg-white">
-                  <div class="min-h-[3.5rem] print:min-h-[2.75rem] bg-white border border-black border-opacity-30" />
+                <td class="border border-black p-2 print:p-1.5 align-middle w-[20%] bg-white text-center">
+                  <div class="min-h-[3.5rem] print:min-h-[2.75rem] bg-white border border-black border-opacity-30 mx-auto" />
                 </td>
                 <td
-                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle w-[12%]"
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-center align-middle w-[12%]"
                 >
                   Date:<br />التاريخ
                 </td>
@@ -468,19 +462,21 @@
               </tr>
               <tr>
                 <td
-                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle"
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-center align-middle"
                 >
                   Received by:<br />أستلم بواسطة
                 </td>
-                <td class="border border-black p-2 print:p-1.5 align-middle min-h-[3rem] bg-white" />
+                <td class="border border-black p-2 print:p-1.5 align-middle min-h-[3rem] bg-white text-sm print:text-xs font-medium text-black text-center">
+                  {{ received_by || testRequest?.received_by || '-' }}
+                </td>
                 <td
-                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle"
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-center align-middle"
                 >
                   Signature:<br />التوقيع
                 </td>
                 <td class="border border-black p-2 print:p-1.5 align-middle bg-white text-center">
                   <div
-                    class="min-h-[3.5rem] print:min-h-[2.75rem] bg-white border border-black border-opacity-30 flex items-center justify-center p-1"
+                    class="min-h-[3.5rem] print:min-h-[2.75rem] bg-white border border-black border-opacity-30 flex items-center justify-center p-1 mx-auto"
                   >
                     <img
                       src="/maram_sign.png"
@@ -490,7 +486,7 @@
                   </div>
                 </td>
                 <td
-                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-left align-middle"
+                  class="border border-black p-2 print:p-1.5 font-bold text-black text-sm print:text-xs font-serif text-center align-middle"
                 >
                   Date:<br />التاريخ
                 </td>
@@ -1653,8 +1649,24 @@ export default {
     background: #f5f5f5 !important;
   }
 
+  .delivery-doc-table {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .delivery-doc-table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
   .delivery-doc-table .delivery-doc-heading {
     background: #f5f5f5 !important;
+  }
+
+  .delivery-doc-table img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    max-height: 40px !important;
   }
 
   /* Document header strip (screen design preserved in print) */

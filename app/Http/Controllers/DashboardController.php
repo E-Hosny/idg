@@ -10,6 +10,7 @@ use App\Models\ArtifactEvaluation;
 use App\Models\DiamondEvaluation;
 use App\Models\User;
 use App\Models\HiddenQoyodCustomer;
+use App\Models\QoyodCustomerProfile;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Services\PricingService;
@@ -890,6 +891,7 @@ class DashboardController extends Controller
             $meta = $response['meta'] ?? [];
 
             $customers = $this->filterVisibleCustomers($customers);
+            $customers = $this->mergeLocalCustomerProfiles($customers);
             $meta['total'] = count($customers);
             
             return Inertia::render('Dashboard/Customers/Index', [
@@ -1004,6 +1006,8 @@ class DashboardController extends Controller
                     ->withErrors(['error' => 'Customer not found in Qoyod.']);
             }
 
+            $customer = $this->mergeLocalCustomerProfile($customer);
+
             // Get basic statistics for this customer
             $artifactsCount = \App\Models\Artifact::where('qoyod_customer_id', $customerId)->count();
             
@@ -1090,10 +1094,14 @@ class DashboardController extends Controller
                 'government_entity' => 'nullable|boolean',
                 'allow_credit' => 'nullable|boolean',
                 'notes' => 'nullable|string|max:1000',
+                'company_representative_name' => 'nullable|string|max:255',
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
+
+            $companyRepresentativeName = $validatedData['company_representative_name'] ?? null;
+            unset($validatedData['company_representative_name']);
 
             // Convert boolean fields
             $validatedData['pos'] = $request->boolean('pos');
@@ -1107,6 +1115,11 @@ class DashboardController extends Controller
             $result = $qoyodService->createCustomer($validatedData);
 
             if ($result) {
+                $qoyodCustomerId = $this->resolveQoyodCustomerIdFromApiPayload($result);
+                if ($qoyodCustomerId) {
+                    QoyodCustomerProfile::upsertForCustomer($qoyodCustomerId, $companyRepresentativeName);
+                }
+
                 return redirect()->route('dashboard.customers')
                     ->with('success', 'تم إنشاء العميل بنجاح في قيود!');
             } else {
@@ -1158,10 +1171,14 @@ class DashboardController extends Controller
                 'government_entity' => 'nullable|boolean',
                 'allow_credit' => 'nullable|boolean',
                 'notes' => 'nullable|string|max:1000',
+                'company_representative_name' => 'nullable|string|max:255',
             ], [
                 'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
                 'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
             ]);
+
+            $companyRepresentativeName = $validatedData['company_representative_name'] ?? null;
+            unset($validatedData['company_representative_name']);
 
             // Convert boolean fields
             $validatedData['pos'] = $request->boolean('pos');
@@ -1175,6 +1192,8 @@ class DashboardController extends Controller
             $result = $qoyodService->updateCustomer($customerId, $validatedData);
 
             if ($result) {
+                QoyodCustomerProfile::upsertForCustomer((int) $customerId, $companyRepresentativeName);
+
                 return redirect()->route('dashboard.customers')
                     ->with('success', 'Customer updated successfully in Qoyod!');
             } else {
@@ -1201,6 +1220,10 @@ class DashboardController extends Controller
             $result = $qoyodService->deleteCustomer($customerId);
 
             if ($result) {
+                QoyodCustomerProfile::query()
+                    ->where('qoyod_customer_id', (int) $customerId)
+                    ->delete();
+
                 return redirect()->route('dashboard.customers')
                     ->with('success', 'Customer deleted successfully from Qoyod!');
             } else {
@@ -3602,5 +3625,52 @@ class DashboardController extends Controller
             $customers,
             fn ($customer) => ! in_array((int) ($customer['id'] ?? 0), $hiddenIds, true)
         ));
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $customers
+     * @return list<array<string, mixed>>
+     */
+    private function mergeLocalCustomerProfiles(array $customers): array
+    {
+        $ids = array_map(fn ($customer) => (int) ($customer['id'] ?? 0), $customers);
+        $names = QoyodCustomerProfile::representativeNamesByCustomerIds($ids);
+
+        return array_map(function ($customer) use ($names) {
+            $id = (int) ($customer['id'] ?? 0);
+            $customer['company_representative_name'] = $names[$id] ?? null;
+
+            return $customer;
+        }, $customers);
+    }
+
+    /**
+     * @param  array<string, mixed>  $customer
+     * @return array<string, mixed>
+     */
+    private function mergeLocalCustomerProfile(array $customer): array
+    {
+        $id = (int) ($customer['id'] ?? 0);
+        $profile = QoyodCustomerProfile::query()
+            ->where('qoyod_customer_id', $id)
+            ->first();
+
+        $customer['company_representative_name'] = $profile?->company_representative_name;
+
+        return $customer;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $payload
+     */
+    private function resolveQoyodCustomerIdFromApiPayload(?array $payload): ?int
+    {
+        if (! is_array($payload)) {
+            return null;
+        }
+
+        $id = $payload['contact']['id'] ?? $payload['id'] ?? null;
+
+        return $id ? (int) $id : null;
     }
 }

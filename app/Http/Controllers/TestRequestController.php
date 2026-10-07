@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TestRequest;
 use App\Models\TestRequestRedelivery;
 use App\Models\Artifact;
+use App\Models\QoyodCustomerProfile;
 use App\Services\QoyodService;
 use App\Services\FileService;
 use App\Services\WorkflowNotificationService;
@@ -211,7 +212,10 @@ class TestRequestController extends Controller
                 'email' => $customer['email'] ?? $customer['email_address'] ?? null,
                 'address' => 'الرياض',
                 'qoyod_customer_id' => $testRequest->qoyod_customer_id,
-                'status' => $customer['status'] ?? 'active'
+                'status' => $customer['status'] ?? 'active',
+                'company_representative_name' => $this->companyRepresentativeNameFor(
+                    (int) $testRequest->qoyod_customer_id
+                ),
             ];
 
             return Inertia::render('Dashboard/Customers/TestRequest', [
@@ -376,6 +380,9 @@ class TestRequestController extends Controller
             'address' => 'الرياض',
             'qoyod_customer_id' => $testRequest->qoyod_customer_id,
             'status' => $customer['status'] ?? 'active',
+            'company_representative_name' => $this->companyRepresentativeNameFor(
+                (int) $testRequest->qoyod_customer_id
+            ),
         ];
 
         return compact(
@@ -385,6 +392,17 @@ class TestRequestController extends Controller
             'evaluatedPiecesCount',
             'pendingPiecesCount'
         );
+    }
+
+    private function companyRepresentativeNameFor(int $qoyodCustomerId): ?string
+    {
+        if ($qoyodCustomerId <= 0) {
+            return null;
+        }
+
+        return QoyodCustomerProfile::query()
+            ->where('qoyod_customer_id', $qoyodCustomerId)
+            ->value('company_representative_name');
     }
 
     /**

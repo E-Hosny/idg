@@ -6,6 +6,7 @@ return [
     'Reference Number' => 'الرقم المرجعي',
     'Customer Name' => 'اسم العميل',
     'Organization Name' => 'اسم المنظمة',
+    'Company Representative Name' => 'اسم مندوب الشركة',
     'Status' => 'الحالة',
     'Active' => 'نشط',
     'Inactive' => 'غير نشط',

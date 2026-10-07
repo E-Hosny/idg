@@ -324,14 +324,19 @@
             padding: 8px;
             font-size: 11px;
             vertical-align: middle;
+            text-align: center;
             color: #000;
         }
 
         .delivery-doc-table .delivery-doc-label {
             font-weight: bold;
             font-family: "Times New Roman", Times, serif;
-            text-align: left;
+            text-align: center;
             width: 14%;
+        }
+
+        .delivery-doc-table .delivery-doc-value {
+            text-align: center;
         }
 
         .delivery-doc-table .delivery-doc-date {
@@ -344,6 +349,26 @@
             min-height: 48px;
             background: #fff;
             border: 1px solid #333;
+            margin: 0 auto;
+        }
+
+        .delivery-doc-table .delivery-doc-sig-box--with-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .delivery-doc-table .delivery-doc-signature-img {
+            max-height: 40px;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .delivery-doc-table tbody tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
 
         /* Push delivery + contact strip to bottom when printing */
@@ -513,14 +538,12 @@
                 <td class="value">
                     {{ $testRequest->received_date ? \Carbon\Carbon::parse($testRequest->received_date)->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
                 </td>
-                <td class="label">تم الاستلام بواسطة<br>Received By</td>
-                <td class="value">{{ $testRequest->received_by ?? '-' }}</td>
-            </tr>
-            <tr>
                 <td class="label">استلم في<br>Received In</td>
                 <td class="value">{{ $testRequest->received_in ?? '-' }}</td>
+            </tr>
+            <tr>
                 <td class="label">ملاحظات<br>Notes</td>
-                <td class="value">{{ $testRequest->notes ? $testRequest->notes : '-' }}</td>
+                <td class="value" colspan="3">{{ $testRequest->notes ? $testRequest->notes : '-' }}</td>
             </tr>
         </table>
         @else
@@ -544,8 +567,6 @@
                 <td class="value">{{ $formattedCustomer['phone'] ?? '-' }}</td>
                 <td class="label">البريد الإلكتروني<br>Email</td>
                 <td class="value">{{ $formattedCustomer['email'] ?? '-' }}</td>
-                <td class="label">تم الاستلام بواسطة<br>Received By</td>
-                <td class="value">{{ $testRequest->received_by ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">المدينة/العنوان<br>City/Address</td>
@@ -915,10 +936,22 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="delivery-doc-label">Received by:<br>أستلم بواسطة</td>
-                        <td class="delivery-doc-value" style="width: 17%;"></td>
+                        <td class="delivery-doc-label">Delivered by:<br>سلّم بواسطة</td>
+                        <td class="delivery-doc-value" style="width: 17%;">{{ $formattedCustomer['company_representative_name'] ?? '-' }}</td>
                         <td class="delivery-doc-label">Signature:<br>التوقيع</td>
                         <td class="delivery-doc-value" style="width: 20%;"><div class="delivery-doc-sig-box"></div></td>
+                        <td class="delivery-doc-label">Date:<br>التاريخ</td>
+                        <td class="delivery-doc-date" style="width: 13%;">{{ $deliveryDocCreated }}</td>
+                    </tr>
+                    <tr>
+                        <td class="delivery-doc-label">Received by:<br>أستلم بواسطة</td>
+                        <td class="delivery-doc-value" style="width: 17%;">{{ $testRequest->received_by ?? '-' }}</td>
+                        <td class="delivery-doc-label">Signature:<br>التوقيع</td>
+                        <td class="delivery-doc-value" style="width: 20%;">
+                            <div class="delivery-doc-sig-box delivery-doc-sig-box--with-image">
+                                <img src="{{ asset('maram_sign.png') }}" alt="" class="delivery-doc-signature-img">
+                            </div>
+                        </td>
                         <td class="delivery-doc-label">Date:<br>التاريخ</td>
                         <td class="delivery-doc-date" style="width: 13%;">{{ $deliveryDocCreated }}</td>
                     </tr>

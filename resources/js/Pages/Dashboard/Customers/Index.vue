@@ -77,6 +77,9 @@
                   {{ __('Organization') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ $t('messages.Company Representative Name') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ __('Email') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -95,7 +98,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="loading">
-                <td colspan="8" class="px-6 py-12 text-center">
+                <td colspan="9" class="px-6 py-12 text-center">
                   <div class="flex items-center justify-center">
                     <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mr-3"></i>
                     <span class="text-gray-500">{{ __('Loading customers...') }}</span>
@@ -103,7 +106,7 @@
                 </td>
               </tr>
               <tr v-else-if="filteredCustomers.length === 0">
-                <td colspan="8" class="px-6 py-12 text-center">
+                <td colspan="9" class="px-6 py-12 text-center">
                   <div class="text-gray-500">
                     <i class="fas fa-users text-4xl mb-4"></i>
                     <p class="text-lg font-medium">{{ __('No customers found') }}</p>
@@ -138,6 +141,9 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ customer.organization || '-' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ customer.company_representative_name || '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" dir="ltr">
                   {{ customer.email || customer.email_address || '-' }}
@@ -262,6 +268,17 @@
                           </label>
                           <input
                             v-model="newCustomer.organization"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Company Representative Name') }}
+                          </label>
+                          <input
+                            v-model="newCustomer.company_representative_name"
                             type="text"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
@@ -740,6 +757,17 @@
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                           />
                         </div>
+
+                        <div>
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ $t('messages.Company Representative Name') }}
+                          </label>
+                          <input
+                            v-model="editCustomerData.company_representative_name"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -1150,6 +1178,15 @@
                       </div>
                       <p class="text-base text-gray-900">
                         {{ mappedCustomer.organization }}
+                      </p>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-user-tie text-gray-400 text-sm"></i>
+                        <label class="text-sm font-medium text-gray-600">{{ $t('messages.Company Representative Name') }}</label>
+                      </div>
+                      <p class="text-base text-gray-900">
+                        {{ mappedCustomer.company_representative_name || '-' }}
                       </p>
                     </div>
                     <div class="space-y-2">
@@ -1919,11 +1956,13 @@ export default {
         pos: false,
         government_entity: false,
         allow_credit: false,
-        notes: ''
+        notes: '',
+        company_representative_name: ''
       },
       editCustomerData: {
         name: '',
         organization: '',
+        company_representative_name: '',
         email: '',
         secondary_email: '',
         phone_number: '',
@@ -2010,6 +2049,7 @@ export default {
             (customer.name && customer.name.toLowerCase().includes(query)) ||
             (customer.display_name && customer.display_name.toLowerCase().includes(query)) ||
             (customer.organization && customer.organization.toLowerCase().includes(query)) ||
+            (customer.company_representative_name && customer.company_representative_name.toLowerCase().includes(query)) ||
             (customer.email && customer.email.toLowerCase().includes(query)) ||
             (customer.email_address && customer.email_address.toLowerCase().includes(query)) ||
             (customer.phone && customer.phone.toLowerCase().includes(query)) ||
@@ -2096,7 +2136,8 @@ export default {
               pos: false,
               government_entity: false,
               allow_credit: false,
-              notes: ''
+              notes: '',
+              company_representative_name: ''
             }
             // Close modal
             this.showAddCustomerModal = false
@@ -2158,7 +2199,8 @@ export default {
         pos: customer.pos || false,
         government_entity: customer.government_entity || false,
         allow_credit: customer.allow_credit || false,
-        notes: customer.notes || ''
+        notes: customer.notes || '',
+        company_representative_name: customer.company_representative_name || ''
       }
       this.showEditCustomerModal = true
     },
@@ -2356,6 +2398,7 @@ export default {
         id: customer.id,
         name: customer.name || customer.display_name || customer.title || '-',
         organization: customer.organization || customer.company_name || '-',
+        company_representative_name: customer.company_representative_name || '-',
         status: customer.status || 'Active',
         
         // Contact Information

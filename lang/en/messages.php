@@ -6,6 +6,7 @@ return [
     'Reference Number' => 'Reference Number',
     'Customer Name' => 'Customer Name',
     'Organization Name' => 'Organization Name',
+    'Company Representative Name' => 'Company Representative Name',
     'Status' => 'Status',
     'Active' => 'Active',
     'Inactive' => 'Inactive',
