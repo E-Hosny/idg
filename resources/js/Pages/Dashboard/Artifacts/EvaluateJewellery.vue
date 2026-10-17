@@ -75,34 +75,19 @@
           <!-- Product Type -->
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Product Type:</label>
-            <div class="flex flex-wrap gap-4">
-              <label v-for="product in productTypes" :key="product" class="flex items-center gap-2">
-                <input type="checkbox" v-model="form.product_types" :value="product" />
-                {{ product }}
-              </label>
-            </div>
+            <CheckboxGroupWithOther v-model="form.product_types" :options="productTypes" :locale="locale" />
           </div>
 
           <!-- Metal Type -->
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Metal:</label>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <label v-for="metal in metalTypes" :key="metal.value" class="flex items-center gap-2">
-                <input type="checkbox" v-model="form.metal_types" :value="metal.value" />
-                {{ metal.label }}
-              </label>
-            </div>
+            <CheckboxGroupWithOther v-model="form.metal_types" :options="metalTypes" :locale="locale" :other-sentinels="['OTHER', '__other__']" />
           </div>
 
           <!-- Stamp -->
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Stamp:</label>
-            <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
-              <label v-for="stamp in stampOptions" :key="stamp" class="flex items-center gap-2">
-                <input type="checkbox" v-model="form.stamps" :value="stamp" />
-                {{ stamp }}
-              </label>
-            </div>
+            <CheckboxGroupWithOther v-model="form.stamps" :options="stampOptions" :locale="locale" />
           </div>
         </section>
 
@@ -112,34 +97,16 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 class="font-semibold text-gray-700 mb-2">A. HPHT Screen</h3>
-              <div class="flex gap-4 mb-2">
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.hpht_screen" value="Natural" />
-                  Natural
-                </label>
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.hpht_screen" value="Lab-Grown" />
-                  Lab-Grown
-                </label>
-              </div>
-              <div>
+              <RadioWithOther v-model="form.hpht_screen" :options="naturalLabOptions" name="jewellery_hpht" :locale="locale" />
+              <div class="mt-2">
                 <label class="block text-gray-700">HPHT Diamond Pcs.</label>
                 <input type="number" v-model="form.hpht_diamond_pcs" class="input" min="0" />
               </div>
             </div>
             <div>
               <h3 class="font-semibold text-gray-700 mb-2">B. CVD Check</h3>
-              <div class="flex gap-4 mb-2">
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.cvd_check" value="Natural" />
-                  Natural
-                </label>
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.cvd_check" value="Lab-Grown" />
-                  Lab-Grown
-                </label>
-              </div>
-              <div>
+              <RadioWithOther v-model="form.cvd_check" :options="naturalLabOptions" name="jewellery_cvd" :locale="locale" />
+              <div class="mt-2">
                 <label class="block text-gray-700">CVD Diamond Pcs.</label>
                 <input type="number" v-model="form.cvd_diamond_pcs" class="input" min="0" />
               </div>
@@ -147,17 +114,10 @@
           </div>
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Need to be Unmount?</label>
-            <div class="flex flex-wrap gap-4 items-center">
-              <label class="flex items-center gap-2">
-                <input type="radio" v-model="form.need_unmount" value="Yes" />
-                Yes
-              </label>
+            <RadioWithOther v-model="form.need_unmount" :options="yesNoOptions" name="need_unmount" :locale="locale" />
+            <div v-if="form.need_unmount && form.need_unmount !== 'No'" class="mt-2 flex flex-wrap gap-2 items-center">
               <span class="text-sm text-gray-700">Reason:</span>
               <input type="text" v-model="form.unmount_reason" class="input flex-1 min-w-[220px]" />
-              <label class="flex items-center gap-2">
-                <input type="radio" v-model="form.need_unmount" value="No" />
-                No
-              </label>
             </div>
           </div>
         </section>
@@ -228,15 +188,13 @@
           <div class="mb-6">
             <h3 class="font-semibold text-gray-700 mb-3">A. Total/Side Stones</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div class="flex gap-4">
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.side_stones_weight_type" value="Estimated" />
-                  Wt. Estimated
-                </label>
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.side_stones_weight_type" value="Given" />
-                  Wt. Given
-                </label>
+              <div>
+                <RadioWithOther
+                  v-model="form.side_stones_weight_type"
+                  :options="weightTypeOptions"
+                  name="side_stones_weight_type"
+                  :locale="locale"
+                />
               </div>
               <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -253,47 +211,23 @@
             <!-- Shape -->
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Shape:</label>
-              <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <template v-for="shape in diamondShapes" :key="shape">
-                  <label v-if="shape !== 'Octagonal'" class="flex items-center gap-2">
-                    <input type="checkbox" v-model="form.side_stones_shapes" :value="shape" />
-                    {{ shape }}
-                  </label>
-                  <div v-else class="flex flex-wrap items-center gap-2 col-span-2 md:col-span-1 min-w-0">
-                    <label class="inline-flex items-center gap-2 shrink-0">
-                      <input type="checkbox" v-model="form.side_stones_shapes" :value="shape" />
-                      {{ shape }}
-                    </label>
-                    <input
-                      type="text"
-                      v-model="form.side_stones_shape_octagonal_detail"
-                      class="input !w-auto min-w-[6rem] max-w-full flex-1"
-                    />
-                  </div>
-                </template>
+              <CheckboxGroupWithOther v-model="form.side_stones_shapes" :options="diamondShapes" :locale="locale" />
+              <div v-if="(form.side_stones_shapes || []).includes('Octagonal')" class="mt-2">
+                <label class="block text-gray-700 mb-1">Octagonal detail</label>
+                <input type="text" v-model="form.side_stones_shape_octagonal_detail" class="input" />
               </div>
             </div>
 
             <!-- Colour -->
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Colour:</label>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <label v-for="colour in diamondColours" :key="colour" class="flex items-center gap-2">
-                  <input type="checkbox" v-model="form.side_stones_colours" :value="colour" />
-                  {{ colour }}
-                </label>
-              </div>
+              <CheckboxGroupWithOther v-model="form.side_stones_colours" :options="diamondColours" :locale="locale" />
             </div>
 
             <!-- Clarity -->
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Clarity:</label>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <label v-for="clarity in diamondClarities" :key="clarity" class="flex items-center gap-2">
-                  <input type="checkbox" v-model="form.side_stones_clarities" :value="clarity" />
-                  {{ clarity }}
-                </label>
-              </div>
+              <CheckboxGroupWithOther v-model="form.side_stones_clarities" :options="diamondClarities" :locale="locale" />
             </div>
           </div>
 
@@ -307,24 +241,15 @@
               </div>
               <div>
                 <label class="block text-gray-700">Shape</label>
-                <select v-model="form.centre_stone_shape" class="input">
-                  <option value="">Select Shape</option>
-                  <option v-for="shape in diamondShapes" :key="shape" :value="shape">{{ shape }}</option>
-                </select>
+                <SelectWithOther v-model="form.centre_stone_shape" :options="diamondShapes" :locale="locale" placeholder="Select Shape" />
               </div>
               <div>
                 <label class="block text-gray-700">Colour</label>
-                <select v-model="form.centre_stone_colour" class="input">
-                  <option value="">Select Colour</option>
-                  <option v-for="colour in diamondColours" :key="colour" :value="colour">{{ colour }}</option>
-                </select>
+                <SelectWithOther v-model="form.centre_stone_colour" :options="diamondColours" :locale="locale" placeholder="Select Colour" />
               </div>
               <div>
                 <label class="block text-gray-700">Clarity</label>
-                <select v-model="form.centre_stone_clarity" class="input">
-                  <option value="">Select Clarity</option>
-                  <option v-for="clarity in diamondClarities" :key="clarity" :value="clarity">{{ clarity }}</option>
-                </select>
+                <SelectWithOther v-model="form.centre_stone_clarity" :options="diamondClarities" :locale="locale" placeholder="Select Clarity" />
               </div>
             </div>
           </div>
@@ -340,17 +265,21 @@
             </div>
             <div>
               <label class="block text-gray-700">Shape</label>
-              <select v-model="colouredStonesShapeIdx" class="input">
-                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
-                <option v-for="(opt, i) in colouredGemStoneShapes" :key="'cgs-'+i" :value="String(i)">{{ opt }}</option>
-              </select>
+              <SelectWithOther
+                v-model="colouredStonesShape"
+                :options="colouredShapeSelectOptions"
+                :locale="locale"
+                :placeholder="locale === 'ar' ? '— اختر —' : '— Select —'"
+              />
             </div>
             <div>
               <label class="block text-gray-700">Cut</label>
-              <select v-model="colouredStonesCutIdx" class="input">
-                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
-                <option v-for="(opt, i) in colouredGemStoneCuts" :key="'cgc-'+i" :value="String(i)">{{ opt }}</option>
-              </select>
+              <SelectWithOther
+                v-model="colouredStonesCut"
+                :options="colouredCutSelectOptions"
+                :locale="locale"
+                :placeholder="locale === 'ar' ? '— اختر —' : '— Select —'"
+              />
             </div>
             <div>
               <label class="block text-gray-700">No. of Stones</label>
@@ -362,31 +291,31 @@
             </div>
             <div>
               <label class="block text-gray-700">Species</label>
-              <select v-model="colouredStonesSpeciesIdx" class="input">
-                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
-                <option v-for="(opt, i) in colouredGemStoneSpecies" :key="'cgsp-'+i" :value="String(i)">{{ opt }}</option>
-              </select>
+              <SelectWithOther
+                v-model="colouredStonesSpecies"
+                :options="colouredSpeciesSelectOptions"
+                :locale="locale"
+                :placeholder="locale === 'ar' ? '— اختر —' : '— Select —'"
+              />
             </div>
             <div>
               <label class="block text-gray-700">Variety</label>
-              <select v-model="colouredStonesVarietyIdx" class="input">
-                <option value="">{{ locale === 'ar' ? '— اختر —' : '— Select —' }}</option>
-                <option v-for="(opt, i) in colouredGemStoneVarieties" :key="'cgv-'+i" :value="String(i)">{{ opt }}</option>
-              </select>
+              <SelectWithOther
+                v-model="colouredStonesVariety"
+                :options="colouredVarietySelectOptions"
+                :locale="locale"
+                :placeholder="locale === 'ar' ? '— اختر —' : '— Select —'"
+              />
             </div>
           </div>
           <div class="mt-4">
             <label class="block text-gray-700 font-semibold mb-2">Conclusion:</label>
-            <div class="flex gap-6">
-              <label class="flex items-center gap-2">
-                <input type="checkbox" :checked="form.coloured_stones_conclusion === 'Natural'" @change="setColouredConclusion('Natural')" />
-                Natural
-              </label>
-              <label class="flex items-center gap-2">
-                <input type="checkbox" :checked="form.coloured_stones_conclusion === 'Synthetic'" @change="setColouredConclusion('Synthetic')" />
-                Synthetic
-              </label>
-            </div>
+            <RadioWithOther
+              v-model="form.coloured_stones_conclusion"
+              :options="conclusionOptions"
+              name="coloured_stones_conclusion"
+              :locale="locale"
+            />
           </div>
           <div class="mt-4">
             <label class="block text-gray-700">Note:</label>
@@ -397,12 +326,7 @@
         <!-- 7. Result -->
         <section class="border-b pb-6">
           <h2 class="text-lg font-semibold text-green-700 mb-4">7. Result</h2>
-          <div class="flex gap-4">
-            <label v-for="result in resultOptions" :key="result" class="flex items-center gap-2">
-              <input type="radio" v-model="form.result" :value="result" />
-              {{ result }}
-            </label>
-          </div>
+          <RadioWithOther v-model="form.result" :options="resultOptions" name="jewellery_result" :locale="locale" />
         </section>
 
         <!-- 8. Comments -->
@@ -584,6 +508,9 @@
 
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
+import SelectWithOther from '@/components/SelectWithOther.vue'
+import RadioWithOther from '@/components/RadioWithOther.vue'
+import CheckboxGroupWithOther from '@/components/CheckboxGroupWithOther.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted } from 'vue'
 import {
@@ -593,12 +520,13 @@ import {
   colouredGemStoneVarieties,
   encodeListSelection,
   decodeListSelectionToIndex,
+  labelFromListSelection,
 } from '@/constants/jewelleryColouredGemOptions'
 
 const route = window.route
 
 export default {
-  components: { DashboardLayout, Link },
+  components: { DashboardLayout, Link, SelectWithOther, RadioWithOther, CheckboxGroupWithOther },
   props: {
     artifact: Object,
     existingEvaluation: Object,
@@ -611,35 +539,6 @@ export default {
     const loading = ref(false)
     const today = new Date().toISOString().split('T')[0]
     const { auth, locale } = usePage().props
-
-    const idxToStr = (idx) => (idx === '' || idx == null ? '' : String(idx))
-
-    const colouredStonesShapeIdx = ref(
-      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_shape, colouredGemStoneShapes))
-    )
-    const colouredStonesCutIdx = ref(
-      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_cut, colouredGemStoneCuts))
-    )
-    const colouredStonesSpeciesIdx = ref(
-      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_species, colouredGemStoneSpecies))
-    )
-    const colouredStonesVarietyIdx = ref(
-      idxToStr(decodeListSelectionToIndex(props.existingEvaluation?.coloured_stones_variety, colouredGemStoneVarieties))
-    )
-
-    watch(
-      () => props.existingEvaluation,
-      (ev) => {
-        if (!ev) {
-          return
-        }
-        colouredStonesShapeIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_shape, colouredGemStoneShapes))
-        colouredStonesCutIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_cut, colouredGemStoneCuts))
-        colouredStonesSpeciesIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_species, colouredGemStoneSpecies))
-        colouredStonesVarietyIdx.value = idxToStr(decodeListSelectionToIndex(ev.coloured_stones_variety, colouredGemStoneVarieties))
-      },
-      { deep: true }
-    )
 
     // Safely access artifact data
     const artifact = computed(() => props.artifact || {})
@@ -824,17 +723,61 @@ export default {
       { value: 'Y', label: 'Yellow Gold (Y)' },
       { value: 'P', label: 'Pink Gold (P)' },
       { value: 'SL', label: 'Silver (SL)' },
-      { value: 'OTHER', label: '' }
     ]
     const stampOptions = ['18K', '750', '21K', '916', '22K', '925', '24K', '375', '585', 'N/A']
     const diamondShapes = ['RBC', 'Princess', 'Baguette', 'T. Baguette', 'Emerald', 'Marquise', 'Pear', 'Oval', 'Heart', 'Triangle', 'Asscher', 'Cushion', 'Radiant', 'Octagonal']
     const diamondColours = ['D-E-F', 'E-F', 'F-G', 'G-H', 'H-I', 'I-J', 'J-K']
     const diamondClarities = ['IF-VS', 'VVS', 'VVS-VS', 'VS', 'VS-SI', 'SI', 'SI-I', 'I']
     const resultOptions = ['Reject', 'Hold', 'Fail', 'Pass']
+    const yesNoOptions = ['Yes', 'No']
+    const naturalLabOptions = ['Natural', 'Lab-Grown']
+    const weightTypeOptions = [
+      { value: 'Estimated', label: 'Wt. Estimated' },
+      { value: 'Given', label: 'Wt. Given' },
+    ]
+    const conclusionOptions = ['Natural', 'Synthetic']
 
-    const setColouredConclusion = (value) => {
-      form.coloured_stones_conclusion = form.coloured_stones_conclusion === value ? '' : value
+    // Index-keyed options preserve duplicate labels; custom "Other" text is stored as plain string.
+    const toIndexedOptions = (list) =>
+      list.map((label, i) => ({ value: String(i), label }))
+
+    const colouredShapeSelectOptions = toIndexedOptions(colouredGemStoneShapes)
+    const colouredCutSelectOptions = toIndexedOptions(colouredGemStoneCuts)
+    const colouredSpeciesSelectOptions = toIndexedOptions(colouredGemStoneSpecies)
+    const colouredVarietySelectOptions = toIndexedOptions(colouredGemStoneVarieties)
+
+    function makeColouredField(list, key) {
+      return computed({
+        get() {
+          const stored = form[key]
+          const idx = decodeListSelectionToIndex(stored, list)
+          if (idx !== '' && idx != null) {
+            return String(idx)
+          }
+          return labelFromListSelection(stored, list)
+        },
+        set(val) {
+          if (val === '' || val == null) {
+            form[key] = ''
+            return
+          }
+          const asNum = Number(val)
+          if (String(asNum) === String(val) && asNum >= 0 && asNum < list.length) {
+            form[key] = encodeListSelection(asNum, list)
+            return
+          }
+          form[key] = String(val)
+        },
+      })
     }
+
+    const colouredStonesShape = makeColouredField(colouredGemStoneShapes, 'coloured_stones_shape')
+    const colouredStonesCut = makeColouredField(colouredGemStoneCuts, 'coloured_stones_cut')
+    const colouredStonesSpecies = makeColouredField(colouredGemStoneSpecies, 'coloured_stones_species')
+    const colouredStonesVariety = makeColouredField(colouredGemStoneVarieties, 'coloured_stones_variety')
+
+    const stripOtherSentinels = (list) =>
+      (list || []).filter((v) => v && !['__other__', 'OTHER'].includes(String(v)))
 
     const submitEvaluation = () => {
       if (!artifact.value?.id) {
@@ -842,11 +785,13 @@ export default {
         return
       }
 
-      form.coloured_stones_shape = encodeListSelection(colouredStonesShapeIdx.value, colouredGemStoneShapes)
-      form.coloured_stones_cut = encodeListSelection(colouredStonesCutIdx.value, colouredGemStoneCuts)
-      form.coloured_stones_species = encodeListSelection(colouredStonesSpeciesIdx.value, colouredGemStoneSpecies)
-      form.coloured_stones_variety = encodeListSelection(colouredStonesVarietyIdx.value, colouredGemStoneVarieties)
-      
+      form.product_types = stripOtherSentinels(form.product_types)
+      form.metal_types = stripOtherSentinels(form.metal_types)
+      form.stamps = stripOtherSentinels(form.stamps)
+      form.side_stones_shapes = stripOtherSentinels(form.side_stones_shapes)
+      form.side_stones_colours = stripOtherSentinels(form.side_stones_colours)
+      form.side_stones_clarities = stripOtherSentinels(form.side_stones_clarities)
+
       loading.value = true
       
       if (props.isEditing && props.existingEvaluation) {
@@ -896,14 +841,14 @@ export default {
       loading,
       today,
       locale,
-      colouredStonesShapeIdx,
-      colouredStonesCutIdx,
-      colouredStonesSpeciesIdx,
-      colouredStonesVarietyIdx,
-      colouredGemStoneShapes,
-      colouredGemStoneCuts,
-      colouredGemStoneSpecies,
-      colouredGemStoneVarieties,
+      colouredStonesShape,
+      colouredStonesCut,
+      colouredStonesSpecies,
+      colouredStonesVariety,
+      colouredShapeSelectOptions,
+      colouredCutSelectOptions,
+      colouredSpeciesSelectOptions,
+      colouredVarietySelectOptions,
       productTypes,
       metalTypes,
       stampOptions,
@@ -911,7 +856,10 @@ export default {
       diamondColours,
       diamondClarities,
       resultOptions,
-      setColouredConclusion,
+      yesNoOptions,
+      naturalLabOptions,
+      weightTypeOptions,
+      conclusionOptions,
       submitEvaluation
     }
   }

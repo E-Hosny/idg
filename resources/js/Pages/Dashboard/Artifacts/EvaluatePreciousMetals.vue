@@ -25,12 +25,29 @@
             <div class="row"><span>{{ t.grossWeight }}:</span><input v-model="form.gross_weight" type="number" step="0.0001" class="line-input" /></div>
             <div class="row"><span>{{ t.netWeight }}:</span><input v-model="form.net_weight" type="number" step="0.0001" class="line-input" /></div>
             <div class="pt-1 space-y-1">
-              <div v-for="metal in purityMetals" :key="metal.key" class="flex flex-wrap items-center gap-2 text-xs">
-                <span class="w-16">{{ metal.label }}:</span>
-                <label v-for="opt in metal.options" :key="opt" class="inline-flex items-center gap-1">
-                  <input type="checkbox" :value="opt" v-model="form.metal_purities[metal.key].selected" />
-                  <span>{{ opt }}</span>
-                </label>
+              <div v-for="metal in purityMetals" :key="metal.key" class="space-y-1 text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="w-16">{{ metal.label }}:</span>
+                  <label v-for="opt in metal.options" :key="opt" class="inline-flex items-center gap-1">
+                    <input type="checkbox" :value="opt" v-model="form.metal_purities[metal.key].selected" />
+                    <span>{{ opt }}</span>
+                  </label>
+                  <label class="inline-flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      :checked="purityOtherChecked(metal.key)"
+                      @change="togglePurityOther(metal.key, $event.target.checked)"
+                    />
+                    <span>{{ t.otherSpecify }}</span>
+                  </label>
+                </div>
+                <input
+                  v-if="purityOtherChecked(metal.key)"
+                  type="text"
+                  v-model="form.metal_purities[metal.key].other"
+                  class="line-input ml-16"
+                  :placeholder="t.otherSpecify"
+                />
               </div>
             </div>
           </section>
@@ -73,12 +90,12 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
           <section class="box">
             <h3 class="sec-title">4. {{ t.result }}</h3>
-            <div class="grid grid-cols-2 gap-1 text-xs">
-              <label v-for="flag in resultFlags" :key="flag" class="inline-flex items-center gap-1">
-                <input type="checkbox" :value="flag" v-model="form.result_flags" />
-                <span>{{ flag }}</span>
-              </label>
-            </div>
+            <CheckboxGroupWithOther
+              v-model="form.result_flags"
+              :options="resultFlags"
+              :locale="locale"
+              input-class="line-input"
+            />
           </section>
 
           <section class="box md:col-span-2">
@@ -155,6 +172,7 @@
 import { computed } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
+import CheckboxGroupWithOther from '@/components/CheckboxGroupWithOther.vue'
 import {
   XRF_ELEMENTS,
   XRF_READING_NUMBERS,
@@ -240,10 +258,58 @@ const purityMetals = computed(() => {
 })
 
 const initial = buildFormDefaults(props.artifact, props.existingEvaluation)
+// Open "Other" inputs when editing records that already have a custom purity.
+;['gold', 'platinum', 'silver'].forEach((key) => {
+  const entry = initial.metal_purities?.[key]
+  if (entry && entry.other != null && String(entry.other).trim() !== '') {
+    entry._otherOpen = true
+  }
+})
 const form = useForm(initial)
+
+function purityOtherChecked(key) {
+  const entry = form.metal_purities?.[key]
+  if (!entry) return false
+  if (entry._otherOpen) return true
+  return entry.other != null && String(entry.other).trim() !== ''
+}
+
+function togglePurityOther(key, checked) {
+  if (!form.metal_purities[key]) {
+    form.metal_purities[key] = { selected: [], other: null }
+  }
+  if (checked) {
+    form.metal_purities[key]._otherOpen = true
+    if (form.metal_purities[key].other == null) {
+      form.metal_purities[key].other = ''
+    }
+  } else {
+    form.metal_purities[key]._otherOpen = false
+    form.metal_purities[key].other = null
+  }
+}
+
+function sanitizeMetalPurities(purities) {
+  const next = {}
+  for (const key of ['gold', 'platinum', 'silver']) {
+    const entry = purities?.[key] || { selected: [], other: null }
+    const other = entry.other != null && String(entry.other).trim() !== ''
+      ? String(entry.other).trim()
+      : null
+    next[key] = {
+      selected: Array.isArray(entry.selected) ? entry.selected : [],
+      other,
+    }
+  }
+  return next
+}
 
 function submit() {
   if (!props.artifact?.id) return
+  form.metal_purities = sanitizeMetalPurities(form.metal_purities)
+  form.result_flags = (form.result_flags || []).filter(
+    (v) => v && !['__other__', 'OTHER'].includes(String(v))
+  )
   if (props.isEditing) {
     form.put(route('artifacts.update-evaluation', props.artifact.id), {
       preserveScroll: true,

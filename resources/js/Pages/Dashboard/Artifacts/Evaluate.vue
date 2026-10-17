@@ -35,45 +35,27 @@
             </div>
             <div>
               <label class="block text-gray-700">Colour</label>
-              <select v-model="form.colour" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر اللون' : 'Select Colour' }}</option>
-                <option v-for="option in colourOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.colour" :options="colourOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر اللون' : 'Select Colour'" />
             </div>
             <div>
               <label class="block text-gray-700">Transparency</label>
-              <select v-model="form.transparency" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر الشفافية' : 'Select Transparency' }}</option>
-                <option v-for="option in transparencyOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.transparency" :options="transparencyOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر الشفافية' : 'Select Transparency'" />
             </div>
             <div>
               <label class="block text-gray-700">Lustre</label>
-              <select v-model="form.lustre" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر اللمعان' : 'Select Lustre' }}</option>
-                <option v-for="option in lustreOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.lustre" :options="lustreOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر اللمعان' : 'Select Lustre'" />
             </div>
             <div>
               <label class="block text-gray-700">Tone</label>
-              <select v-model="form.tone" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر النغمة' : 'Select Tone' }}</option>
-                <option v-for="option in toneOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.tone" :options="toneOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر النغمة' : 'Select Tone'" />
             </div>
             <div>
               <label class="block text-gray-700">Phenomena</label>
-              <select v-model="form.phenomena" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر الظاهرة' : 'Select Phenomena' }}</option>
-                <option v-for="option in phenomenaOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.phenomena" :options="phenomenaOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر الظاهرة' : 'Select Phenomena'" />
             </div>
             <div>
               <label class="block text-gray-700">Saturation</label>
-              <select v-model="form.saturation" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر التشبع' : 'Select Saturation' }}</option>
-                <option v-for="option in saturationOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.saturation" :options="saturationOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر التشبع' : 'Select Saturation'" />
             </div>
             <div>
               <label class="block text-gray-700">Measurements (mm)</label>
@@ -81,17 +63,11 @@
             </div>
             <div>
               <label class="block text-gray-700">Shape</label>
-              <select v-model="form.shape" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر الشكل' : 'Select Shape' }}</option>
-                <option v-for="option in shapeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.shape" :options="shapeOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر الشكل' : 'Select Shape'" />
             </div>
             <div>
               <label class="block text-gray-700">Cut</label>
-              <select v-model="form.cut" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر القطع' : 'Select Cut' }}</option>
-                <option v-for="option in cutOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.cut" :options="cutOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر القطع' : 'Select Cut'" />
             </div>
           </div>
         </section>
@@ -99,20 +75,13 @@
         <!-- 3. Pleochroism -->
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٣. البلوكرويزم' : '3. Pleochroism' }}</h2>
-          <div class="flex items-center gap-4">
-            <label v-for="option in pleochroismOptions" :key="option.value" class="flex items-center gap-1">
-              <input type="radio" v-model="form.pleochroism" :value="option.value" /> {{ option.label }}
-            </label>
-          </div>
+          <RadioWithOther v-model="form.pleochroism" :options="pleochroismOptions" :locale="locale" name="pleochroism" />
         </section>
 
         <!-- 4. Optic Character -->
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٤. خصائص البصرية' : '4. Optic Character' }}</h2>
-          <select v-model="form.optic_character" class="input">
-            <option value="">{{ locale === 'ar' ? 'اختر الخصائص البصرية' : 'Select Optic Character' }}</option>
-            <option v-for="option in opticCharacterOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-          </select>
+          <SelectWithOther v-model="form.optic_character" :options="opticCharacterOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر الخصائص البصرية' : 'Select Optic Character'" />
         </section>
 
         <!-- 5. Refractive Index -->
@@ -130,20 +99,7 @@
         <!-- 6. Inclusion (Magnification) -->
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٦. التضمين (التكبير)' : '6. Inclusion (Magnification)' }}</h2>
-          <div class="grid grid-cols-1 gap-3">
-            <div>
-              <label class="block text-gray-700 mb-1">{{ locale === 'ar' ? 'اختر من القائمة' : 'Select from list' }}</label>
-              <select v-model="inclusionSelectModel" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر التضمينات' : 'Select Inclusion' }}</option>
-                <option v-for="option in inclusionOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                <option value="__manual__">{{ locale === 'ar' ? 'إدخال يدوي…' : 'Other / manual entry…' }}</option>
-              </select>
-            </div>
-            <div v-if="inclusionManualMode">
-              <label class="block text-gray-700 mb-1">{{ locale === 'ar' ? 'تفاصيل التضمين (يدوي)' : 'Inclusion details (manual)' }}</label>
-              <textarea v-model="form.inclusion" class="input" rows="2" :placeholder="locale === 'ar' ? 'اكتب وصف التضمين…' : 'Describe inclusion…'"></textarea>
-            </div>
-          </div>
+          <SelectWithOther v-model="form.inclusion" :options="inclusionOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر التضمينات' : 'Select Inclusion'" />
         </section>
 
         <!-- 7. Specific Gravity -->
@@ -171,17 +127,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-gray-700">Long Wave</label>
-              <select v-model="form.fluorescence_long" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر الفلورسنس' : 'Select Fluorescence' }}</option>
-                <option v-for="option in fluorescenceOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.fluorescence_long" :options="fluorescenceOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر الفلورسنس' : 'Select Fluorescence'" />
             </div>
             <div>
               <label class="block text-gray-700">Short Wave</label>
-              <select v-model="form.fluorescence_short" class="input">
-                <option value="">{{ locale === 'ar' ? 'اختر الفلورسنس' : 'Select Fluorescence' }}</option>
-                <option v-for="option in fluorescenceOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
+              <SelectWithOther v-model="form.fluorescence_short" :options="fluorescenceOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر الفلورسنس' : 'Select Fluorescence'" />
             </div>
           </div>
         </section>
@@ -189,48 +139,26 @@
         <!-- 9. Result -->
         <section>
           <h2 class="text-lg font-semibold text-green-700 mb-2">{{ locale === 'ar' ? '٩. النتيجة' : '9. Result' }}</h2>
-          <div class="flex items-center gap-4">
-            <label class="flex items-center gap-1">
-              <input type="radio" v-model="form.result" value="Pass" /> Pass
-            </label>
-            <label class="flex items-center gap-1">
-              <input type="radio" v-model="form.result" value="Fail" /> Fail
-            </label>
-          </div>
+          <RadioWithOther v-model="form.result" :options="resultOptions" :locale="locale" name="gemstone_result" />
           <div class="mt-2">
             <label class="block text-gray-700">Group</label>
-            <select v-model="form.stone_group" class="input">
-              <option value="">{{ locale === 'ar' ? 'اختر المجموعة' : 'Select Group' }}</option>
-              <option v-for="option in groupOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-            </select>
+            <SelectWithOther v-model="form.stone_group" :options="groupOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر المجموعة' : 'Select Group'" />
           </div>
           <div class="mt-2">
             <label class="block text-gray-700">Species</label>
-            <select v-model="form.species" class="input">
-              <option value="">{{ locale === 'ar' ? 'اختر النوع الأساسي' : 'Select Species' }}</option>
-              <option v-for="(option, idx) in speciesOptions" :key="'species-' + idx" :value="option.value">{{ option.label }}</option>
-            </select>
+            <SelectWithOther v-model="form.species" :options="speciesOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر النوع الأساسي' : 'Select Species'" />
           </div>
           <div class="mt-2">
             <label class="block text-gray-700">Variety</label>
-            <select v-model="form.variety" class="input">
-              <option value="">{{ locale === 'ar' ? 'اختر النوع' : 'Select Variety' }}</option>
-              <option v-for="(option, idx) in varietyOptions" :key="'variety-' + idx" :value="option.value">{{ option.label }}</option>
-            </select>
+            <SelectWithOther v-model="form.variety" :options="varietyOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر النوع' : 'Select Variety'" />
           </div>
           <div class="mt-2">
             <label class="block text-gray-700">Treatment</label>
-            <select v-model="form.treatment" class="input">
-              <option value="">{{ locale === 'ar' ? 'اختر المعالجة' : 'Select Treatment' }}</option>
-              <option v-for="option in treatmentOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-            </select>
+            <SelectWithOther v-model="form.treatment" :options="treatmentOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر المعالجة' : 'Select Treatment'" />
           </div>
           <div class="mt-2">
             <label class="block text-gray-700">Gemstone Type</label>
-            <select v-model="form.gemstone_type" class="input">
-              <option value="">{{ locale === 'ar' ? 'اختر نوع الحجر' : 'Select Gemstone Type' }}</option>
-              <option v-for="option in gemstoneTypeOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-            </select>
+            <SelectWithOther v-model="form.gemstone_type" :options="gemstoneTypeOptions" :locale="locale" :placeholder="locale === 'ar' ? 'اختر نوع الحجر' : 'Select Gemstone Type'" />
           </div>
         </section>
 
@@ -334,9 +262,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { usePage, useForm } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import SelectWithOther from '@/components/SelectWithOther.vue';
+import RadioWithOther from '@/components/RadioWithOther.vue';
 import { gemstoneEvaluationOptions } from '@/constants/gemstoneEvaluationOptions';
 
 const props = defineProps({ 
@@ -511,53 +441,10 @@ const pleochroismOptions = [
 const opticCharacterOptions = toSelectOptions(gemstoneEvaluationOptions.opticCharacters)
 const fluorescenceOptions = toSelectOptions(gemstoneEvaluationOptions.fluorescence)
 const inclusionOptions = toSelectOptions(gemstoneEvaluationOptions.inclusions)
-
-const inclusionManualMode = ref(false)
-const inclusionKnownSet = new Set(gemstoneEvaluationOptions.inclusions.map((s) => s.trim().toLowerCase()))
-
-function syncInclusionUiFromFormValue(val) {
-  const raw = typeof val === 'string' ? val.trim() : ''
-  if (!raw) {
-    inclusionManualMode.value = false
-    return
-  }
-  const isListed = inclusionKnownSet.has(raw.toLowerCase())
-  inclusionManualMode.value = !isListed
-}
-
-syncInclusionUiFromFormValue(form.inclusion)
-
-watch(() => form.inclusion, (v) => syncInclusionUiFromFormValue(v))
-
-watch(
-  () => props.existingEvaluation?.inclusion,
-  (v) => {
-    if (v === undefined) return
-    form.inclusion = v || ''
-    syncInclusionUiFromFormValue(form.inclusion)
-  },
-  { immediate: false },
-)
-
-const inclusionSelectModel = computed({
-  get() {
-    if (inclusionManualMode.value) return '__manual__'
-    const v = typeof form.inclusion === 'string' ? form.inclusion.trim() : ''
-    return v && inclusionKnownSet.has(v.toLowerCase()) ? form.inclusion : ''
-  },
-  set(sel) {
-    if (sel === '__manual__') {
-      inclusionManualMode.value = true
-      const cur = typeof form.inclusion === 'string' ? form.inclusion.trim() : ''
-      if (cur && !inclusionKnownSet.has(cur.toLowerCase())) return
-      form.inclusion = ''
-      return
-    }
-    inclusionManualMode.value = false
-    form.inclusion = sel || ''
-  },
-})
-
+const resultOptions = [
+  { value: 'Pass', label: 'Pass' },
+  { value: 'Fail', label: 'Fail' },
+]
 const groupOptions = toSelectOptions(gemstoneEvaluationOptions.groups)
 const speciesOptions = toSelectOptions(gemstoneEvaluationOptions.species)
 const varietyOptions = toSelectOptions(gemstoneEvaluationOptions.varieties)

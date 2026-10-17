@@ -56,29 +56,11 @@
             </div>
             <div>
               <label class="block text-gray-700">Shape</label>
-              <select v-model="form.shape" class="input">
-                <option value="">Select Shape</option>
-                <option
-                  v-for="(shape, idx) in diamondShapeOptions"
-                  :key="'diamond-shape-' + idx"
-                  :value="shape"
-                >
-                  {{ shape }}
-                </option>
-              </select>
+              <SelectWithOther v-model="form.shape" :options="diamondShapeOptions" placeholder="Select Shape" />
             </div>
             <div class="md:col-span-2">
               <label class="block text-gray-700 mb-2">Laser Inscription</label>
-              <div class="flex gap-4">
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.laser_inscription" value="No" />
-                  No
-                </label>
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.laser_inscription" value="Yes" />
-                  Yes
-                </label>
-              </div>
+              <RadioWithOther v-model="form.laser_inscription" :options="yesNoOptions" name="laser_inscription" />
             </div>
           </div>
         </section>
@@ -89,29 +71,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 class="font-semibold text-gray-700 mb-2">A. HPHT Screen</h3>
-              <div class="flex gap-4">
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.hpht_screen" value="Natural" />
-                  Natural
-                </label>
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.hpht_screen" value="Lab-Grown" />
-                  Lab-Grown
-                </label>
-              </div>
+              <RadioWithOther v-model="form.hpht_screen" :options="naturalLabOptions" name="hpht_screen" />
             </div>
             <div>
               <h3 class="font-semibold text-gray-700 mb-2">B. CVD Check</h3>
-              <div class="flex gap-4">
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.cvd_check" value="Natural" />
-                  Natural
-                </label>
-                <label class="flex items-center gap-2">
-                  <input type="radio" v-model="form.cvd_check" value="Lab-Grown" />
-                  Lab-Grown
-                </label>
-              </div>
+              <RadioWithOther v-model="form.cvd_check" :options="naturalLabOptions" name="cvd_check" />
             </div>
           </div>
         </section>
@@ -166,37 +130,15 @@
             </div>
             <div>
               <label class="block text-gray-700">Culet Size</label>
-              <select v-model="form.culet_size" class="input">
-                <option value="">Select Culet Size</option>
-                <option value="None">None</option>
-                <option value="Very Small">Very Small</option>
-                <option value="Small">Small</option>
-                <option value="Medium">Medium</option>
-                <option value="Large">Large</option>
-                <option value="Very Large">Very Large</option>
-              </select>
+              <SelectWithOther v-model="form.culet_size" :options="culetSizeOptions" placeholder="Select Culet Size" />
             </div>
             <div>
               <label class="block text-gray-700">Girdle Condition</label>
-              <select v-model="form.girdle_condition" class="input">
-                <option value="">Select Condition</option>
-                <option value="Excellent">Excellent</option>
-                <option value="Very Good">Very Good</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
-                <option value="Poor">Poor</option>
-              </select>
+              <SelectWithOther v-model="form.girdle_condition" :options="gradeOptions" placeholder="Select Condition" />
             </div>
             <div>
               <label class="block text-gray-700">Culet Condition</label>
-              <select v-model="form.culet_condition" class="input">
-                <option value="">Select Condition</option>
-                <option value="Excellent">Excellent</option>
-                <option value="Very Good">Very Good</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
-                <option value="Poor">Poor</option>
-              </select>
+              <SelectWithOther v-model="form.culet_condition" :options="gradeOptions" placeholder="Select Condition" />
             </div>
           </div>
         </section>
@@ -207,30 +149,15 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Polish:</label>
-              <div class="space-y-2">
-                <label v-for="grade in gradeOptions" :key="grade" class="flex items-center gap-2">
-                  <input type="radio" v-model="form.polish" :value="grade" />
-                  {{ grade }}
-                </label>
-              </div>
+              <RadioWithOther v-model="form.polish" :options="gradeOptions" name="polish" />
             </div>
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Symmetry:</label>
-              <div class="space-y-2">
-                <label v-for="grade in gradeOptions" :key="grade" class="flex items-center gap-2">
-                  <input type="radio" v-model="form.symmetry" :value="grade" />
-                  {{ grade }}
-                </label>
-              </div>
+              <RadioWithOther v-model="form.symmetry" :options="gradeOptions" name="symmetry" />
             </div>
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Cut:</label>
-              <div class="space-y-2">
-                <label v-for="grade in gradeOptions" :key="grade" class="flex items-center gap-2">
-                  <input type="radio" v-model="form.cut" :value="grade" />
-                  {{ grade }}
-                </label>
-              </div>
+              <RadioWithOther v-model="form.cut" :options="gradeOptions" name="cut" />
             </div>
           </div>
         </section>
@@ -241,49 +168,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-gray-700">Clarity</label>
-              <select v-model="form.clarity" class="input">
-                <option value="">Select Clarity</option>
-                <option value="FL">FL (Flawless)</option>
-                <option value="IF">IF (Internally Flawless)</option>
-                <option value="VVS1">VVS1</option>
-                <option value="VVS2">VVS2</option>
-                <option value="VS1">VS1</option>
-                <option value="VS2">VS2</option>
-                <option value="SI1">SI1</option>
-                <option value="SI2">SI2</option>
-                <option value="I1">I1</option>
-                <option value="I2">I2</option>
-                <option value="I3">I3</option>
-              </select>
+              <SelectWithOther v-model="form.clarity" :options="clarityOptions" placeholder="Select Clarity" />
             </div>
             <div>
               <label class="block text-gray-700">Colour</label>
-              <select v-model="form.colour" class="input">
-                <option value="">Select Colour</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="G">G</option>
-                <option value="H">H</option>
-                <option value="I">I</option>
-                <option value="J">J</option>
-                <option value="K">K</option>
-                <option value="L">L</option>
-                <option value="M">M</option>
-                <option value="N">N</option>
-                <option value="O">O</option>
-                <option value="P">P</option>
-                <option value="Q">Q</option>
-                <option value="R">R</option>
-                <option value="S">S</option>
-                <option value="T">T</option>
-                <option value="U">U</option>
-                <option value="V">V</option>
-                <option value="W">W</option>
-                <option value="X">X</option>
-                <option value="Y">Y</option>
-                <option value="Z">Z</option>
-              </select>
+              <SelectWithOther v-model="form.colour" :options="colourOptions" placeholder="Select Colour" />
             </div>
           </div>
         </section>
@@ -294,12 +183,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Strength:</label>
-              <div class="space-y-2">
-                <label v-for="strength in fluorescenceStrengths" :key="strength" class="flex items-center gap-2">
-                  <input type="radio" v-model="form.fluorescence_strength" :value="strength" />
-                  {{ strength }}
-                </label>
-              </div>
+              <RadioWithOther v-model="form.fluorescence_strength" :options="fluorescenceStrengths" name="fluorescence_strength" />
             </div>
             <div>
               <label class="block text-gray-700">Colour</label>
@@ -316,21 +200,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Evaluation Result:</label>
-              <div class="space-y-2">
-                <label v-for="result in resultOptions" :key="result" class="flex items-center gap-2">
-                  <input type="radio" v-model="form.result" :value="result" />
-                  {{ result }}
-                </label>
-              </div>
+              <RadioWithOther v-model="form.result" :options="resultOptions" name="diamond_result" />
             </div>
             <div>
               <label class="block text-gray-700 font-semibold mb-2">Stone Type:</label>
-              <div class="space-y-2">
-                <label v-for="type in stoneTypeOptions" :key="type" class="flex items-center gap-2">
-                  <input type="radio" v-model="form.stone_type" :value="type" />
-                  {{ type }}
-                </label>
-              </div>
+              <RadioWithOther v-model="form.stone_type" :options="stoneTypeOptions" name="stone_type" />
             </div>
           </div>
         </section>
@@ -489,12 +363,14 @@
 
 <script>
 import DashboardLayout from '@/Layouts/DashboardLayout.vue'
+import SelectWithOther from '@/components/SelectWithOther.vue'
+import RadioWithOther from '@/components/RadioWithOther.vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { ref, computed, watch, onMounted } from 'vue'
 import { diamondShapeOptions } from '@/constants/diamondEvaluationOptions'
 
 export default {
-  components: { DashboardLayout, Link },
+  components: { DashboardLayout, Link, SelectWithOther, RadioWithOther },
   props: {
     artifact: Object,
     existingEvaluation: Object,
@@ -659,7 +535,16 @@ export default {
       });
     });
 
+    const yesNoOptions = ['Yes', 'No']
+    const naturalLabOptions = ['Natural', 'Lab-Grown']
     const gradeOptions = ['Excellent', 'Very Good', 'Good', 'Fair', 'Poor']
+    const culetSizeOptions = ['None', 'Very Small', 'Small', 'Medium', 'Large', 'Very Large']
+    const clarityOptions = [
+      { value: 'FL', label: 'FL (Flawless)' },
+      { value: 'IF', label: 'IF (Internally Flawless)' },
+      'VVS1', 'VVS2', 'VS1', 'VS2', 'SI1', 'SI2', 'I1', 'I2', 'I3',
+    ]
+    const colourOptions = 'DEFGHIJKLMNOPQRSTUVWXYZ'.split('')
     const fluorescenceStrengths = ['V. Str.', 'Str.', 'Med.', 'Faint', 'None']
     const resultOptions = ['Pass', 'Fail', 'Reject']
     const stoneTypeOptions = ['Natural', 'Synthetic', 'Imitation', 'Treated']
@@ -744,7 +629,12 @@ export default {
       loading,
       today,
       diamondShapeOptions,
+      yesNoOptions,
+      naturalLabOptions,
       gradeOptions,
+      culetSizeOptions,
+      clarityOptions,
+      colourOptions,
       fluorescenceStrengths,
       resultOptions,
       stoneTypeOptions,

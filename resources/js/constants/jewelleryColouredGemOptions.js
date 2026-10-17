@@ -359,3 +359,21 @@ export function labelFromListSelection (stored, list) {
   }
   return stored
 }
+
+/**
+ * Convert a UI selection (listed label or custom text) into the stored form.
+ * Listed values keep index::label encoding; custom text is stored as-is.
+ * @param {string} value
+ * @param {string[]} list
+ * @returns {string}
+ */
+export function storeListSelection (value, list) {
+  if (value == null || value === '') {
+    return ''
+  }
+  const idx = list.indexOf(value)
+  if (idx >= 0) {
+    return encodeListSelection(idx, list)
+  }
+  return String(value)
+}

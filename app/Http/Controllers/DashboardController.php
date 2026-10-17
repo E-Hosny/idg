@@ -472,11 +472,11 @@ class DashboardController extends Controller
             // Stone Information
             'weight' => 'nullable|numeric|min:0',
             'shape' => 'nullable|string|max:255',
-            'laser_inscription' => 'nullable|in:Yes,No',
+            'laser_inscription' => 'nullable|string|max:255',
             
             // Lab-Grown Diamond Screen
-            'hpht_screen' => 'nullable|in:Natural,Lab-Grown',
-            'cvd_check' => 'nullable|in:Natural,Lab-Grown',
+            'hpht_screen' => 'nullable|string|max:255',
+            'cvd_check' => 'nullable|string|max:255',
             
             // Proportion Grade
             'diameter' => 'nullable|numeric|min:0',
@@ -495,21 +495,21 @@ class DashboardController extends Controller
             'culet_condition' => 'nullable|string|max:255',
             
             // Grade Information
-            'polish' => 'nullable|in:Excellent,Very Good,Good,Fair,Poor',
-            'symmetry' => 'nullable|in:Excellent,Very Good,Good,Fair,Poor',
-            'cut' => 'nullable|in:Excellent,Very Good,Good,Fair,Poor',
+            'polish' => 'nullable|string|max:255',
+            'symmetry' => 'nullable|string|max:255',
+            'cut' => 'nullable|string|max:255',
             
             // Visual Inspection
-            'clarity' => 'nullable|in:FL,IF,VVS1,VVS2,VS1,VS2,SI1,SI2,I1,I2,I3',
-            'colour' => 'nullable|in:D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z',
+            'clarity' => 'nullable|string|max:255',
+            'colour' => 'nullable|string|max:255',
             
             // Fluorescence
-            'fluorescence_strength' => 'nullable|in:V. Str.,Str.,Med.,Faint,None',
+            'fluorescence_strength' => 'nullable|string|max:255',
             'fluorescence_colour' => 'nullable|string|max:255',
             
             // Result
-            'result' => 'nullable|in:Pass,Fail,Reject',
-            'stone_type' => 'nullable|in:Natural,Synthetic,Imitation,Treated',
+            'result' => 'nullable|string|max:255',
+            'stone_type' => 'nullable|string|max:255',
             
             // Comments
             'comments' => 'nullable|string',
@@ -531,8 +531,8 @@ class DashboardController extends Controller
             'retaining_signature' => 'nullable|string|max:255',
             
             // Reporting Information
-            'report_done' => 'nullable|in:Yes,No',
-            'label_done' => 'nullable|in:Yes,No',
+            'report_done' => 'nullable|string|max:255',
+            'label_done' => 'nullable|string|max:255',
             'report_done_by' => 'nullable|string|max:255',
                          'report_date' => 'nullable|date',
              'checked_by' => 'nullable|string|max:255',
@@ -687,11 +687,11 @@ class DashboardController extends Controller
             'stamps' => 'nullable|array',
             
             // Lab-Grown Diamond Screen
-            'hpht_screen' => 'nullable|in:Natural,Lab-Grown',
+            'hpht_screen' => 'nullable|string|max:255',
             'hpht_diamond_pcs' => 'nullable|integer|min:0',
-            'cvd_check' => 'nullable|in:Natural,Lab-Grown',
+            'cvd_check' => 'nullable|string|max:255',
             'cvd_diamond_pcs' => 'nullable|integer|min:0',
-            'need_unmount' => 'nullable|in:Yes,No',
+            'need_unmount' => 'nullable|string|max:255',
             'unmount_reason' => 'nullable|string|max:255',
             
             // XRF Data
@@ -720,7 +720,7 @@ class DashboardController extends Controller
             'coloured_stones_group' => 'nullable|string|max:255',
             'coloured_stones_species' => 'nullable|string|max:500',
             'coloured_stones_variety' => 'nullable|string|max:500',
-            'coloured_stones_conclusion' => 'nullable|in:Natural,Synthetic',
+            'coloured_stones_conclusion' => 'nullable|string|max:255',
             'coloured_stones_note' => 'nullable|string|max:1000',
             
             // Result
@@ -2253,11 +2253,11 @@ class DashboardController extends Controller
             'product_types' => 'nullable|array',
             'metal_types' => 'nullable|array',
             'stamps' => 'nullable|array',
-            'hpht_screen' => 'nullable|in:Natural,Lab-Grown',
+            'hpht_screen' => 'nullable|string|max:255',
             'hpht_diamond_pcs' => 'nullable|integer|min:0',
-            'cvd_check' => 'nullable|in:Natural,Lab-Grown',
+            'cvd_check' => 'nullable|string|max:255',
             'cvd_diamond_pcs' => 'nullable|integer|min:0',
-            'need_unmount' => 'nullable|in:Yes,No',
+            'need_unmount' => 'nullable|string|max:255',
             'unmount_reason' => 'nullable|string|max:255',
             'xrf_data' => 'nullable|array',
             
