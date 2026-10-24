@@ -36,7 +36,10 @@ class TestRequestController extends Controller
             // Get confirmed test requests only (drafts are hidden until approved)
             $testRequests = TestRequest::where('qoyod_customer_id', $customerId)
                 ->where('status', '!=', 'draft')
-                ->with(['redeliveries' => fn ($q) => $q->orderByDesc('id')])
+                ->with([
+                    'redeliveries' => fn ($q) => $q->orderByDesc('id'),
+                    'surveyInvitations' => fn ($q) => $q->orderByDesc('id'),
+                ])
                 ->withCount([
                     'artifacts as pending_pieces_count' => function ($q) {
                         $q->whereIn('status', ['pending', 'under_evaluation']);
@@ -47,6 +50,17 @@ class TestRequestController extends Controller
                 ])
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $testRequests->each(function (TestRequest $testRequest) {
+                $latest = $testRequest->surveyInvitations->first();
+                $testRequest->setAttribute('survey', $latest ? [
+                    'status' => $latest->completed_at ? 'completed' : 'pending',
+                    'recipient_email' => $latest->recipient_email,
+                    'sent_at' => optional($latest->sent_at)->toDateTimeString(),
+                    'completed_at' => optional($latest->completed_at)->toDateTimeString(),
+                ] : null);
+                $testRequest->unsetRelation('surveyInvitations');
+            });
 
             // Format customer data
             $formattedCustomer = [

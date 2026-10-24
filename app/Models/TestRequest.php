@@ -45,6 +45,11 @@ class TestRequest extends Model
         return $this->hasMany(TestRequestRedelivery::class)->orderByDesc('id');
     }
 
+    public function surveyInvitations()
+    {
+        return $this->hasMany(CustomerSurveyInvitation::class);
+    }
+
     /**
      * Get signed document URL (from Spaces or local storage)
      */

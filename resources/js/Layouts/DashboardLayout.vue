@@ -85,6 +85,16 @@
               </Link>
 
               <Link
+                v-if="$page.props.auth.user?.role === 'admin' || $page.props.auth.user?.role === 'receptionist'"
+                :href="$route('dashboard.surveys.index')"
+                class="sidebar-link"
+                :class="{ 'active': $page.component.startsWith('Dashboard/Surveys') }"
+              >
+                <i class="fas fa-poll w-5 h-5 ml-3"></i>
+                <span class="ml-3">{{ $page.props.locale === 'ar' ? 'نتائج الاستبيانات' : 'Survey Results' }}</span>
+              </Link>
+
+              <Link
                 v-if="$page.props.auth.user?.role === 'admin'"
                 :href="$route('dashboard.users.index')"
                 class="sidebar-link"

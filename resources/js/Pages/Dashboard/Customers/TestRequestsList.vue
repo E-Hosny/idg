@@ -39,6 +39,12 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div v-if="$page.props.flash?.success" class="mb-4 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+        {{ $page.props.flash.success }}
+      </div>
+      <div v-if="$page.props.flash?.error" class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+        {{ $page.props.flash.error }}
+      </div>
       <!-- Test Requests List -->
       <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -139,6 +145,17 @@
                   >
                     <i class="fas fa-eye mr-1"></i>
                     View | عرض
+                  </button>
+                  <button
+                    type="button"
+                    @click="openSurveyModal(request)"
+                    class="inline-flex items-center px-3 py-1.5 bg-teal-700 text-white text-xs font-semibold rounded hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    title="ارسال استبيان"
+                  >
+                    <i class="fas fa-paper-plane mr-1"></i>
+                    ارسال استبيان
+                    <span v-if="request.survey?.status === 'completed'" class="mr-1 text-[10px] opacity-90">· تم الرد</span>
+                    <span v-else-if="request.survey" class="mr-1 text-[10px] opacity-90">· أُرسل</span>
                   </button>
                   <button
                     @click="downloadPdf(request.id)"
@@ -390,6 +407,45 @@
         </div>
       </div>
     </div>
+
+    <div
+      v-if="surveyModalOpen && surveyRequest"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeSurveyModal"
+    >
+      <form class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-200" @submit.prevent="sendSurvey">
+        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50">
+          <h3 class="text-lg font-bold text-gray-900">ارسال استبيان</h3>
+          <p class="text-sm text-gray-600 mt-1">
+            {{ surveyRequest.receiving_record_no }}
+            <span class="text-gray-400">|</span>
+            #{{ surveyRequest.id }}
+          </p>
+        </div>
+        <div class="px-6 py-5 space-y-3">
+          <p class="text-sm text-gray-700">
+            سيصل للعميل رابط عام لتعبئة الاستبيان. يمكنك تأكيد البريد المسجّل أو تعديله قبل الإرسال.
+          </p>
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-1">البريد الإلكتروني</label>
+            <input v-model="surveyEmail" type="email" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            <p v-if="surveyError" class="mt-1 text-sm text-red-600">{{ surveyError }}</p>
+          </div>
+          <p v-if="surveyRequest.survey?.recipient_email" class="text-xs text-gray-500">
+            آخر إرسال: {{ surveyRequest.survey.recipient_email }}
+            <span v-if="surveyRequest.survey.status === 'completed'"> — تم الرد، وسيُنشأ رابط جديد</span>
+          </p>
+        </div>
+        <div class="px-6 py-4 bg-gray-50 flex justify-end gap-2">
+          <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-sm" @click="closeSurveyModal">إلغاء</button>
+          <button type="submit" :disabled="surveySending" class="px-4 py-2 bg-teal-700 text-white rounded-md text-sm font-semibold disabled:opacity-50">
+            {{ surveySending ? 'جاري الإرسال...' : 'تأكيد الإرسال' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -425,7 +481,12 @@ export default {
       },
       redeliveryCreating: false,
       redeliveryUploading: false,
-      redeliveryUploadTargetId: null
+      redeliveryUploadTargetId: null,
+      surveyModalOpen: false,
+      surveyRequest: null,
+      surveyEmail: '',
+      surveySending: false,
+      surveyError: ''
     }
   },
   methods: {
@@ -669,6 +730,41 @@ export default {
         },
         onFinish: () => {
           this.labUploading = false
+        }
+      })
+    },
+    openSurveyModal(request) {
+      this.surveyRequest = request
+      this.surveyEmail = request.survey?.recipient_email || this.customer.email || ''
+      this.surveyError = ''
+      this.surveyModalOpen = true
+    },
+    closeSurveyModal() {
+      if (this.surveySending) return
+      this.surveyModalOpen = false
+      this.surveyRequest = null
+      this.surveyError = ''
+    },
+    sendSurvey() {
+      if (!this.surveyRequest) return
+      this.surveySending = true
+      this.surveyError = ''
+      this.$inertia.post(`/dashboard/test-requests/${this.surveyRequest.id}/survey`, {
+        email: this.surveyEmail
+      }, {
+        preserveScroll: true,
+        onSuccess: () => {
+          this.surveySending = false
+          this.surveyModalOpen = false
+          this.surveyRequest = null
+        },
+        onError: (errors) => {
+          this.surveySending = false
+          const msg = errors.email || errors.error || 'تعذر إرسال الاستبيان'
+          this.surveyError = Array.isArray(msg) ? msg[0] : msg
+        },
+        onFinish: () => {
+          this.surveySending = false
         }
       })
     },

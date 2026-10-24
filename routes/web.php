@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\TestRequestController;
+use App\Http\Controllers\CustomerSurveyController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MailTestController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -15,6 +16,11 @@ use App\Http\Controllers\TestSpaceController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/survey/{token}', [CustomerSurveyController::class, 'publicForm'])->name('survey.show');
+Route::post('/survey/{token}', [CustomerSurveyController::class, 'publicSubmit'])
+    ->middleware('throttle:10,1')
+    ->name('survey.submit');
 
 Route::get('/test-spaces', [TestSpaceController::class, 'testSpaces']);
 
@@ -86,6 +92,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('dashboard.analytics');
     // Customer routes - Restricted for lab role
     Route::middleware('restrict.lab')->group(function () {
+        Route::get('/dashboard/surveys', [CustomerSurveyController::class, 'index'])->name('dashboard.surveys.index');
+        Route::get('/dashboard/surveys/{survey}', [CustomerSurveyController::class, 'show'])->name('dashboard.surveys.show');
+
         Route::get('/dashboard/customers', [DashboardController::class, 'customers'])->name('dashboard.customers');
         Route::post('/dashboard/customers', [DashboardController::class, 'storeCustomer'])->name('dashboard.customers.store');
         Route::post('/dashboard/customers/artifacts', [DashboardController::class, 'storeCustomerArtifact'])->name('dashboard.customers.artifacts.store');
@@ -121,6 +130,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/test-requests/{testRequest}/download-pdf', [TestRequestController::class, 'downloadPdfDirect'])->name('dashboard.test-requests.download-pdf');
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
+        Route::post('/dashboard/test-requests/{testRequest}/survey', [CustomerSurveyController::class, 'send'])->name('dashboard.test-requests.surveys.send');
     });
 
     // Lab workflows from Items dashboard (print lab file, redelivery batches): allowed for lab + reception + admin (auth only).
