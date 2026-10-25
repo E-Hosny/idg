@@ -213,8 +213,8 @@ class QoyodService
                 'data' => $customerData
             ]);
 
-            // Format address data for Qoyod
-            $formattedData = $this->formatCustomerDataForQoyod($customerData);
+            // Always send address blocks on update so cleared fields replace the stored address.
+            $formattedData = $this->formatCustomerDataForQoyod($customerData, true);
             
             Log::info('Formatted customer data for update', [
                 'customer_id' => $customerId,
@@ -374,9 +374,11 @@ class QoyodService
     }
 
     /**
-     * Format customer data for Qoyod API
+     * Format customer data for Qoyod API.
+     * Updates must send blank address fields as empty strings. Omitting the
+     * address block leaves the previous billing or shipping address in Qoyod.
      */
-    private function formatCustomerDataForQoyod($customerData)
+    private function formatCustomerDataForQoyod($customerData, bool $persistEmptyAddresses = false)
     {
         $formatted = [
             'name' => $customerData['name'] ?? null,
@@ -401,24 +403,28 @@ class QoyodService
         ];
 
         // Use the correct format from Qoyod support: billing_address_attributes and shipping_address_attributes
-        if (!empty($customerData['billing_address']) || !empty($customerData['billing_city']) || !empty($customerData['billing_state']) || !empty($customerData['billing_postal_code']) || !empty($customerData['billing_country'])) {
-            $formatted['billing_address_attributes'] = [
-                'billing_address' => $customerData['billing_address'] ?? null,
-                'billing_city' => $customerData['billing_city'] ?? null,
-                'billing_state' => $customerData['billing_state'] ?? null,
-                'billing_zip' => $customerData['billing_postal_code'] ?? null,
-                'billing_country' => $customerData['billing_country'] ?? null,
-            ];
+        $billingAddress = $this->qoyodAddressAttributes($customerData, [
+            'billing_address' => 'billing_address',
+            'billing_city' => 'billing_city',
+            'billing_state' => 'billing_state',
+            'billing_zip' => 'billing_postal_code',
+            'billing_country' => 'billing_country',
+        ], $persistEmptyAddresses);
+
+        if ($billingAddress !== null) {
+            $formatted['billing_address_attributes'] = $billingAddress;
         }
 
-        if (!empty($customerData['shipping_address']) || !empty($customerData['shipping_city']) || !empty($customerData['shipping_state']) || !empty($customerData['shipping_postal_code']) || !empty($customerData['shipping_country'])) {
-            $formatted['shipping_address_attributes'] = [
-                'shipping_address' => $customerData['shipping_address'] ?? null,
-                'shipping_city' => $customerData['shipping_city'] ?? null,
-                'shipping_state' => $customerData['shipping_state'] ?? null,
-                'shipping_zip' => $customerData['shipping_postal_code'] ?? null,
-                'shipping_country' => $customerData['shipping_country'] ?? null,
-            ];
+        $shippingAddress = $this->qoyodAddressAttributes($customerData, [
+            'shipping_address' => 'shipping_address',
+            'shipping_city' => 'shipping_city',
+            'shipping_state' => 'shipping_state',
+            'shipping_zip' => 'shipping_postal_code',
+            'shipping_country' => 'shipping_country',
+        ], $persistEmptyAddresses);
+
+        if ($shippingAddress !== null) {
+            $formatted['shipping_address_attributes'] = $shippingAddress;
         }
 
         // Use the correct format from Qoyod support: customer_details as indexed array
@@ -441,6 +447,44 @@ class QoyodService
         }
 
         return $formatted;
+    }
+
+    /**
+     * Map form address fields to Qoyod nested attributes.
+     * Blank values are omitted on create, and sent as empty strings on update.
+     */
+    private function qoyodAddressAttributes(array $customerData, array $fieldMap, bool $persistWhenEmpty): ?array
+    {
+        $attributes = [];
+        $hasValue = false;
+
+        foreach ($fieldMap as $apiField => $inputField) {
+            $value = trim((string) ($customerData[$inputField] ?? ''));
+            if ($value !== '') {
+                $hasValue = true;
+            }
+
+            $attributes[$apiField] = $persistWhenEmpty ? $value : ($value !== '' ? $value : null);
+        }
+
+        if (!$hasValue && !$persistWhenEmpty) {
+            return null;
+        }
+
+        if (!$hasValue && $persistWhenEmpty) {
+            // Qoyod ignores a nested address when every permitted field is blank.
+            // Billing accepts building_number, which is not part of the quotation
+            // address line, so the visible fields can be stored as empty.
+            // Shipping has no separate writable field, so a zero-width space is
+            // stored in the street and the form still looks empty.
+            if (array_key_exists('billing_address', $fieldMap)) {
+                $attributes['building_number'] = '0';
+            } else {
+                $attributes['shipping_address'] = "\u{200B}";
+            }
+        }
+
+        return $attributes;
     }
 
     /**

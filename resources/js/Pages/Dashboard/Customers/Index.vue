@@ -2296,8 +2296,9 @@ export default {
         const possibleFields = fieldMappings[field] || [field];
         
         for (const possibleField of possibleFields) {
-          if (addressData[possibleField] && addressData[possibleField].trim() !== '') {
-            return addressData[possibleField];
+          const value = String(addressData[possibleField] ?? '').replace(/\u200B/g, '').trim();
+          if (value !== '') {
+            return value;
           }
         }
       }
@@ -2311,7 +2312,9 @@ export default {
       
       // If it's a string, return it directly for address field
       if (typeof addressData === 'string') {
-        return field.includes('address') ? addressData : null;
+        if (!field.includes('address')) return null;
+        const value = addressData.replace(/\u200B/g, '').trim();
+        return value !== '' ? value : null;
       }
       
       // If it's an object, extract the specific field
@@ -2333,8 +2336,9 @@ export default {
         const possibleFields = fieldMappings[field] || [field];
         
         for (const possibleField of possibleFields) {
-          if (addressData[possibleField] && addressData[possibleField].trim() !== '') {
-            return addressData[possibleField];
+          const value = String(addressData[possibleField] ?? '').replace(/\u200B/g, '').trim();
+          if (value !== '') {
+            return value;
           }
         }
       }
