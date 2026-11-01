@@ -884,7 +884,7 @@
                     @endif
                     <tr>
                         <td class="delivery-doc-label">Received by:<br>أستلم بواسطة</td>
-                        <td class="delivery-doc-value" style="width: 17%;">{{ $testRequest->received_by ?? '-' }}</td>
+                        <td class="delivery-doc-value" style="width: 17%;">{{ !empty($labDeliveryFile) && empty($redeliveryFromLabPrint) ? ($labReceiverName ?? '') : ($testRequest->received_by ?? '-') }}</td>
                         <td class="delivery-doc-label">Signature:<br>التوقيع</td>
                         <td class="delivery-doc-value" style="width: 20%;">
                             @if(empty($labDeliveryFile))

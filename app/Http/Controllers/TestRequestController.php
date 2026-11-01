@@ -421,12 +421,16 @@ class TestRequestController extends Controller
     }
 
     /**
-     * Only the lab role is kept from the customer name and contact details.
-     * Admin and receptionist prints keep every customer field.
+     * The lab role never sees the customer name. The lab handover sheet
+     * also omits it for every role, because that file is what the lab keeps.
+     * Other roles still see the customer on the regular test-request print.
      */
     private function presentPrintData(array $data, array $flags = []): array
     {
-        $hideCustomerIdentity = auth()->user()?->isLab() === true;
+        $viewer = auth()->user();
+        $isLab = $viewer?->isLab() === true;
+        $labHandoverFile = !empty($flags['labDeliveryFile']) && empty($flags['redeliveryFromLabPrint']);
+        $hideCustomerIdentity = $isLab || $labHandoverFile;
 
         if ($hideCustomerIdentity) {
             $data['formattedCustomer']['full_name'] = '';
@@ -439,6 +443,7 @@ class TestRequestController extends Controller
 
         return array_merge($data, $flags, [
             'hideCustomerIdentity' => $hideCustomerIdentity,
+            'labReceiverName' => $isLab ? (string) $viewer->name : '',
         ]);
     }
 
