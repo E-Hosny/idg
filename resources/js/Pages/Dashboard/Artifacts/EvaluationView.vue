@@ -7,7 +7,7 @@
           <div>
             <p><strong>{{ __('Item Code') }}:</strong> {{ artifact.artifact_code }}</p>
             <p><strong>{{ __('Type') }}:</strong> {{ artifact.type }}</p>
-            <p><strong>{{ __('Client') }}:</strong> {{ artifact.client?.full_name || '-' }}</p>
+            <p v-if="$page.props.auth.user?.role !== 'lab'"><strong>{{ __('Client') }}:</strong> {{ artifact.client?.full_name || '-' }}</p>
           </div>
           <div>
             <p><strong>{{ __('Evaluation Date') }}:</strong> {{ formatDate(evaluation.evaluation_date || evaluation.created_at) }}</p>

@@ -525,7 +525,7 @@
         </div>
 
         <!-- Customer Information -->
-        @if(!empty($labDeliveryFile))
+        @if(!empty($hideCustomerIdentity))
         <table class="info-table">
             <tr>
                 <td class="label">كود العميل<br>Customer Code</td>
@@ -676,72 +676,7 @@
                                 default: $statusAr = $status;
                             }
                             
-                            // حساب تاريخ الاستلام المتوقع
-                            $expectedDate = '-';
-                            if ($artifact->expected_date) {
-                                $expectedDate = \Carbon\Carbon::parse($artifact->expected_date)->format('d/m/Y');
-                            } elseif ($artifact->delivery_type) {
-                                $today = \Carbon\Carbon::now();
-                                switch($artifact->delivery_type) {
-                                    case 'Regular':
-                                        // بعد 7 أيام عمل (تجنب الجمعة)
-                                        $date = $today->copy();
-                                        $addedDays = 0;
-                                        while ($addedDays < 7) {
-                                            $date->addDay();
-                                            if ($date->dayOfWeek !== 5) { // تجنب الجمعة
-                                                $addedDays++;
-                                            }
-                                        }
-                                        $expectedDate = $date->format('d/m/Y');
-                                        break;
-                                    case 'Express Service':
-                                    case 'Same Day':
-                                        // نفس اليوم - إذا كان جمعة، اجعله السبت
-                                        $date = $today->copy();
-                                        if ($date->dayOfWeek === 5) { // إذا كان جمعة
-                                            $date->addDay(); // انتقل إلى السبت
-                                        }
-                                        $expectedDate = $date->format('d/m/Y');
-                                        break;
-                                    case '24 hours':
-                                        // الغد (تجنب الجمعة)
-                                        $date = $today->copy();
-                                        $addedDays = 0;
-                                        while ($addedDays < 1) {
-                                            $date->addDay();
-                                            if ($date->dayOfWeek !== 5) {
-                                                $addedDays++;
-                                            }
-                                        }
-                                        $expectedDate = $date->format('d/m/Y');
-                                        break;
-                                    case '48 hours':
-                                        // بعد الغد (تجنب الجمعة)
-                                        $date = $today->copy();
-                                        $addedDays = 0;
-                                        while ($addedDays < 2) {
-                                            $date->addDay();
-                                            if ($date->dayOfWeek !== 5) {
-                                                $addedDays++;
-                                            }
-                                        }
-                                        $expectedDate = $date->format('d/m/Y');
-                                        break;
-                                    case '72 hours':
-                                        // بعد 3 أيام عمل (تجنب الجمعة)
-                                        $date = $today->copy();
-                                        $addedDays = 0;
-                                        while ($addedDays < 3) {
-                                            $date->addDay();
-                                            if ($date->dayOfWeek !== 5) {
-                                                $addedDays++;
-                                            }
-                                        }
-                                        $expectedDate = $date->format('d/m/Y');
-                                        break;
-                                }
-                            }
+                            $expectedDate = $artifact->deliveryDateLabel($testRequest->received_date ?? $testRequest->created_at);
                         @endphp
                         <tr>
                             <td>{{ $index + 1 }}</td>
@@ -879,9 +814,11 @@
         <!-- Tail: pinned to bottom of sheet when printing -->
         @php
             $todayFormatted = \Carbon\Carbon::now()->format('d/m/Y');
-            $deliveryDocCreated = $testRequest->created_at
-                ? $testRequest->created_at->format('d/m/Y')
-                : $todayFormatted;
+            $deliveryDocCreated = !empty($labDeliveryFile)
+                ? $todayFormatted
+                : ($testRequest->created_at
+                    ? $testRequest->created_at->format('d/m/Y')
+                    : $todayFormatted);
         @endphp
         <div class="print-page-tail" dir="ltr">
         <div class="delivery-section">
@@ -937,7 +874,7 @@
                 <tbody>
                     <tr>
                         <td class="delivery-doc-label">Delivered by:<br>سلّم بواسطة</td>
-                        <td class="delivery-doc-value" style="width: 17%;">{{ $formattedCustomer['company_representative_name'] ?? '-' }}</td>
+                        <td class="delivery-doc-value" style="width: 17%;">{{ empty($hideCustomerIdentity) ? ($formattedCustomer['company_representative_name'] ?? '-') : '' }}</td>
                         <td class="delivery-doc-label">Signature:<br>التوقيع</td>
                         <td class="delivery-doc-value" style="width: 20%;"><div class="delivery-doc-sig-box"></div></td>
                         <td class="delivery-doc-label">Date:<br>التاريخ</td>

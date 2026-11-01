@@ -79,7 +79,7 @@
                 <th class="px-4 py-2 text-left font-bold">{{ __('Receiving Request No') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Type') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Weight') }}</th>
-                <th class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
+                <th v-if="$page.props.auth.user?.role !== 'lab'" class="px-4 py-2 text-left font-bold">{{ __('Client') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Issue Date') }}</th>
                 <th class="px-4 py-2 text-left font-bold">{{ __('Actions') }}</th>
               </tr>
@@ -108,7 +108,7 @@
                   </span>
                   <span v-else class="text-gray-400">-</span>
                 </td>
-                <td class="px-4 py-2">{{ artifact.client ? artifact.client.full_name : '-' }}</td>
+                <td v-if="$page.props.auth.user?.role !== 'lab'" class="px-4 py-2">{{ artifact.client ? artifact.client.full_name : '-' }}</td>
                 <td class="px-4 py-2">{{ formatDate(artifact.latest_certificate?.created_at) }}</td>
                 <td class="px-4 py-2">
                   <div class="flex space-x-2">

@@ -420,6 +420,28 @@ class TestRequestController extends Controller
     }
 
     /**
+     * Only the lab role is kept from the customer name and contact details.
+     * Admin and receptionist prints keep every customer field.
+     */
+    private function presentPrintData(array $data, array $flags = []): array
+    {
+        $hideCustomerIdentity = auth()->user()?->isLab() === true;
+
+        if ($hideCustomerIdentity) {
+            $data['formattedCustomer']['full_name'] = '';
+            $data['formattedCustomer']['company_name'] = null;
+            $data['formattedCustomer']['phone'] = null;
+            $data['formattedCustomer']['email'] = null;
+            $data['formattedCustomer']['address'] = null;
+            $data['formattedCustomer']['company_representative_name'] = null;
+        }
+
+        return array_merge($data, $flags, [
+            'hideCustomerIdentity' => $hideCustomerIdentity,
+        ]);
+    }
+
+    /**
      * Show print page for test request (replaces PDF download with browser print)
      */
     public function showPrintPage(TestRequest $testRequest)
@@ -427,9 +449,10 @@ class TestRequestController extends Controller
         try {
             \Log::info('Showing test request print page', ['test_request_id' => $testRequest->id]);
 
-            $data = $this->buildTestRequestPrintData($testRequest);
-
-            return view('test-request-print', array_merge($data, ['labDeliveryFile' => false]));
+            return view('test-request-print', $this->presentPrintData(
+                $this->buildTestRequestPrintData($testRequest),
+                ['labDeliveryFile' => false]
+            ));
         } catch (\RuntimeException $e) {
             \Log::warning('Test request print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 
@@ -455,9 +478,10 @@ class TestRequestController extends Controller
         try {
             \Log::info('Showing lab delivery print page', ['test_request_id' => $testRequest->id]);
 
-            $data = $this->buildTestRequestPrintData($testRequest);
-
-            return view('test-request-print', array_merge($data, ['labDeliveryFile' => true]));
+            return view('test-request-print', $this->presentPrintData(
+                $this->buildTestRequestPrintData($testRequest),
+                ['labDeliveryFile' => true]
+            ));
         } catch (\RuntimeException $e) {
             \Log::warning('Lab delivery print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 
@@ -536,13 +560,14 @@ class TestRequestController extends Controller
                 'redelivery_id' => $redelivery->id,
             ]);
 
-            $data = $this->buildTestRequestPrintData($testRequest);
-
-            return view('test-request-print', array_merge($data, [
-                'labDeliveryFile' => true,
-                'redeliveryFromLabPrint' => true,
-                'redelivery' => $redelivery,
-            ]));
+            return view('test-request-print', $this->presentPrintData(
+                $this->buildTestRequestPrintData($testRequest),
+                [
+                    'labDeliveryFile' => true,
+                    'redeliveryFromLabPrint' => true,
+                    'redelivery' => $redelivery,
+                ]
+            ));
         } catch (\RuntimeException $e) {
             \Log::warning('Redelivery print: ' . $e->getMessage(), ['test_request_id' => $testRequest->id]);
 

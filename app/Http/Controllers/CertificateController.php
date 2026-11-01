@@ -28,7 +28,7 @@ class CertificateController extends Controller
             ->get();
 
         return Inertia::render('Dashboard/Certificates/Index', [
-            'artifact' => $artifact->load('client'),
+            'artifact' => $artifact->load(auth()->user()?->isLab() ? [] : ['client'])->concealCustomerForLab(),
             'certificates' => $certificates,
         ]);
     }
@@ -119,6 +119,7 @@ class CertificateController extends Controller
     public function show(Certificate $certificate)
     {
         $certificateData = $certificate->load(['artifact.client', 'generatedBy']);
+        $certificateData->artifact?->concealCustomerForLab();
         
         // Add QR code URL to the response
         $certificateData->qr_code_url = $certificate->qr_code_url;
@@ -199,6 +200,7 @@ class CertificateController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(15)
             ->withQueryString();
+        $artifacts->getCollection()->each->concealCustomerForLab();
 
         return Inertia::render('Dashboard/Certificates/Certified', [
             'artifacts' => $artifacts,

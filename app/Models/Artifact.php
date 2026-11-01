@@ -67,6 +67,72 @@ class Artifact extends Model
 
     public $translatable = ['title', 'description'];
 
+    /**
+     * Promised piece delivery date.
+     * A saved specific date wins. Otherwise count business days from the
+     * receiving date, skipping Friday, so the printed date follows the piece
+     * instead of the day the report is opened.
+     */
+    public function deliveryDateLabel($anchor = null): string
+    {
+        if ($this->specific_delivery_date) {
+            return \Carbon\Carbon::parse($this->specific_delivery_date)->format('d/m/Y');
+        }
+
+        if ($this->expected_date) {
+            return \Carbon\Carbon::parse($this->expected_date)->format('d/m/Y');
+        }
+
+        $start = $anchor
+            ? \Carbon\Carbon::parse($anchor)->startOfDay()
+            : ($this->created_at ? $this->created_at->copy()->startOfDay() : \Carbon\Carbon::now()->startOfDay());
+
+        $days = match ($this->delivery_type) {
+            'Regular' => 7,
+            'Express Service', 'Same Day' => 0,
+            '24 hours' => 1,
+            '48 hours' => 2,
+            '72 hours' => 3,
+            default => null,
+        };
+
+        if ($days === null) {
+            return '-';
+        }
+
+        $date = $start->copy();
+        if ($days === 0) {
+            if ($date->dayOfWeek === 5) {
+                $date->addDay();
+            }
+
+            return $date->format('d/m/Y');
+        }
+
+        $added = 0;
+        while ($added < $days) {
+            $date->addDay();
+            if ($date->dayOfWeek !== 5) {
+                $added++;
+            }
+        }
+
+        return $date->format('d/m/Y');
+    }
+
+    /**
+     * Lab users evaluate pieces without seeing who the customer is.
+     */
+    public function concealCustomerForLab(): static
+    {
+        if (auth()->user()?->isLab()) {
+            $this->unsetRelation('client');
+            $this->makeHidden(['client']);
+        }
+
+        return $this;
+    }
+
     // Relationships
     public function category(): BelongsTo
     {

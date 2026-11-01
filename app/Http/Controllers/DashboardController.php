@@ -137,7 +137,12 @@ class DashboardController extends Controller
      */
     public function artifactsForReceiving(Request $request, TestRequest $testRequest)
     {
-        $query = Artifact::with(['category', 'assignedTo', 'client', 'testRequest'])
+        $with = ['category', 'assignedTo', 'testRequest'];
+        if (! auth()->user()?->isLab()) {
+            $with[] = 'client';
+        }
+
+        $query = Artifact::with($with)
             ->where('test_request_id', $testRequest->id);
 
         if ($request->filled('code')) {
@@ -155,6 +160,7 @@ class DashboardController extends Controller
         }
 
         $artifacts = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        $artifacts->getCollection()->each->concealCustomerForLab();
 
         return Inertia::render('Dashboard/Artifacts/ReceivingShow', [
             'testRequest' => [
@@ -187,6 +193,7 @@ class DashboardController extends Controller
         $allEvaluations = collect();
         
         foreach ($generalEvaluations as $eval) {
+            $eval->artifact?->concealCustomerForLab();
             $allEvaluations->push([
                 'id' => $eval->id,
                 'type' => 'general',
@@ -203,6 +210,7 @@ class DashboardController extends Controller
         }
 
         foreach ($diamondEvaluations as $eval) {
+            $eval->artifact?->concealCustomerForLab();
             $allEvaluations->push([
                 'id' => $eval->id,
                 'type' => 'diamond',
@@ -319,8 +327,10 @@ class DashboardController extends Controller
                 ->first();
         }
 
+        $relations = auth()->user()?->isLab() ? ['testRequest'] : ['testRequest', 'client'];
+
         return Inertia::render($evaluationPage, [
-            'artifact' => $artifact->load(['testRequest', 'client']),
+            'artifact' => $artifact->load($relations)->concealCustomerForLab(),
             'existingEvaluation' => $existingEvaluation,
         ]);
     }
@@ -823,7 +833,7 @@ class DashboardController extends Controller
         }
 
         return Inertia::render($evaluationPage, [
-            'artifact' => $artifact->load('client'),
+            'artifact' => $artifact->load(auth()->user()?->isLab() ? [] : ['client'])->concealCustomerForLab(),
             'evaluation' => $evaluation,
         ]);
     }
@@ -865,6 +875,7 @@ class DashboardController extends Controller
             ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
+        $artifacts->getCollection()->each->concealCustomerForLab();
 
         return Inertia::render('Dashboard/Artifacts/EvaluatedIndex', [
             'artifacts' => $artifacts,
@@ -1990,7 +2001,7 @@ class DashboardController extends Controller
         ]);
 
         return Inertia::render($evaluationPage, [
-            'artifact' => $artifact->load('client'),
+            'artifact' => $artifact->load(auth()->user()?->isLab() ? [] : ['client'])->concealCustomerForLab(),
             'existingEvaluation' => $evaluation,
             'isEditing' => true,
         ]);
@@ -2055,7 +2066,7 @@ class DashboardController extends Controller
         ]);
 
         return Inertia::render('Dashboard/Artifacts/EvaluateDiamond', [
-            'artifact' => $evaluation->artifact->load('client'),
+            'artifact' => $evaluation->artifact->load(auth()->user()?->isLab() ? [] : ['client'])->concealCustomerForLab(),
             'existingEvaluation' => $evaluation,
             'isEditing' => true,
         ]);

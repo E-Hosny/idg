@@ -7,7 +7,7 @@
         <div class="flex justify-between items-center text-sm text-gray-600">
           <div>
             <p><strong>{{ __('Item Code') }}:</strong> {{ artifact.artifact_code }}</p>
-            <p><strong>{{ __('Client') }}:</strong> {{ artifact.client?.full_name || '-' }}</p>
+            <p v-if="$page.props.auth.user?.role !== 'lab'"><strong>{{ __('Client') }}:</strong> {{ artifact.client?.full_name || '-' }}</p>
           </div>
           <div>
             <p><strong>{{ __('Evaluation Date') }}:</strong> {{ formatDate(evaluation.test_date) }}</p>

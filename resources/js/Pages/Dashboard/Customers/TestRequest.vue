@@ -258,10 +258,7 @@
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
                     <div class="text-sm print:text-xs text-black">
-                      {{ artifact.delivery_type === 'Specific Date' && artifact.specific_delivery_date 
-                          ? formatDate(artifact.specific_delivery_date) 
-                          : (artifact.expected_date ? formatDate(artifact.expected_date) : calculateExpectedDate(artifact.delivery_type)) 
-                      }}
+                      {{ deliveryDateLabel(artifact) }}
                     </div>
                   </td>
                   <td class="border border-gray-400 px-3 py-2 print:px-1 print:py-1 text-center">
@@ -1213,31 +1210,30 @@ export default {
       return `${day}/${month}/${year}`
     },
     formatDate(date) {
-      if (!date) return this.getCurrentDate()
-      
-      // Handle different date formats
-      let dateObj
-      if (typeof date === 'string') {
-        // Handle ISO string format
-        if (date.includes('T')) {
-          dateObj = new Date(date)
-        } else {
-          // Handle YYYY-MM-DD format
-          dateObj = new Date(date)
-        }
-      } else {
-        dateObj = new Date(date)
-      }
-      
-      // Check if date is valid
-      if (isNaN(dateObj.getTime())) {
-        return this.getCurrentDate()
-      }
-      
+      const dateObj = this.parseLocalDate(date)
+      if (!dateObj) return this.getCurrentDate()
+
       const day = String(dateObj.getDate()).padStart(2, '0')
       const month = String(dateObj.getMonth() + 1).padStart(2, '0')
       const year = dateObj.getFullYear()
       return `${day}/${month}/${year}`
+    },
+    parseLocalDate(value) {
+      if (!value) return null
+      const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/)
+      if (match) {
+        return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+      }
+      const parsed = new Date(value)
+      return Number.isNaN(parsed.getTime()) ? null : parsed
+    },
+    deliveryDateLabel(artifact) {
+      if (artifact?.specific_delivery_date) return this.formatDate(artifact.specific_delivery_date)
+      if (artifact?.expected_date) return this.formatDate(artifact.expected_date)
+      return this.calculateExpectedDate(
+        artifact?.delivery_type,
+        this.testRequest?.received_date || this.testRequest?.created_at
+      )
     },
     printPage() {
       // Open dedicated print page in new tab
@@ -1372,10 +1368,10 @@ export default {
       this.showSuccessModal = false;
     },
     
-    calculateExpectedDate(deliveryType) {
+    calculateExpectedDate(deliveryType, anchor = null) {
       if (!deliveryType) return '-';
       
-      const today = new Date();
+      const today = this.parseLocalDate(anchor) || new Date();
       let targetDate = new Date(today);
       
       switch (deliveryType) {
