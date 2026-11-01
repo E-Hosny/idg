@@ -12,6 +12,7 @@ use App\Services\WorkflowNotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TestRequestController extends Controller
 {
@@ -468,6 +469,90 @@ class TestRequestController extends Controller
             return redirect()->back()
                 ->withErrors(['error' => 'An error occurred while showing print page: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * HOT-F05: reception hands the reports and pieces back to the customer.
+     */
+    public function showCustomerDeliveryPrint(Request $request, TestRequest $testRequest)
+    {
+        try {
+            $data = $this->buildTestRequestPrintData($testRequest);
+            $artifacts = $data['artifacts'];
+            $artifacts->load('certificates');
+
+            $reportNumbers = $artifacts
+                ->flatMap(fn ($artifact) => $artifact->certificates)
+                ->map(fn ($certificate) => $certificate->report_number ?: $certificate->certificate_number)
+                ->filter()
+                ->unique()
+                ->values();
+
+            $alreadyDelivered = $testRequest->customer_delivered_at !== null;
+            $customer = $data['formattedCustomer'];
+            $company = trim((string) ($customer['company_name'] ?? ''));
+            $name = trim((string) ($customer['full_name'] ?? ''));
+            $customerLabel = $company !== '' && $name !== '' && $company !== $name
+                ? $company.' / '.$name
+                : ($company !== '' ? $company : $name);
+
+            return view('customer-delivery-print', [
+                'testRequest' => $testRequest,
+                'customerLabel' => $customerLabel !== '' ? $customerLabel : '-',
+                'reportNumbers' => $reportNumbers->isNotEmpty()
+                    ? $reportNumbers->implode('، ')
+                    : ($testRequest->receiving_record_no ?? '-'),
+                'reportsCount' => $reportNumbers->count(),
+                'piecesCount' => $artifacts->count(),
+                'deliveredBy' => $alreadyDelivered
+                    ? ($testRequest->customer_delivered_by ?: '-')
+                    : (auth()->user()?->name ?: '-'),
+                'receivedBy' => $alreadyDelivered
+                    ? (string) ($testRequest->customer_received_by ?? '')
+                    : Str::limit(trim((string) $request->query('received_by', '')), 255, ''),
+                'receivedDate' => $alreadyDelivered
+                    ? $testRequest->customer_delivered_at->format('d/m/Y')
+                    : now()->format('d/m/Y'),
+                'note' => $alreadyDelivered
+                    ? (string) ($testRequest->customer_delivery_note ?? '')
+                    : Str::limit(trim((string) $request->query('note', '')), 1000, ''),
+            ]);
+        } catch (\RuntimeException $e) {
+            return redirect()->route('dashboard.customers')
+                ->withErrors(['error' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing customer delivery print', [
+                'test_request_id' => $testRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'تعذر فتح تقرير التسليم للعميل.']);
+        }
+    }
+
+    /**
+     * Record that reception delivered this request's pieces to the customer.
+     */
+    public function deliverToCustomer(Request $request, TestRequest $testRequest)
+    {
+        $validated = $request->validate([
+            'received_by' => 'nullable|string|max:255',
+            'note' => 'nullable|string|max:1000',
+        ]);
+
+        if ($testRequest->customer_delivered_at) {
+            return back()->with('success', 'تم تسجيل التسليم للعميل مسبقاً.');
+        }
+
+        $testRequest->update([
+            'customer_delivered_at' => now(),
+            'customer_delivered_by' => auth()->user()?->name,
+            'customer_received_by' => $validated['received_by'] ?? null,
+            'customer_delivery_note' => $validated['note'] ?? null,
+        ]);
+
+        return back()->with('success', 'تم تسليم القطع للعميل.');
     }
 
     /**

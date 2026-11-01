@@ -131,6 +131,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard/test-requests/{testRequest}/print', [TestRequestController::class, 'showPrintPage'])->name('dashboard.test-requests.print');
         Route::post('/dashboard/test-requests/{testRequest}/upload-signed', [TestRequestController::class, 'uploadSignedDocument'])->name('dashboard.test-requests.upload-signed');
         Route::post('/dashboard/test-requests/{testRequest}/survey', [CustomerSurveyController::class, 'send'])->name('dashboard.test-requests.surveys.send');
+        Route::get('/dashboard/test-requests/{testRequest}/print-customer-delivery', [TestRequestController::class, 'showCustomerDeliveryPrint'])->name('dashboard.test-requests.print-customer-delivery');
+        Route::post('/dashboard/test-requests/{testRequest}/deliver-to-customer', [TestRequestController::class, 'deliverToCustomer'])->name('dashboard.test-requests.deliver-to-customer');
     });
 
     // Lab workflows from Items dashboard (print lab file, redelivery batches): allowed for lab + reception + admin (auth only).

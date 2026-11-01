@@ -20,11 +20,16 @@ class TestRequest extends Model
         'notes',
         'signed_document_path',
         'lab_delivery_signed_document_path',
+        'customer_delivered_at',
+        'customer_delivered_by',
+        'customer_received_by',
+        'customer_delivery_note',
     ];
 
     protected $casts = [
         'received_date' => 'date',
         'delivery_date' => 'date',
+        'customer_delivered_at' => 'datetime',
     ];
 
     protected $appends = [

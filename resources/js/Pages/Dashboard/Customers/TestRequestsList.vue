@@ -126,6 +126,13 @@
                   <span :class="getStatusClass(request.status)" class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
                     {{ getStatusLabel(request.status) }}
                   </span>
+                  <span
+                    v-if="request.customer_delivered_at"
+                    class="mr-1 mt-1 px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-800"
+                    :title="request.customer_delivered_by || ''"
+                  >
+                    مسلّم للعميل
+                  </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <span v-if="request.signed_document_path" class="text-green-600 font-semibold">
@@ -195,6 +202,19 @@
                       v-if="request.lab_delivery_signed_document_path"
                       class="mr-1 text-[10px] font-bold uppercase tracking-wide opacity-90"
                     >موقع</span>
+                  </button>
+                  <button
+                    type="button"
+                    @click="openCustomerDeliveryModal(request)"
+                    :class="customerDeliveryButtonClass(request)"
+                    :title="request.customer_delivered_at ? 'تم التسليم للعميل' : 'التسليم للعميل'"
+                  >
+                    <i :class="request.customer_delivered_at ? 'fas fa-check-circle' : 'fas fa-handshake'" class="mr-1"></i>
+                    <span>التسليم للعميل</span>
+                    <span
+                      v-if="request.customer_delivered_at"
+                      class="mr-1 text-[10px] font-bold opacity-90"
+                    >تم</span>
                   </button>
                   <button
                     type="button"
@@ -298,6 +318,75 @@
             <span>عرض الملف الموقع</span>
           </a>
           <p v-else class="text-center text-xs text-gray-500">لا يوجد ملف موقع بعد — ارفع ملف PDF بعد التوقيع</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer delivery -->
+    <div
+      v-if="customerDeliveryModalOpen && selectedCustomerDelivery"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closeCustomerDeliveryModal"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-gray-200">
+        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex justify-between items-start gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">التسليم للعميل</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              {{ selectedCustomerDelivery.receiving_record_no }}
+              <span class="text-gray-400">|</span>
+              #{{ selectedCustomerDelivery.id }}
+            </p>
+          </div>
+          <button type="button" class="text-gray-400 hover:text-gray-700 p-1 rounded" aria-label="إغلاق" @click="closeCustomerDeliveryModal">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="px-6 py-6 space-y-4">
+          <p v-if="selectedCustomerDelivery.customer_delivered_at" class="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-800">
+            مسلّم للعميل
+            <span v-if="selectedCustomerDelivery.customer_delivered_by"> بواسطة {{ selectedCustomerDelivery.customer_delivered_by }}</span>
+          </p>
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-1">المستلم</label>
+            <input
+              v-model="customerDeliveryForm.received_by"
+              type="text"
+              :disabled="!!selectedCustomerDelivery.customer_delivered_at"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm disabled:bg-gray-100"
+              placeholder="اسم من استلم القطع"
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-1">ملاحظة</label>
+            <input
+              v-model="customerDeliveryForm.note"
+              type="text"
+              :disabled="!!selectedCustomerDelivery.customer_delivered_at"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm disabled:bg-gray-100"
+            >
+          </div>
+          <a
+            :href="customerDeliveryPrintUrl"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900"
+            @click.prevent="openPrintPage(customerDeliveryPrintUrl)"
+          >
+            <i class="fas fa-print"></i>
+            <span>طباعة التقرير</span>
+          </a>
+          <button
+            v-if="!selectedCustomerDelivery.customer_delivered_at"
+            type="button"
+            :disabled="customerDeliverySaving"
+            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50"
+            @click="confirmCustomerDelivery"
+          >
+            <i v-if="customerDeliverySaving" class="fas fa-spinner fa-spin"></i>
+            <i v-else class="fas fa-check"></i>
+            <span>تأكيد التسليم للعميل</span>
+          </button>
         </div>
       </div>
     </div>
@@ -486,7 +575,27 @@ export default {
       surveyRequest: null,
       surveyEmail: '',
       surveySending: false,
-      surveyError: ''
+      surveyError: '',
+      customerDeliveryModalOpen: false,
+      selectedCustomerDelivery: null,
+      customerDeliverySaving: false,
+      customerDeliveryForm: {
+        received_by: '',
+        note: ''
+      }
+    }
+  },
+  computed: {
+    customerDeliveryPrintUrl() {
+      const row = this.selectedCustomerDelivery
+      if (!row) return '#'
+      const base = `/dashboard/test-requests/${row.id}/print-customer-delivery`
+      if (row.customer_delivered_at) return base
+      const params = new URLSearchParams()
+      if (this.customerDeliveryForm.received_by) params.set('received_by', this.customerDeliveryForm.received_by)
+      if (this.customerDeliveryForm.note) params.set('note', this.customerDeliveryForm.note)
+      const query = params.toString()
+      return query ? `${base}?${query}` : base
     }
   },
   methods: {
@@ -656,6 +765,54 @@ export default {
         },
         onFinish: () => {
           this.redeliveryUploading = false
+        }
+      })
+    },
+    customerDeliveryButtonClass(request) {
+      const base = 'inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded focus:outline-none focus:ring-2 transition-shadow'
+      if (request.customer_delivered_at) {
+        return `${base} bg-emerald-700 text-white ring-2 ring-emerald-300 ring-offset-1 hover:bg-emerald-800 focus:ring-emerald-400 shadow-sm`
+      }
+      return `${base} bg-amber-600 text-white hover:bg-amber-700 focus:ring-amber-500`
+    },
+    openCustomerDeliveryModal(request) {
+      this.selectedCustomerDelivery = { ...request }
+      this.customerDeliveryForm = {
+        received_by: request.customer_received_by || '',
+        note: request.customer_delivery_note || ''
+      }
+      this.customerDeliveryModalOpen = true
+    },
+    closeCustomerDeliveryModal() {
+      this.customerDeliveryModalOpen = false
+      this.selectedCustomerDelivery = null
+      this.customerDeliverySaving = false
+    },
+    confirmCustomerDelivery() {
+      const row = this.selectedCustomerDelivery
+      if (!row || row.customer_delivered_at) return
+      this.customerDeliverySaving = true
+      this.$inertia.post(`/dashboard/test-requests/${row.id}/deliver-to-customer`, {
+        received_by: this.customerDeliveryForm.received_by,
+        note: this.customerDeliveryForm.note
+      }, {
+        preserveScroll: true,
+        onSuccess: (page) => {
+          this.customerDeliverySaving = false
+          const updated = (page?.props?.testRequests || []).find((item) => item.id === row.id)
+          if (updated) {
+            this.selectedCustomerDelivery = { ...updated }
+            this.customerDeliveryForm = {
+              received_by: updated.customer_received_by || '',
+              note: updated.customer_delivery_note || ''
+            }
+          }
+        },
+        onError: () => {
+          this.customerDeliverySaving = false
+        },
+        onFinish: () => {
+          this.customerDeliverySaving = false
         }
       })
     },
