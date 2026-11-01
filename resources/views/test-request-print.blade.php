@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <title>@if(!empty($redeliveryFromLabPrint) && isset($redelivery))إعادة التسليم — دفعة #{{ $redelivery->id }} — @elseif(!empty($redeliveryFromLabPrint))إعادة التسليم للاستقبال — @elseif(!empty($labDeliveryFile))ملف التسليم للمختبر — @elseطلب اختبار — @endif{{ $testRequest->receiving_record_no }}</title>
+    <title>@if(!empty($redeliveryFromLabPrint) && isset($redelivery))إعادة التسليم — دفعة #{{ $redelivery->id }} — @elseif(!empty($redeliveryFromLabPrint))إعادة التسليم للاستقبال — @elseif(!empty($labDeliveryFile))ملف التسليم للمختبر — @else Sample Receiving Request — @endif{{ $testRequest->receiving_record_no }}</title>
     <style>
         /* Reset and Base Styles */
         * {
@@ -513,7 +513,7 @@
                 <span class="doc-header-title">Samples Delivery Record</span>
             @else
                 <span class="doc-header-docno">HOT - F03</span>
-                <span class="doc-header-title">TEST Request</span>
+                <span class="doc-header-title">Sample Receiving Request</span>
             @endif
             <div class="doc-header-logo-wrap">
                 @if(file_exists(public_path('images/idg_logo.jpg')))
@@ -547,38 +547,59 @@
             </tr>
         </table>
         @else
-        <table class="info-table">
+        @php
+            $receivedDateLabel = $testRequest->received_date
+                ? \Carbon\Carbon::parse($testRequest->received_date)->format('d/m/Y')
+                : '-';
+            $deliveryDateLabel = $testRequest->delivery_date
+                ? \Carbon\Carbon::parse($testRequest->delivery_date)->format('d/m/Y')
+                : '-';
+        @endphp
+        <table class="info-table" dir="ltr">
             <tr>
-                <td class="label">اسم العميل<br>Customer Name</td>
-                <td class="value">{{ $formattedCustomer['full_name'] ?? '-' }}</td>
-                <td class="label">رقم سجل الاستلام<br>Receiving Record No</td>
+                <td class="label">Barcode<br>الباركود</td>
+                <td class="value"></td>
+                <td class="label">Receiving record<br>no.<br>رقم سجل الاستلام</td>
                 <td class="value">{{ $testRequest->receiving_record_no ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label">كود العميل<br>Customer Code</td>
+                <td class="label">Company name<br>اسم الشركة</td>
+                <td class="value">{{ $formattedCustomer['company_name'] ?: '-' }}</td>
+                <td class="label">Received by<br>استلم بواسطة</td>
+                <td class="value">{{ $testRequest->received_by ?: '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Customer name<br>اسم العميل</td>
+                <td class="value">{{ $formattedCustomer['full_name'] ?: '-' }}</td>
+                <td class="label">Received Date<br>تاريخ الاستلام</td>
+                <td class="value">{{ $receivedDateLabel }}</td>
+            </tr>
+            <tr>
+                <td class="label">Customer code<br>رمز العميل</td>
                 <td class="value">{{ $formattedCustomer['customer_code'] ?? '-' }}</td>
-                <td class="label">تاريخ الاستلام<br>Received Date</td>
-                <td class="value">
-                    {{ $testRequest->received_date ? \Carbon\Carbon::parse($testRequest->received_date)->format('d/m/Y') : \Carbon\Carbon::now()->format('d/m/Y') }}
-                </td>
+                <td class="label">Received in<br>استلم في</td>
+                <td class="value">{{ $testRequest->received_in ?: '-' }}</td>
             </tr>
             <tr>
-                <td class="label">رقم الجوال<br>Mobile No</td>
-                <td class="value">{{ $formattedCustomer['phone'] ?? '-' }}</td>
-                <td class="label">البريد الإلكتروني<br>Email</td>
-                <td class="value">{{ $formattedCustomer['email'] ?? '-' }}</td>
+                <td class="label">Mobile No.<br>رقم الجوال</td>
+                <td class="value">{{ $formattedCustomer['phone'] ?: '-' }}</td>
+                <td class="label">Delivery Date<br>وقت التسليم</td>
+                <td class="value">{{ $deliveryDateLabel }}</td>
             </tr>
             <tr>
-                <td class="label">المدينة/العنوان<br>City/Address</td>
-                <td class="value">{{ $formattedCustomer['address'] ?? '-' }}</td>
-                <td class="label">استلم في<br>Received In</td>
-                <td class="value">{{ $testRequest->received_in ?? '-' }}</td>
+                <td class="label">Email<br>البريد الإلكتروني</td>
+                <td class="value">{{ $formattedCustomer['email'] ?: '-' }}</td>
+                <td class="label"></td>
+                <td class="value"></td>
             </tr>
         </table>
         @endif
 
         <!-- Items Table -->
+        @php $isReceivingForm = empty($labDeliveryFile); @endphp
+        @unless($isReceivingForm)
         <div class="section-title">العناصر | Items</div>
+        @endunless
         @php
             // Group artifacts by base code
             $groups = [];
@@ -642,9 +663,21 @@
                 ];
             }
         @endphp
+        @unless($isReceivingForm)
         <div class="total-info">المجموع | Total: {{ count($groupedArtifacts) }} عنصر | items</div>
-        <table class="items-table">
+        @endunless
+        <table class="items-table" @if($isReceivingForm) dir="ltr" @endif>
             <thead>
+                @if($isReceivingForm)
+                <tr>
+                    <th style="width: 18%;">Item ID<br>تعريف العنصر</th>
+                    <th style="width: 16%;">Type<br>نوع العنصر</th>
+                    <th style="width: 18%;">Service<br>الخدمة</th>
+                    <th style="width: 12%;">Weight<br>الوزن</th>
+                    <th style="width: 16%;">Delivery Type<br>طريقة التسليم / نوعه</th>
+                    <th style="width: 20%;">Note<br>ملاحظات</th>
+                </tr>
+                @else
                 <tr>
                     <th style="width: 5%;">#</th>
                     <th style="width: 10%;">الكود<br>Code</th>
@@ -656,13 +689,15 @@
                     <th style="width: 15%;">ملاحظات<br>Notes</th>
                     <th style="width: 12%;">الحالة<br>Status</th>
                 </tr>
+                @endif
             </thead>
             <tbody>
                 @if(count($groupedArtifacts) > 0)
                     @foreach($groupedArtifacts as $index => $group)
                         @php
                             $artifact = $group['artifact'];
-                            $weight = $artifact->weight ? $artifact->weight . ' ' . ($artifact->unit_type === 'carat' ? 'ct' : 'gm') : '-';
+                            $weightUnit = $artifact->weight_unit ?? $artifact->unit_type ?? '';
+                            $weight = $artifact->weight ? $artifact->weight . ' ' . (in_array($weightUnit, ['carat', 'ct'], true) ? 'ct' : ($weightUnit === 'gm' || $weightUnit === '' ? 'gm' : $weightUnit)) : '-';
                             $status = ucfirst($artifact->status ?? 'pending');
                             $statusAr = '';
                             $currentStatus = $artifact->status ?? 'pending';
@@ -679,6 +714,14 @@
                             $expectedDate = $artifact->deliveryDateLabel($testRequest->received_date ?? $testRequest->created_at);
                         @endphp
                         <tr>
+                            @if($isReceivingForm)
+                            <td style="font-family: monospace;">{{ $group['display_code'] }}</td>
+                            <td>{{ $artifact->type ? ($artifact->subtype ? $artifact->type . ' - ' . $artifact->subtype : $artifact->type) : '-' }}</td>
+                            <td>{{ $artifact->service ?? '-' }}</td>
+                            <td>{{ $weight }}</td>
+                            <td>{{ $artifact->delivery_type ?? '-' }}</td>
+                            <td>{{ $artifact->notes ?: '-' }}</td>
+                            @else
                             <td>{{ $index + 1 }}</td>
                             <td style="font-family: monospace;">{{ $group['display_code'] }}</td>
                             <td>{{ $artifact->type ? ($artifact->subtype ? $artifact->type . ' - ' . $artifact->subtype : $artifact->type) : '-' }}</td>
@@ -690,11 +733,12 @@
                                 {{ strlen($artifact->notes ?? '-') > 30 ? substr($artifact->notes, 0, 30) . '...' : ($artifact->notes ?? '-') }}
                             </td>
                             <td style="font-size: 8px;">{{ $statusAr }}<br>{{ $status }}</td>
+                            @endif
                         </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 15px; color: #666;">
+                        <td colspan="{{ $isReceivingForm ? 6 : 9 }}" style="text-align: center; padding: 15px; color: #666;">
                             لا توجد عناصر مسجلة<br>No items found
                         </td>
                     </tr>
@@ -705,12 +749,12 @@
         <!-- Terms and Conditions (not shown on lab delivery file) -->
         @if(empty($labDeliveryFile))
         <div style="margin-top: 15px;">
-            <div class="section-title">الشروط والأحكام | Terms and Conditions</div>
+            <div class="section-title">IDG Terms and Conditions | الشروط والأحكام الخاصة بـ IDG</div>
             <table class="items-table terms-conditions-print" dir="ltr">
                 <thead>
                     <tr style="background-color: #f3f4f6;">
-                        <th style="width: 50%; text-align: left; padding: 8px;">Terms and Conditions:</th>
-                        <th style="width: 50%; text-align: right; padding: 8px;" dir="rtl">:الشروط والأحكام</th>
+                        <th style="width: 50%; text-align: left; padding: 8px;">IDG Terms and Conditions</th>
+                        <th style="width: 50%; text-align: right; padding: 8px;" dir="rtl">الشروط والأحكام الخاصة بـ IDG</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -866,11 +910,13 @@
             </table>
             @else
             <table class="delivery-doc-table" dir="ltr">
+                @unless($isReceivingForm)
                 <thead>
                     <tr>
                         <th colspan="6" class="delivery-doc-heading">Delivery Documentation | توثيق التسليم</th>
                     </tr>
                 </thead>
+                @endunless
                 <tbody>
                     <tr>
                         <td class="delivery-doc-label">Delivered by:<br>سلّم بواسطة</td>
