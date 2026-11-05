@@ -200,6 +200,9 @@
                   {{ __('Artifact Code') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ __('Pieces') }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ __('Type') }}
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -232,6 +235,11 @@
               <tr v-for="artifact in groupedArtifacts" :key="artifact.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
                   {{ artifact.artifact_code }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">
+                    {{ artifact.count || 1 }} {{ __('pieces') }}
+                  </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ getFullType(artifact) }}
@@ -286,6 +294,56 @@
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete pieces modal -->
+    <div v-if="showDeleteArtifactModal && deleteTargetArtifact" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeDeleteArtifactModal"></div>
+        <div class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+          <div class="bg-white px-6 py-5 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">{{ __('Delete pieces') }}</h3>
+            <p class="mt-1 text-sm text-gray-600 font-mono">{{ deleteTargetArtifact.artifact_code }}</p>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div class="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-sm text-slate-800">
+              {{ __('Total pieces in this group') }}:
+              <strong class="text-base">{{ deleteTargetTotal }}</strong>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-1">
+                {{ __('How many pieces do you want to delete?') }}
+              </label>
+              <input
+                v-model.number="deleteQuantity"
+                type="number"
+                min="1"
+                :max="deleteTargetTotal"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+              >
+              <p class="mt-1 text-xs text-gray-500">
+                {{ __('Remaining after delete') }}:
+                <strong>{{ Math.max(deleteTargetTotal - (Number(deleteQuantity) || 0), 0) }}</strong>
+              </p>
+              <p v-if="deleteError" class="mt-2 text-sm text-red-600">{{ deleteError }}</p>
+            </div>
+          </div>
+          <div class="px-6 py-4 bg-gray-50 flex justify-end gap-2">
+            <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-sm" @click="closeDeleteArtifactModal">
+              {{ __('Cancel') }}
+            </button>
+            <button
+              type="button"
+              :disabled="deletingArtifact"
+              class="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-semibold hover:bg-red-700 disabled:opacity-50"
+              @click="confirmDeleteArtifact"
+            >
+              <i v-if="deletingArtifact" class="fas fa-spinner fa-spin ml-1"></i>
+              {{ __('Confirm delete') }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -887,12 +945,21 @@ export default {
     typeOptions() {
       return getTypeOptions(this.$page.props.locale)
     },
+    deleteTargetTotal() {
+      if (!this.deleteTargetArtifact) return 1
+      return this.deleteTargetArtifact.count || (this.deleteTargetArtifact.ids ? this.deleteTargetArtifact.ids.length : 1)
+    },
   },
   data() {
     return {
       ARTIFACT_TYPE_PRECIOUS_METALS,
       showEditArtifactModal: false,
       showAddArtifactModal: false,
+      showDeleteArtifactModal: false,
+      deleteTargetArtifact: null,
+      deleteQuantity: 1,
+      deleteError: '',
+      deletingArtifact: false,
       updatingArtifact: false,
       addingArtifact: false,
       newArtifactSubtypeMode: 'list',
@@ -1053,9 +1120,50 @@ export default {
     },
     
     deleteArtifact(artifact) {
-      if (confirm(this.__('Are you sure you want to delete this artifact?'))) {
-        this.$inertia.delete(`/dashboard/artifacts/${artifact.id}`)
+      this.deleteTargetArtifact = artifact
+      this.deleteQuantity = 1
+      this.deleteError = ''
+      this.deletingArtifact = false
+      this.showDeleteArtifactModal = true
+    },
+    closeDeleteArtifactModal() {
+      this.showDeleteArtifactModal = false
+      this.deleteTargetArtifact = null
+      this.deleteQuantity = 1
+      this.deleteError = ''
+      this.deletingArtifact = false
+    },
+    confirmDeleteArtifact() {
+      const artifact = this.deleteTargetArtifact
+      if (!artifact) return
+
+      const total = this.deleteTargetTotal
+      const quantity = Number(this.deleteQuantity)
+      if (!Number.isInteger(quantity) || quantity < 1) {
+        this.deleteError = this.__('Enter a valid number of pieces to delete.')
+        return
       }
+      if (quantity > total) {
+        this.deleteError = this.__('Cannot delete more pieces than the group total.')
+        return
+      }
+
+      this.deletingArtifact = true
+      this.deleteError = ''
+      this.$inertia.delete(`/dashboard/artifacts/${artifact.id}`, {
+        data: { quantity },
+        preserveScroll: true,
+        onSuccess: () => {
+          this.closeDeleteArtifactModal()
+        },
+        onError: () => {
+          this.deletingArtifact = false
+          this.deleteError = this.__('Error deleting artifact. Please try again.')
+        },
+        onFinish: () => {
+          this.deletingArtifact = false
+        }
+      })
     },
     
     resolveSubtypeMode(type, subtypeValue) {
@@ -1271,6 +1379,8 @@ export default {
           'This customer has no artifacts yet.': 'This customer has no artifacts yet.',
           'Add First Artifact': 'Add First Artifact',
           'Artifact Code': 'Artifact Code',
+          'Pieces': 'Pieces',
+          'pieces': 'pieces',
           'Type': 'Type',
           'Service': 'Service',
           'Weight': 'Weight',
@@ -1280,6 +1390,13 @@ export default {
           'View': 'View',
           'Edit': 'Edit',
           'Delete': 'Delete',
+          'Delete pieces': 'Delete pieces',
+          'Total pieces in this group': 'Total pieces in this group',
+          'How many pieces do you want to delete?': 'How many pieces do you want to delete?',
+          'Remaining after delete': 'Remaining after delete',
+          'Confirm delete': 'Confirm delete',
+          'Enter a valid number of pieces to delete.': 'Enter a valid number of pieces to delete.',
+          'Cannot delete more pieces than the group total.': 'Cannot delete more pieces than the group total.',
           'Are you sure you want to delete this artifact?': 'Are you sure you want to delete this artifact?',
           'Error deleting artifact. Please try again.': 'Error deleting artifact. Please try again.',
           'Edit Artifact': 'Edit Artifact',
@@ -1337,6 +1454,8 @@ export default {
           'This customer has no artifacts yet.': 'هذا العميل لا يملك قطع بعد.',
           'Add First Artifact': 'إضافة أول قطعة',
           'Artifact Code': 'كود القطعة',
+          'Pieces': 'عدد القطع',
+          'pieces': 'قطعة',
           'Type': 'النوع',
           'Service': 'الخدمة',
           'Weight': 'الوزن',
@@ -1346,6 +1465,13 @@ export default {
           'View': 'عرض',
           'Edit': 'تعديل',
           'Delete': 'حذف',
+          'Delete pieces': 'حذف قطع',
+          'Total pieces in this group': 'إجمالي القطع في هذه المجموعة',
+          'How many pieces do you want to delete?': 'كم قطعة تريد حذفها؟',
+          'Remaining after delete': 'المتبقي بعد الحذف',
+          'Confirm delete': 'تأكيد الحذف',
+          'Enter a valid number of pieces to delete.': 'أدخل عدداً صحيحاً للقطع المراد حذفها.',
+          'Cannot delete more pieces than the group total.': 'لا يمكن حذف عدد أكبر من إجمالي المجموعة.',
           'Are you sure you want to delete this artifact?': 'هل أنت متأكد من حذف هذه القطعة؟',
           'Error deleting artifact. Please try again.': 'خطأ في حذف القطعة. يرجى المحاولة مرة أخرى.',
           'Edit Artifact': 'تعديل القطعة',

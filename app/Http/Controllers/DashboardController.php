@@ -1911,30 +1911,105 @@ class DashboardController extends Controller
     }
 
     /**
-     * Delete artifact
+     * Delete one or more pieces from a grouped artifact row.
+     *
+     * The customer list shows one row per base code. The request may send
+     * `quantity` = how many pieces to remove from that group (highest
+     * sub-codes first). Default is 1.
      */
-    public function deleteArtifact(Artifact $artifact)
+    public function deleteArtifact(Request $request, Artifact $artifact)
     {
         try {
-            \Log::info('Deleting artifact', [
-                'artifact_id' => $artifact->id,
-                'artifact_code' => $artifact->artifact_code
-            ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+            $validated = $request->validate([
+                'quantity' => 'nullable|integer|min:1',
             ]);
 
-            $artifact->delete();
+            $currentCode = (string) $artifact->artifact_code;
+            $baseCode = preg_match('/-\d+$/', $currentCode)
+                ? preg_replace('/-\d+$/', '', $currentCode)
+                : $currentCode;
 
-            \Log::info('Artifact deleted successfully', [
+            $groupQuery = Artifact::query()->where(function ($query) use ($baseCode) {
+                $query->where('artifact_code', $baseCode)
+                    ->orWhere('artifact_code', 'like', $baseCode.'-%');
+            });
+
+            if ($artifact->qoyod_customer_id) {
+                $groupQuery->where('qoyod_customer_id', $artifact->qoyod_customer_id);
+            } elseif ($artifact->client_id) {
+                $groupQuery->where('client_id', $artifact->client_id);
+            } else {
+                $groupQuery->whereKey($artifact->id);
+            }
+
+            if ($artifact->test_request_id) {
+                $groupQuery->where('test_request_id', $artifact->test_request_id);
+            }
+
+            $group = $groupQuery->get();
+            $total = $group->count();
+            if ($total === 0) {
+                return redirect()->back()->withErrors(['error' => 'Artifact not found.']);
+            }
+
+            $quantity = min((int) ($validated['quantity'] ?? 1), $total);
+
+            $sorted = $group->sortByDesc(function (Artifact $item) use ($baseCode) {
+                $code = (string) $item->artifact_code;
+                if ($code === $baseCode) {
+                    return -1;
+                }
+                if (preg_match('/-(\d+)$/', $code, $matches)) {
+                    return (int) $matches[1];
+                }
+
+                return 0;
+            })->values();
+
+            $toDelete = $sorted->take($quantity);
+            $deletedIds = $toDelete->pluck('id')->all();
+            $deletedCodes = $toDelete->pluck('artifact_code')->all();
+
+            \Log::info('Deleting artifacts from group', [
                 'artifact_id' => $artifact->id,
-                'artifact_code' => $artifact->artifact_code
-            ], [
-                'tax_number.min' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
-                'tax_number.max' => 'الرقم الضريبي يجب أن يكون 15 رقم بالضبط',
+                'base_code' => $baseCode,
+                'requested_quantity' => $quantity,
+                'group_total' => $total,
+                'deleted_ids' => $deletedIds,
+                'deleted_codes' => $deletedCodes,
             ]);
 
-            return redirect()->back()->with('success', 'Artifact deleted successfully');
+            Artifact::query()->whereIn('id', $deletedIds)->delete();
+
+            $remaining = $total - $quantity;
+            if ($remaining === 1) {
+                $left = Artifact::query()
+                    ->where(function ($query) use ($baseCode) {
+                        $query->where('artifact_code', $baseCode)
+                            ->orWhere('artifact_code', 'like', $baseCode.'-%');
+                    })
+                    ->when($artifact->qoyod_customer_id, fn ($q) => $q->where('qoyod_customer_id', $artifact->qoyod_customer_id))
+                    ->when(! $artifact->qoyod_customer_id && $artifact->client_id, fn ($q) => $q->where('client_id', $artifact->client_id))
+                    ->when($artifact->test_request_id, fn ($q) => $q->where('test_request_id', $artifact->test_request_id))
+                    ->first();
+
+                if ($left && $left->artifact_code !== $baseCode) {
+                    $left->update(['artifact_code' => $baseCode]);
+                }
+            }
+
+            \Log::info('Artifacts deleted from group successfully', [
+                'base_code' => $baseCode,
+                'deleted_count' => $quantity,
+                'remaining' => $remaining,
+            ]);
+
+            return redirect()->back()->with(
+                'success',
+                $quantity > 1
+                    ? "Successfully deleted {$quantity} artifacts"
+                    : 'Artifact deleted successfully'
+            );
 
         } catch (\Exception $e) {
             \Log::error('Error deleting artifact', [
